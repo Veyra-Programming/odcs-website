@@ -79,6 +79,11 @@ export default function Footer() {
               </a>
             </li>
             <li>
+              <a href="https://github.com/Veyra-Programming/odcs-website" target="_blank" rel="noreferrer" style={{ color: '#38bdf8', textDecoration: 'none' }}>
+                🌐 Portal Web Repo (odcs-website)
+              </a>
+            </li>
+            <li>
               <a href="https://github.com/Veyra-Programming/open-digital-continuity-standard-" target="_blank" rel="noreferrer" style={{ color: 'var(--text-muted)', textDecoration: 'none' }}>
                 🐙 ODCS Standard Specification
               </a>
