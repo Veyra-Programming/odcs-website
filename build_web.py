@@ -65,6 +65,12 @@ def build():
         if os.path.exists(src_file):
             shutil.copy2(src_file, os.path.join(build_dir, f))
 
+    # Copy admin sub-directory
+    src_admin = os.path.join(website_dir, "admin")
+    dst_admin = os.path.join(build_dir, "admin")
+    if os.path.exists(src_admin):
+        shutil.copytree(src_admin, dst_admin, dirs_exist_ok=True)
+
     # Copy downloads directory
     src_downloads = os.path.join(website_dir, "public", "downloads")
     if not os.path.exists(src_downloads):

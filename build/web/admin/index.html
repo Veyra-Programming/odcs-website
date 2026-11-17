@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ODCS Admin Cockpit — Unrestricted Sovereign Dashboard & Article Studio</title>
+  <meta name="description" content="Centralized Administrator Cockpit for the Open Digital Continuity Standard (ODCS). Full unrestricted website permissions, article writing and publishing studio, and disruption controls.">
+  <link rel="icon" href="/favicon.ico">
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+
+  <!-- Ambient Glow Background -->
+  <div class="admin-glow" aria-hidden="true">
+    <div class="orb-1"></div>
+    <div class="orb-2"></div>
+  </div>
+
+  <!-- Admin Sticky Header -->
+  <header class="admin-header">
+    <div class="header-container">
+      <div style="display: flex; align-items: center; gap: 1rem;">
+        <a href="/" class="brand-section">
+          <div class="brand-icon">🌟</div>
+          <div>
+            <div style="font-size: 1.15rem; font-weight: 800; color: #fff;">ODCS Admin Cockpit</div>
+            <div style="font-size: 0.68rem; color: var(--cyan); font-family: var(--font-mono); font-weight: 700;">
+              UNRESTRICTED ROOT AUTHORITY · ALL PERMISSIONS GRANTED
+            </div>
+          </div>
+        </a>
+      </div>
+
+      <div style="display: flex; align-items: center; gap: 0.85rem; flex-wrap: wrap;">
+        <!-- Status Indicator: Unrestricted -->
+        <div class="status-banner">
+          <span class="pulse-dot"></span>
+          <span>ROOT RING-0 ACTIVE (ANIRUDHA PUTHRAYA)</span>
+        </div>
+
+        <a href="/" class="btn btn-secondary btn-sm">
+          <span>🌐 View Live Website</span>
+        </a>
+
+        <a href="https://github.com/Veyra-Programming/odcs-website" target="_blank" rel="noreferrer" class="btn btn-secondary btn-sm">
+          <span>GitHub Repo ↗</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Cockpit View -->
+  <main class="admin-main">
+
+    <!-- Admin Navigation Tabs -->
+    <nav class="admin-tabs">
+      <button id="tabBtn_write_article" class="tab-btn active" onclick="setAdminTab('write_article')">
+        <span>📝 Write &amp; Publish Article</span>
+      </button>
+      <button id="tabBtn_articles_list" class="tab-btn" onclick="setAdminTab('articles_list')">
+        <span>📚 Published Articles</span>
+        <span id="articlesCountBadge" class="badge badge-cyan" style="font-size: 0.65rem;">4</span>
+      </button>
+      <button id="tabBtn_network_control" class="tab-btn" onclick="setAdminTab('network_control')">
+        <span>⚡ Network &amp; Telemetry Override</span>
+      </button>
+      <button id="tabBtn_crdt_mesh" class="tab-btn" onclick="setAdminTab('crdt_mesh')">
+        <span>🌐 CRDT Mesh &amp; Merkle WAL</span>
+      </button>
+      <button id="tabBtn_release_vault" class="tab-btn" onclick="setAdminTab('release_vault')">
+        <span>📦 20-OS Release Vault Manager</span>
+      </button>
+    </nav>
+
+    <!-- ========================================================================
+         TAB 1: WRITE & PUBLISH ARTICLE STUDIO
+         ======================================================================== -->
+    <section id="tabPanel_write_article" class="tab-panel active">
+      <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.25rem;">
+          <div>
+            <h2 class="card-title">📝 Sovereign Article Writing &amp; Publishing Studio</h2>
+            <p class="card-desc" style="margin: 0;">
+              Author technical essays, architectural RFCs, and release announcements with live Markdown rendering and instant Layer 4 ZIL cryptographic seals.
+            </p>
+          </div>
+          <div style="display: flex; gap: 0.5rem;">
+            <button onclick="publishArticle()" class="btn btn-primary">
+              <span id="publishBtnLabel">PUBLISH ARTICLE</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="article-editor-grid">
+          <!-- Editor Form Column -->
+          <div>
+            <div class="form-group">
+              <label class="form-label" for="artTitle">Article Title</label>
+              <input type="text" id="artTitle" class="form-input" placeholder="e.g. Inside the Star Language WebAssembly Engine..." />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="artSubtitle">Subtitle / Excerpt</label>
+              <input type="text" id="artSubtitle" class="form-input" placeholder="A concise summary of the architectural invariant..." />
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+              <div class="form-group">
+                <label class="form-label" for="artCategory">Category</label>
+                <select id="artCategory" class="form-select">
+                  <option value="Architecture & Philosophy">Architecture &amp; Philosophy</option>
+                  <option value="Compilers & Language Design">Compilers &amp; Language Design</option>
+                  <option value="Standards & Protocols">Standards &amp; Protocols</option>
+                  <option value="WebAssembly & Runtime">WebAssembly &amp; Runtime</option>
+                  <option value="CRDTs & Mesh Sync">CRDTs &amp; Mesh Sync</option>
+                  <option value="Zero Intent Loss">Zero Intent Loss (ZIL)</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="artAuthor">Author Attribution</label>
+                <input type="text" id="artAuthor" class="form-input" value="Anirudha Puthraya" />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="artTags">Tags (Comma-separated)</label>
+              <input type="text" id="artTags" class="form-input" placeholder="ODCS, StarLang, WASM, CRDT" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="artContent">Markdown Content</label>
+              <textarea id="artContent" class="form-textarea" placeholder="# Enter your Markdown article here...&#10;&#10;Use ```haven or ```star for code blocks."></textarea>
+            </div>
+          </div>
+
+          <!-- Live Split Preview Column -->
+          <div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.45rem;">
+              <span class="form-label" style="margin: 0;">Live Rendered Preview</span>
+              <span class="badge badge-cyan" style="font-size: 0.65rem;">REAL-TIME PARSER</span>
+            </div>
+            <div id="markdownPreview" class="preview-pane"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================================
+         TAB 2: PUBLISHED ARTICLES REPOSITORY
+         ======================================================================== -->
+    <section id="tabPanel_articles_list" class="tab-panel">
+      <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1rem;">
+          <div>
+            <h2 class="card-title">📚 Published Technical Articles &amp; Essays</h2>
+            <p class="card-desc" style="margin: 0;">
+              Manage, edit, and export all published ODCS standard articles and essays.
+            </p>
+          </div>
+          <div style="display: flex; gap: 0.5rem;">
+            <button onclick="setAdminTab('write_article')" class="btn btn-primary btn-sm">
+              <span>+ New Article</span>
+            </button>
+            <button onclick="exportArticlesJson()" class="btn btn-secondary btn-sm">
+              <span>📥 Export JSON</span>
+            </button>
+          </div>
+        </div>
+
+        <div style="overflow-x: auto;">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Title &amp; Subtitle</th>
+                <th>Category</th>
+                <th>Author</th>
+                <th>Read Time</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="articlesTableBody">
+              <!-- Dynamically rendered by admin.js -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================================
+         TAB 3: UNRESTRICTED NETWORK & TELEMETRY CONTROLLER
+         ======================================================================== -->
+    <section id="tabPanel_network_control" class="tab-panel">
+      <div class="card">
+        <h2 class="card-title">⚡ Unrestricted Network &amp; Telemetry Override</h2>
+        <p class="card-desc">
+          Root administrator commands to simulate adverse carrier conditions, force operating modes, and inspect the Layer 3 telemetry probe without restriction.
+        </p>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.25rem;">
+          <div style="background: rgba(0, 0, 0, 0.4); border: 1px solid var(--border-cyan); border-radius: 12px; padding: 1.25rem;">
+            <h4 style="font-size: 0.95rem; font-weight: 800; color: #fff; margin-bottom: 0.4rem;">Force Telemetry Mode</h4>
+            <p style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 1rem;">Override the automated probe with a fixed network operational state.</p>
+            <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+              <button onclick="adminSetMode('OPTIMAL_ONLINE')" class="btn btn-secondary btn-sm" style="border-color: var(--emerald); color: var(--emerald); justify-content: flex-start;">
+                <span>🟢 Force OPTIMAL_ONLINE (0.04ms)</span>
+              </button>
+              <button onclick="adminSetMode('DEGRADED_JITTER')" class="btn btn-secondary btn-sm" style="border-color: var(--amber); color: var(--amber); justify-content: flex-start;">
+                <span>🟡 Force DEGRADED_JITTER (480ms)</span>
+              </button>
+              <button onclick="adminSetMode('SEVERED_OFFLINE')" class="btn btn-secondary btn-sm" style="border-color: var(--rose); color: var(--rose); justify-content: flex-start;">
+                <span>🔴 Force SEVERED_OFFLINE (Carrier Severed)</span>
+              </button>
+            </div>
+          </div>
+
+          <div style="background: rgba(0, 0, 0, 0.4); border: 1px solid var(--border-violet); border-radius: 12px; padding: 1.25rem;">
+            <h4 style="font-size: 0.95rem; font-weight: 800; color: #fff; margin-bottom: 0.4rem;">Carrier Link Disruption</h4>
+            <p style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 1rem;">Simulate physical cable cuts and satellite ground station dropouts.</p>
+            <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+              <button onclick="adminCutCarrier()" class="btn btn-danger btn-sm" style="justify-content: flex-start;">
+                <span>🛑 Cut Upstream Carrier Wave</span>
+              </button>
+              <button onclick="adminRestoreCarrier()" class="btn btn-secondary btn-sm" style="border-color: var(--emerald); color: var(--emerald); justify-content: flex-start;">
+                <span>🔄 Restore Carrier Wave &amp; Resync</span>
+              </button>
+            </div>
+          </div>
+
+          <div style="background: rgba(0, 0, 0, 0.4); border: 1px solid var(--border-amber); border-radius: 12px; padding: 1.25rem;">
+            <h4 style="font-size: 0.95rem; font-weight: 800; color: #fff; margin-bottom: 0.4rem;">Cache &amp; Storage Maintenance</h4>
+            <p style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 1rem;">Purge Service Worker caches and reset client IndexedDB WAL logs.</p>
+            <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+              <button onclick="adminPurgeCache()" class="btn btn-secondary btn-sm" style="justify-content: flex-start;">
+                <span>🧹 Purge Service Worker Cache</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================================
+         TAB 4: CRDT MESH & MERKLE WAL ARBITER
+         ======================================================================== -->
+    <section id="tabPanel_crdt_mesh" class="tab-panel">
+      <div class="card">
+        <h2 class="card-title">🌐 CRDT Mesh &amp; Merkle DAG Arbiter</h2>
+        <p class="card-desc">
+          Inspect distributed state vectors across the 4 sovereign nodes (Alpha, Beta, Gamma, Delta) and audit Merkle tree roots.
+        </p>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+          <div style="background: rgba(0, 0, 0, 0.4); border: 1px solid var(--border-cyan); border-radius: 10px; padding: 1rem;">
+            <div style="font-size: 0.7rem; color: var(--text-dim); font-family: var(--font-mono);">NODE ALPHA (EDGE GATEWAY)</div>
+            <div style="font-size: 1.1rem; font-weight: 800; color: var(--cyan); margin: 0.3rem 0;">1,048 WAL BLOCKS</div>
+            <div style="font-size: 0.72rem; color: var(--emerald);">VECTOR CLOCK: [142, 108, 96, 70]</div>
+          </div>
+
+          <div style="background: rgba(0, 0, 0, 0.4); border: 1px solid var(--border-violet); border-radius: 10px; padding: 1rem;">
+            <div style="font-size: 0.7rem; color: var(--text-dim); font-family: var(--font-mono);">NODE BETA (MOBILE RUNTIME)</div>
+            <div style="font-size: 1.1rem; font-weight: 800; color: var(--violet); margin: 0.3rem 0;">1,048 WAL BLOCKS</div>
+            <div style="font-size: 0.72rem; color: var(--emerald);">VECTOR CLOCK: [142, 108, 96, 70]</div>
+          </div>
+
+          <div style="background: rgba(0, 0, 0, 0.4); border: 1px solid var(--border-emerald); border-radius: 10px; padding: 1rem;">
+            <div style="font-size: 0.7rem; color: var(--text-dim); font-family: var(--font-mono);">NODE GAMMA (SATELLITE RELAY)</div>
+            <div style="font-size: 1.1rem; font-weight: 800; color: var(--emerald); margin: 0.3rem 0;">1,048 WAL BLOCKS</div>
+            <div style="font-size: 0.72rem; color: var(--emerald);">VECTOR CLOCK: [142, 108, 96, 70]</div>
+          </div>
+
+          <div style="background: rgba(0, 0, 0, 0.4); border: 1px solid var(--border-amber); border-radius: 10px; padding: 1rem;">
+            <div style="font-size: 0.7rem; color: var(--text-dim); font-family: var(--font-mono);">NODE DELTA (SOVEREIGN SERVER)</div>
+            <div style="font-size: 1.1rem; font-weight: 800; color: var(--amber); margin: 0.3rem 0;">1,048 WAL BLOCKS</div>
+            <div style="font-size: 0.72rem; color: var(--emerald);">VECTOR CLOCK: [142, 108, 96, 70]</div>
+          </div>
+        </div>
+
+        <div style="background: rgba(0, 0, 0, 0.4); border: 1px solid var(--border-subtle); border-radius: 12px; padding: 1.25rem;">
+          <h4 style="font-size: 0.95rem; font-weight: 800; color: #fff; margin-bottom: 0.4rem;">CRDT Mathematical Verification</h4>
+          <p style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.6;">
+            All 4 nodes satisfy the commutative semi-lattice invariant: <code style="color: var(--cyan);">S_A ⊔ S_B = S_B ⊔ S_A</code>. State operations merge automatically with 0% data drift and zero coordinator locks.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================================
+         TAB 5: 20-OS RELEASE VAULT MANAGER
+         ======================================================================== -->
+    <section id="tabPanel_release_vault" class="tab-panel">
+      <div class="card">
+        <h2 class="card-title">📦 20-OS Release Vault &amp; Binary Manifest</h2>
+        <p class="card-desc">
+          Official distribution registry for Star and Haven compiled packages across heterogenous operating systems.
+        </p>
+
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Target OS</th>
+              <th>Package Artifact</th>
+              <th>Size</th>
+              <th>SHA-256 Digest</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Windows x64</td>
+              <td><code>Star-1.2.0-Windows-x64-Setup.exe</code></td>
+              <td>14.2 MB</td>
+              <td><code>b325da0b200c...</code></td>
+              <td><span class="badge badge-emerald">VERIFIED</span></td>
+            </tr>
+            <tr>
+              <td>Universal Linux</td>
+              <td><code>star-1.2.0-universal-sdk.tar.gz</code></td>
+              <td>22.1 MB</td>
+              <td><code>8cf6a540bffb...</code></td>
+              <td><span class="badge badge-emerald">VERIFIED</span></td>
+            </tr>
+            <tr>
+              <td>macOS Silicon</td>
+              <td><code>Haven-1.0.0-macOS-AppleSilicon.dmg</code></td>
+              <td>28.4 MB</td>
+              <td><code>a94897544bac...</code></td>
+              <td><span class="badge badge-emerald">VERIFIED</span></td>
+            </tr>
+            <tr>
+              <td>Android ARM64</td>
+              <td><code>haven-1.0.0-r0.apk</code></td>
+              <td>72.8 KB</td>
+              <td><code>4c318c2a916d...</code></td>
+              <td><span class="badge badge-emerald">VERIFIED</span></td>
+            </tr>
+            <tr>
+              <td>WebAssembly</td>
+              <td><code>app.wasm</code></td>
+              <td>4.9 KB</td>
+              <td><code>1a2b3c4d5e6f...</code></td>
+              <td><span class="badge badge-cyan">60 FPS GA</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="admin.js"></script>
+</body>
+</html>
