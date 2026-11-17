@@ -1,0 +1,218 @@
+[
+  {
+    "target": "Haven-1.0.0-macOS-AppleSilicon.dmg",
+    "size_bytes": 90361,
+    "size": "88.2 KB",
+    "sha256": "a94897544bac05970f25ecc43ab8bddb3dcb6c3ad36827b1f4f5c5c7c8169872"
+  },
+  {
+    "target": "Haven-1.0.0-macOS-Intel.dmg",
+    "size_bytes": 90361,
+    "size": "88.2 KB",
+    "sha256": "a94897544bac05970f25ecc43ab8bddb3dcb6c3ad36827b1f4f5c5c7c8169872"
+  },
+  {
+    "target": "Haven-1.0.0-macOS-Universal.dmg",
+    "size_bytes": 90361,
+    "size": "88.2 KB",
+    "sha256": "a94897544bac05970f25ecc43ab8bddb3dcb6c3ad36827b1f4f5c5c7c8169872"
+  },
+  {
+    "target": "Haven-1.0.0-win64-Setup.exe",
+    "size_bytes": 20621593,
+    "size": "19.7 MB",
+    "sha256": "b325da0b200c59caa494135966b683f94e8ad0cdfd87cdab419585122a2a32e6"
+  },
+  {
+    "target": "Haven-1.0.0-win64-portable.zip",
+    "size_bytes": 4768306,
+    "size": "4.5 MB",
+    "sha256": "aae36c9e29a769167f7191f4e697bed0a4c1ac59adf258a1282744bf34711de3"
+  },
+  {
+    "target": "README.txt",
+    "size_bytes": 352,
+    "size": "352 B",
+    "sha256": "dbcfab8af2bd2430110791ad801acfb69a283732ff9df12af3fad0776883bdbe"
+  },
+  {
+    "target": "Star-1.2.0-Windows-x64-Setup.exe",
+    "size_bytes": 6004937,
+    "size": "5.7 MB",
+    "sha256": "41437e6e343fbe22c425f8b2f2ba92593696169b01f245414bb2d3ed7092605a"
+  },
+  {
+    "target": "Star-1.2.0-Windows-x64.zip",
+    "size_bytes": 245722,
+    "size": "240.0 KB",
+    "sha256": "29f878ba830198de5b1e5ea68f323887b46103dc1d36859b17b73f74694c043e"
+  },
+  {
+    "target": "app.wasm",
+    "size_bytes": 5708,
+    "size": "5.6 KB",
+    "sha256": "a3e1c9b13cfc34c5c09d31a51d7d610672db977c382d06dd12a330160539ae52"
+  },
+  {
+    "target": "downloads_manifest.json",
+    "size_bytes": 6684,
+    "size": "6.5 KB",
+    "sha256": "c8a3937029be7ea0605db85c9f6c9f97dd259b96240499d3ac386b12437d5ccf"
+  },
+  {
+    "target": "haven-1.0.0-1-x86_64.pkg.tar.zst",
+    "size_bytes": 74458,
+    "size": "72.7 KB",
+    "sha256": "1ce95b7b319a47f3341240043b735719117154eea86cd477fd3c04ada0d0db55"
+  },
+  {
+    "target": "haven-1.0.0-1.aarch64.rpm",
+    "size_bytes": 71763,
+    "size": "70.1 KB",
+    "sha256": "632730a0a9abaa9b72e3c37e9eac53456b264395c69a961ed1573e64e5f0ac6c"
+  },
+  {
+    "target": "haven-1.0.0-1.x86_64.rpm",
+    "size_bytes": 71763,
+    "size": "70.1 KB",
+    "sha256": "632730a0a9abaa9b72e3c37e9eac53456b264395c69a961ed1573e64e5f0ac6c"
+  },
+  {
+    "target": "haven-1.0.0-aarch64.AppImage",
+    "size_bytes": 74347,
+    "size": "72.6 KB",
+    "sha256": "316f3d0cc901b4512db0ae0a9fe0023755d585e98df660b31e12f544639d4323"
+  },
+  {
+    "target": "haven-1.0.0-android-arm64.tar.gz",
+    "size_bytes": 72682,
+    "size": "71.0 KB",
+    "sha256": "502cdf47d1bfa6acbf5a162eb6180d740c169636f15b9376cd513afc1c2693bf"
+  },
+  {
+    "target": "haven-1.0.0-freebsd-x86_64.tar.xz",
+    "size_bytes": 63068,
+    "size": "61.6 KB",
+    "sha256": "3151775e9754c97dc2cf96ff14d8ab3564f29945633bc2b5ab52b764f4412c86"
+  },
+  {
+    "target": "haven-1.0.0-linux-aarch64.tar.gz",
+    "size_bytes": 74501,
+    "size": "72.8 KB",
+    "sha256": "8cf6a540bffb6e895a6e05d718c65d0644b0492a75f2a46fea6d11f89bf82a01"
+  },
+  {
+    "target": "haven-1.0.0-linux-x86_64.tar.gz",
+    "size_bytes": 74501,
+    "size": "72.8 KB",
+    "sha256": "8cf6a540bffb6e895a6e05d718c65d0644b0492a75f2a46fea6d11f89bf82a01"
+  },
+  {
+    "target": "haven-1.0.0-linux-x86_64.zip",
+    "size_bytes": 88169,
+    "size": "86.1 KB",
+    "sha256": "8924fde4c391ca7b3f8f1b2d7ca7dd1cc095ede23c6c51e9d0098e0f2b94441d"
+  },
+  {
+    "target": "haven-1.0.0-r0.apk",
+    "size_bytes": 72865,
+    "size": "71.2 KB",
+    "sha256": "4c318c2a916df8abc1174e41053a2ba462c8c7d4ed9bceca8073e71cbe1a8d22"
+  },
+  {
+    "target": "haven-1.0.0-win-arm64.zip",
+    "size_bytes": 89867,
+    "size": "87.8 KB",
+    "sha256": "d8b2aa34aa7187e040797e3a0e433fb4ef8fc74becdc20ea9fee842dd63bab90"
+  },
+  {
+    "target": "haven-1.0.0-x86_64.AppImage",
+    "size_bytes": 74347,
+    "size": "72.6 KB",
+    "sha256": "316f3d0cc901b4512db0ae0a9fe0023755d585e98df660b31e12f544639d4323"
+  },
+  {
+    "target": "haven-runtime.wasm",
+    "size_bytes": 258,
+    "size": "258 B",
+    "sha256": "66395a581cf1f821e72005c3f4304b6aa5d8165ac7d5eafc6694e89cfe2825a0"
+  },
+  {
+    "target": "haven-web-sdk.zip",
+    "size_bytes": 1072,
+    "size": "1.0 KB",
+    "sha256": "3f3a30f83522a6ee2a14bd6420fee8ba16ecc71af92e8860fc64a6a8f22e8660"
+  },
+  {
+    "target": "haven.exe",
+    "size_bytes": 393728,
+    "size": "384.5 KB",
+    "sha256": "6040768277c8e8dd30b07fbee73fe808d707fb30212ee3d734fbf2ec2ac27de0"
+  },
+  {
+    "target": "haven.sh",
+    "size_bytes": 95,
+    "size": "95 B",
+    "sha256": "54ffd9f982dce531a3ba64b1348e4684c69ef841701fc32d6a59147e13448ce9"
+  },
+  {
+    "target": "haven_1.0.0_amd64.deb",
+    "size_bytes": 75280,
+    "size": "73.5 KB",
+    "sha256": "fe19d90149eeda01813b64cf29e32b02b9d0f135fbdb2b594e7886fbd892da1b"
+  },
+  {
+    "target": "haven_1.0.0_arm64.deb",
+    "size_bytes": 75296,
+    "size": "73.5 KB",
+    "sha256": "9a7e4d68a0188c60d198a60b2ec67a4657d7df603cd3b171cb957ac5acc7b8c0"
+  },
+  {
+    "target": "haven_lang.py",
+    "size_bytes": 28354,
+    "size": "27.7 KB",
+    "sha256": "dd3236cf0d2e1bfc39469f3dfdf60714d5cfabc82c8e359cee5a5f25c61dd0ab"
+  },
+  {
+    "target": "havenw.exe",
+    "size_bytes": 393728,
+    "size": "384.5 KB",
+    "sha256": "097c24ac35dd77aace6e2895f42cd8827e3bae253d9303203fbbda4d711bd0f9"
+  },
+  {
+    "target": "install.ps1",
+    "size_bytes": 11877,
+    "size": "11.6 KB",
+    "sha256": "9a40b35e352bce3edf4a419220bd648056a9f7331e9799acb7470cdb0ce72f15"
+  },
+  {
+    "target": "odcs-vps-bundle-ubuntu.tar.gz",
+    "size_bytes": 116838317,
+    "size": "111.4 MB",
+    "sha256": "fab3196783144cd54d4f85554f9c478c4c1a9cc1de474172121620538b5ac4ef"
+  },
+  {
+    "target": "odcs_sdk-2.0.0-py3-none-any.whl",
+    "size_bytes": 189376,
+    "size": "184.9 KB",
+    "sha256": "c5cace1b7a837871f1a166c723da07795a888e93dea0eb7f3010f89aa0ea2d8b"
+  },
+  {
+    "target": "odcs_sdk-2.0.0.tar.gz",
+    "size_bytes": 239404,
+    "size": "233.8 KB",
+    "sha256": "b9751dc91931dfffead7a449c10667996473f7c44cad10b81c78db195298eef4"
+  },
+  {
+    "target": "star-1.2.0-universal-sdk.tar.gz",
+    "size_bytes": 515015,
+    "size": "502.9 KB",
+    "sha256": "7a69ea6fb2c0c964527961f5bf1b76027d90e6cf6cfb276b9a17fdad52dae7e2"
+  },
+  {
+    "target": "star-1.2.0-universal-sdk.zip",
+    "size_bytes": 635499,
+    "size": "620.6 KB",
+    "sha256": "c2d9da3c01d151f67c22112648769421973a9662b1cd0e798de7ea1296ac2446"
+  }
+]

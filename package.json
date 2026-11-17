@@ -1,0 +1,43 @@
+{
+  "name": "odcs-official-portal",
+  "version": "2.0.0",
+  "description": "Official Open Digital Continuity Standard (ODCS) Web Portal. Frontend built in Star Language (v1.2.0); Backend powered by Haven (Heaven Language v2.0).",
+  "author": "Anirudha Puthraya",
+  "license": "Apache-2.0",
+  "homepage": "https://www.odcs.in",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Veyra-Programming/open-digital-continuity-standard-"
+  },
+  "bugs": {
+    "url": "https://github.com/Veyra-Programming/open-digital-continuity-standard-/issues"
+  },
+  "main": "heaven/odcs_backend.hvn",
+  "scripts": {
+    "start": "start_all.bat",
+    "build:star": "star.bat compile main.star && python build_web.py",
+    "check:star": "star.bat check main.star",
+    "preview:star": "star.bat preview main.star",
+    "backend": "python heaven/haven_lang.py run heaven/odcs_backend.hvn",
+    "backend:lint": "python heaven/haven_lang.py lint heaven/odcs_backend.hvn",
+    "backend:compile": "python heaven/haven_lang.py compile heaven/odcs_backend.hvn",
+    "doctor": "star.bat doctor",
+    "test": "npm run check:star && npm run backend:lint",
+    "next:dev": "cd website && npm run dev",
+    "next:build": "cd website && npm run build",
+    "next:start": "cd website && npm run start"
+  },
+  "keywords": [
+    "star-language",
+    "star-ui",
+    "odcs",
+    "heaven-language",
+    "haven-language",
+    "digital-continuity",
+    "offline-first",
+    "local-first",
+    "zero-intent-loss",
+    "crdt",
+    "webassembly"
+  ]
+}

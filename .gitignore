@@ -1,0 +1,28 @@
+# Large OS Distribution Vault Archives (Hosted on VPS / GitHub Releases)
+*.tar.gz
+*.dmg
+*.exe
+*.zip
+*.AppImage
+*.deb
+*.rpm
+*.pkg.tar.zst
+*.whl
+
+# Node dependencies & Next.js cache
+node_modules/
+.next/
+out/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# IDE & OS
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
