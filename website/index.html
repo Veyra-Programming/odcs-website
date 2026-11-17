@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#030712">
+  <title>ODCS — Open Digital Continuity Standard (ODCS-2.0.0) | Sovereign Architecture</title>
+  <meta name="description" content="Official Web Portal for the Open Digital Continuity Standard (ODCS-2.0.0). Built & Maintained by Anirudha Puthraya. World's First Working UI for the Star Programming Language & Haven Language.">
+  <meta name="author" content="Anirudha Puthraya">
+  <meta name="creator" content="Anirudha Puthraya">
+  <link rel="icon" href="/favicon.ico">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Ambient Background Glow Orbs -->
+  <div class="glow-backdrop" aria-hidden="true">
+    <div class="glow-orb-1"></div>
+    <div class="glow-orb-2"></div>
+    <div class="glow-orb-3"></div>
+  </div>
+
+  <!-- Mobile Backdrop Overlay -->
+  <div id="mobileBackdrop" class="mobile-backdrop" aria-hidden="true"></div>
+
+  <!-- Floating Sticky Capsule Header -->
+  <header class="sticky-header">
+    <div class="header-capsule">
+      <div class="header-top">
+        <!-- Brand & Creator Attribution -->
+        <a href="#" class="brand-link">
+          <div class="brand-logo-box">🌟</div>
+          <div style="display: flex; flex-direction: column; min-width: 0;">
+            <span class="brand-title">ODCS Foundation</span>
+            <span class="brand-sub">BUILT &amp; MAINTAINED BY ANIRUDHA PUTHRAYA</span>
+          </div>
+        </a>
+
+        <!-- Desktop Navigation Links -->
+        <nav class="desktop-nav">
+          <a href="#star-ui" class="nav-link nav-link-highlight">⭐ Star UI</a>
+          <a href="#milestone-1" class="nav-link" style="color: #fbbf24;">🏆 Milestone 1</a>
+          <a href="#dual-engines" class="nav-link">⚡ Dual Engines</a>
+          <a href="#topology" class="nav-link">🧊 3D Layers</a>
+          <a href="#docs" class="nav-link">📖 Full Docs</a>
+          <a href="#articles" class="nav-link">📰 Articles</a>
+          <a href="#downloads" class="nav-link">📦 Vault</a>
+        </nav>
+
+        <!-- Right Controls & Telemetry -->
+        <div class="header-controls">
+          <div class="telemetry-pill">
+            <span class="telemetry-dot"></span>
+            <span>ONLINE (<span id="telemetryLatency">0.04ms</span>)</span>
+          </div>
+
+          <a href="https://github.com/Veyra-Programming/star-haven" target="_blank" rel="noreferrer" class="btn btn-secondary btn-sm" style="display: inline-flex;">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
+            <span>GitHub</span>
+          </a>
+
+          <!-- Mobile Hamburger Toggle Button -->
+          <button id="hamburgerBtn" class="hamburger-btn" aria-label="Toggle Navigation Menu" aria-expanded="false">
+            <span id="hamburgerIcon" style="font-size: 1.1rem; line-height: 1;">☰</span>
+            <span id="hamburgerLabel">MENU</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Mobile Dropdown Drawer -->
+      <div id="mobileDrawer" class="mobile-drawer">
+        <!-- Quick Verified Runtimes Download -->
+        <div style="background: rgba(15, 23, 42, 0.95); border: 1px solid var(--border-cyan); border-radius: 12px; padding: 0.85rem; display: flex; flex-direction: column; gap: 0.5rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.72rem; font-weight: 800; color: #38bdf8;">
+            <span>📱 MOBILE RUNTIMES</span>
+            <span class="badge badge-cyan">ODCS-2.0.0</span>
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr; gap: 0.45rem;">
+            <a href="/downloads/haven-1.0.0-r0.apk" download class="mobile-drawer-link" style="display: flex; align-items: center; gap: 0.65rem; background: rgba(168, 85, 247, 0.15); border: 1px solid var(--border-violet); border-radius: 8px; padding: 0.55rem 0.75rem; text-decoration: none; color: #fff;">
+              <span style="font-size: 1.2rem;">🕊️</span>
+              <div style="flex: 1; min-width: 0;">
+                <div style="font-size: 0.76rem; font-weight: 800;">Haven Android Runtime</div>
+                <div style="font-size: 0.62rem; color: var(--text-muted); font-family: var(--font-mono);">haven-1.0.0-r0.apk · 72.8 KB</div>
+              </div>
+              <span style="font-size: 0.65rem; font-weight: 800; background: var(--violet); color: #fff; padding: 0.2rem 0.5rem; border-radius: 4px;">GET APK</span>
+            </a>
+
+            <a href="/downloads/app.wasm" download class="mobile-drawer-link" style="display: flex; align-items: center; gap: 0.65rem; background: rgba(0, 240, 255, 0.12); border: 1px solid var(--border-cyan); border-radius: 8px; padding: 0.55rem 0.75rem; text-decoration: none; color: #fff;">
+              <span style="font-size: 1.2rem;">⭐</span>
+              <div style="flex: 1; min-width: 0;">
+                <div style="font-size: 0.76rem; font-weight: 800;">Star Universal WASM Core</div>
+                <div style="font-size: 0.62rem; color: var(--text-muted); font-family: var(--font-mono);">app.wasm · 4.9 KB (60 FPS)</div>
+              </div>
+              <span style="font-size: 0.65rem; font-weight: 800; background: var(--cyan); color: #000; padding: 0.2rem 0.5rem; border-radius: 4px;">LAUNCH</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Categorized Navigation Links in Drawer -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)) ; gap: 0.4rem;">
+          <a href="#star-ui" class="mobile-drawer-link" style="padding: 0.6rem 0.75rem; border-radius: 8px; background: rgba(0, 240, 255, 0.12); border: 1px solid var(--border-cyan); color: var(--cyan); text-decoration: none; font-size: 0.82rem; font-weight: 800;">⭐ Star UI Engine</a>
+          <a href="#milestone-1" class="mobile-drawer-link" style="padding: 0.6rem 0.75rem; border-radius: 8px; background: rgba(251, 191, 36, 0.12); border: 1px solid var(--border-amber); color: var(--amber); text-decoration: none; font-size: 0.82rem; font-weight: 800;">🏆 Milestone 1</a>
+          <a href="#dual-engines" class="mobile-drawer-link" style="padding: 0.6rem 0.75rem; border-radius: 8px; background: rgba(255, 255, 255, 0.04); color: #fff; text-decoration: none; font-size: 0.82rem; font-weight: 700;">⚡ Dual Engines</a>
+          <a href="#topology" class="mobile-drawer-link" style="padding: 0.6rem 0.75rem; border-radius: 8px; background: rgba(255, 255, 255, 0.04); color: #fff; text-decoration: none; font-size: 0.82rem; font-weight: 700;">🧊 3D Layers</a>
+          <a href="#docs" class="mobile-drawer-link" style="padding: 0.6rem 0.75rem; border-radius: 8px; background: rgba(255, 255, 255, 0.04); color: #fff; text-decoration: none; font-size: 0.82rem; font-weight: 700;">📖 Public Docs</a>
+          <a href="#articles" class="mobile-drawer-link" style="padding: 0.6rem 0.75rem; border-radius: 8px; background: rgba(255, 255, 255, 0.04); color: #fff; text-decoration: none; font-size: 0.82rem; font-weight: 700;">📰 Articles</a>
+          <a href="#downloads" class="mobile-drawer-link" style="padding: 0.6rem 0.75rem; border-radius: 8px; background: rgba(255, 255, 255, 0.04); color: #fff; text-decoration: none; font-size: 0.82rem; font-weight: 700;">📦 20-OS Vault</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Page Container -->
+  <main class="page-container">
+
+    <!-- ========================================================================
+         HERO SECTION: FIRST WORKING UI FOR STAR LANGUAGE
+         ======================================================================== -->
+    <section class="hero-grid">
+      <div class="hero-left">
+        <!-- Creator Spotlight Badge -->
+        <div class="hero-creator-badge">
+          <div style="font-size: 1.25rem; background: rgba(0, 240, 255, 0.15); border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;">👨‍💻</div>
+          <div style="display: flex; flex-direction: column;">
+            <span style="font-weight: 800; font-size: 0.84rem; color: #ffffff;">Anirudha Puthraya</span>
+            <span style="font-size: 0.66rem; color: var(--cyan); fontFamily: var(--font-mono);">Standards Director, Author &amp; Maintainer · ODCS / Star / Haven</span>
+          </div>
+          <span style="background: linear-gradient(135deg, #00f0ff, #8b5cf6); color: #020617; font-size: 0.62rem; font-weight: 800; padding: 0.15rem 0.45rem; border-radius: 9999px;">VERIFIED</span>
+        </div>
+
+        <h1 class="hero-title">
+          World's First Working UI for the <span class="gradient-text">Star Programming Language</span>
+        </h1>
+
+        <p class="hero-desc">
+          The <strong>Open Digital Continuity Standard (ODCS-2.0.0)</strong> completely eliminates fragile web stacks. Powered by the <strong>Star Language (v1.2.0 GA)</strong> WebAssembly UI core (<code style="color: var(--cyan);">app.wasm</code>, 4.9 KB) and <strong>Haven Language (v2.0)</strong> natural-English continuity engine.
+        </p>
+
+        <!-- Quick Launch Action Deck -->
+        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+          <a href="#star-ui" class="btn btn-primary btn-sm">
+            <span>⭐ Star UI Engine</span>
+          </a>
+          <a href="#milestone-1" class="btn btn-amber btn-sm">
+            <span>🏆 Milestone 1 GA</span>
+          </a>
+          <a href="#dual-engines" class="btn btn-secondary btn-sm" style="border-color: var(--border-violet); color: #c084fc;">
+            <span>⚡ Dual Engines</span>
+          </a>
+          <a href="#docs" class="btn btn-secondary btn-sm" style="border-color: var(--border-cyan); color: var(--cyan);">
+            <span>📖 Public Docs</span>
+          </a>
+          <a href="#downloads" class="btn btn-secondary btn-sm">
+            <span>📦 20-OS Vault</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Right Column: Interactive Topology Mesh Preview -->
+      <div class="glass-card" style="border-color: var(--border-cyan);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+          <div style="display: flex; align-items: center; gap: 0.5rem;">
+            <span style="width: 7px; height: 7px; border-radius: 50%; background-color: var(--emerald); box-shadow: 0 0 8px var(--emerald);"></span>
+            <span style="font-family: var(--font-mono); font-size: 0.72rem; font-weight: 700; color: var(--emerald);">
+              DISRUPTION MESH TOPOLOGY · 4 LAYERS
+            </span>
+          </div>
+          <span class="badge badge-rose">&lt; 0.15ms ZIL</span>
+        </div>
+
+        <div style="position: relative; width: 100%; height: 240px; background: #030712; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); overflow: hidden;">
+          <canvas id="topologyCanvas" style="width: 100%; height: 100%; display: block;"></canvas>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1rem; font-size: 0.75rem; color: var(--text-dim); font-family: var(--font-mono);">
+          <div>STATUS: <strong style="color: var(--cyan);">100% PERSISTENT</strong></div>
+          <div>BUDGET: <strong style="color: var(--emerald);">&lt; 16.6ms 60Hz</strong></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================================
+         ⭐ FEATURE SPOTLIGHT: FIRST WORKING UI FOR STAR LANGUAGE (v1.2.0 GA)
+         ======================================================================== -->
+    <section id="star-ui" class="star-studio-container">
+      <!-- Studio Bar -->
+      <div class="star-studio-bar">
+        <div style="display: flex; align-items: center; gap: 0.85rem;">
+          <div style="display: flex; gap: 0.35rem;">
+            <span style="width: 11px; height: 11px; border-radius: 50%; background-color: var(--rose);"></span>
+            <span style="width: 11px; height: 11px; border-radius: 50%; background-color: var(--amber);"></span>
+            <span style="width: 11px; height: 11px; border-radius: 50%; background-color: var(--emerald);"></span>
+          </div>
+
+          <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+            <span style="font-family: var(--font-mono); font-size: 0.85rem; font-weight: 800; color: var(--cyan);">
+              ⭐ StarVM 60 FPS Sovereign UI Engine
+            </span>
+            <span class="badge badge-cyan">app.wasm (4.9 KB)</span>
+            <span id="starFpsBadge" style="background: rgba(16, 185, 129, 0.15); border: 1px solid var(--emerald); color: var(--emerald); font-family: var(--font-mono); font-size: 0.68rem; font-weight: 800; padding: 0.15rem 0.5rem; border-radius: 6px;">
+              60 FPS (16.6ms)
+            </span>
+          </div>
+        </div>
+
+        <!-- Studio Tabs -->
+        <div class="star-tabs">
+          <button id="tabBtn_live_ui" class="star-tab-btn active" onclick="setStarTab('live_ui')">🖥️ Live Star UI</button>
+          <button id="tabBtn_code" class="star-tab-btn" onclick="setStarTab('code')">📜 main.star Source</button>
+          <button id="tabBtn_wal" class="star-tab-btn" onclick="setStarTab('wal')">🌳 Merkle WAL</button>
+        </div>
+      </div>
+
+      <!-- Tab 1: Live Rendered Star UI -->
+      <div id="tabPanel_live_ui" class="star-tab-panel" style="padding: 1.75rem;">
+        <!-- Star Brand Header -->
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; padding: 1rem 1.25rem; background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-subtle); border-radius: 16px; margin-bottom: 1.5rem;">
+          <div style="display: flex; align-items: center; gap: 0.75rem;">
+            <div style="width: 38px; height: 38px; border-radius: 10px; background: rgba(0, 240, 255, 0.2); border: 1.5px solid var(--cyan); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; box-shadow: 0 0 15px var(--cyan-glow);">
+              🏛️
+            </div>
+            <div>
+              <h3 style="font-size: 1.15rem; font-weight: 800; margin: 0; color: #fff;">ODCS Continuity Portal</h3>
+              <div style="font-size: 0.72rem; color: var(--cyan); font-family: var(--font-mono);">
+                main.star · Star Language v1.2.0 GA Sovereign UI Target
+              </div>
+            </div>
+          </div>
+
+          <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+            <span class="badge badge-cyan">ODCS-2.0.0</span>
+            <span class="badge badge-emerald">STAR v1.2 GA</span>
+            <span class="badge badge-violet">HAVEN v2.0</span>
+          </div>
+        </div>
+
+        <!-- Reactive Telemetry HUD Strip -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+          <div style="background: rgba(0, 0, 0, 0.4); border: 1px solid var(--border-subtle); border-radius: 12px; padding: 0.85rem 1rem;">
+            <div style="font-size: 0.65rem; color: var(--text-dim); font-family: var(--font-mono); margin-bottom: 0.25rem;">OPERATING MODE</div>
+            <div id="starModeVal" style="font-size: 0.88rem; font-weight: 800; color: var(--emerald); font-family: var(--font-mono);">OPTIMAL_ONLINE</div>
+          </div>
+
+          <div style="background: rgba(0, 0, 0, 0.4); border: 1px solid var(--border-subtle); border-radius: 12px; padding: 0.85rem 1rem;">
+            <div style="font-size: 0.65rem; color: var(--text-dim); font-family: var(--font-mono); margin-bottom: 0.25rem;">RTT LATENCY</div>
+            <div id="starRttVal" style="font-size: 0.88rem; font-weight: 800; color: var(--cyan); font-family: var(--font-mono);">0.04ms</div>
+          </div>
+
+          <div style="background: rgba(0, 0, 0, 0.4); border: 1px solid var(--border-subtle); border-radius: 12px; padding: 0.85rem 1rem;">
+            <div style="font-size: 0.65rem; color: var(--text-dim); font-family: var(--font-mono); margin-bottom: 0.25rem;">STAGED ZIL RECEIPTS</div>
+            <div id="starReceiptsVal" style="font-size: 0.88rem; font-weight: 800; color: var(--amber); font-family: var(--font-mono);">#142 BLOCKS</div>
+          </div>
+
+          <div style="background: rgba(0, 0, 0, 0.4); border: 1px solid var(--border-subtle); border-radius: 12px; padding: 0.85rem 1rem;">
+            <div style="font-size: 0.65rem; color: var(--text-dim); font-family: var(--font-mono); margin-bottom: 0.25rem;">CRDT REPLICAS</div>
+            <div id="starCrdtVal" style="font-size: 0.88rem; font-weight: 800; color: #c084fc; font-family: var(--font-mono);">512 REPLICAS</div>
+          </div>
+        </div>
+
+        <!-- 4 Disruption Matrix Layers -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+          <div style="background: rgba(0, 0, 0, 0.35); border: 1px solid var(--border-cyan); border-radius: 14px; padding: 1rem;">
+            <span class="badge badge-cyan" style="font-size: 0.62rem; margin-bottom: 0.5rem;">LAYER 1 · LOCAL DURABILITY</span>
+            <h4 style="font-size: 0.92rem; font-weight: 800; color: #fff; margin-bottom: 0.35rem;">IndexedDB / NVMe WAL</h4>
+            <p style="font-size: 0.78rem; color: var(--text-muted); line-height: 1.5; margin: 0;">
+              RFC 8785 Canonical JSON &amp; SHA-256 Merkle chain active. 100% bit-for-bit replay.
+            </p>
+          </div>
+
+          <div style="background: rgba(0, 0, 0, 0.35); border: 1px solid var(--border-emerald); border-radius: 14px; padding: 1rem;">
+            <span class="badge badge-emerald" style="font-size: 0.62rem; margin-bottom: 0.5rem;">LAYER 2 · MESH CONSENSUS</span>
+            <h4 style="font-size: 0.92rem; font-weight: 800; color: #fff; margin-bottom: 0.35rem;">CRDT Strong Consistency</h4>
+            <p style="font-size: 0.78rem; color: var(--text-muted); line-height: 1.5; margin: 0;">
+              PN-Counters &amp; Add-Wins OR-Sets merge algebraically without central locks.
+            </p>
+          </div>
+
+          <div style="background: rgba(0, 0, 0, 0.35); border: 1px solid var(--border-amber); border-radius: 14px; padding: 1rem;">
+            <span class="badge badge-amber" style="font-size: 0.62rem; margin-bottom: 0.5rem;">LAYER 3 · TELEMETRY SENSING</span>
+            <h4 style="font-size: 0.92rem; font-weight: 800; color: #fff; margin-bottom: 0.35rem;">Adaptive Latency Probe</h4>
+            <p style="font-size: 0.78rem; color: var(--text-muted); line-height: 1.5; margin: 0;">
+              Carrier wave probing adjusts transport policies with exponential jitter backoff.
+            </p>
+          </div>
+
+          <div style="background: rgba(0, 0, 0, 0.35); border: 1px solid rgba(244, 63, 94, 0.4); border-radius: 14px; padding: 1rem;">
+            <span class="badge badge-rose" style="font-size: 0.62rem; margin-bottom: 0.5rem;">LAYER 4 · ZERO INTENT LOSS</span>
+            <h4 style="font-size: 0.92rem; font-weight: 800; color: #fff; margin-bottom: 0.35rem;">&lt; 16ms Local Authority</h4>
+            <p style="font-size: 0.78rem; color: var(--text-muted); line-height: 1.5; margin: 0;">
+              Hardware receipts minted before socket dispatches. Zero forms wiped.
+            </p>
+          </div>
+        </div>
+
+        <!-- Interactive Control Deck -->
+        <div style="background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 1.25rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.85rem;">
+            <span style="font-size: 0.82rem; font-weight: 800; color: #fff;">
+              ⚡ DISRUPTION &amp; RECOVERY TEST DECK (STAR REACTIVE FUNCTIONS)
+            </span>
+            <span style="font-size: 0.72rem; color: var(--text-dim); font-family: var(--font-mono);">
+              Single-Frame 60Hz Execution
+            </span>
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 0.75rem;">
+            <button onclick="mintStarZilReceipt()" class="btn btn-primary" style="width: 100%; font-size: 0.82rem;">
+              <span>▶ Mint Layer 4 ZIL (&lt;16ms)</span>
+            </button>
+            <button onclick="simulateStarJitter()" class="btn btn-secondary" style="width: 100%; font-size: 0.82rem; border-color: var(--amber); color: var(--amber);">
+              <span>🛰️ 480ms Satellite Jitter</span>
+            </button>
+            <button onclick="triggerStarBlackout()" class="btn btn-secondary" style="width: 100%; font-size: 0.82rem; border-color: var(--rose); color: var(--rose);">
+              <span>🛑 Cut Network Carrier</span>
+            </button>
+            <button onclick="convergeStarMesh()" class="btn btn-secondary" style="width: 100%; font-size: 0.82rem; border-color: var(--emerald); color: var(--emerald);">
+              <span>🔄 Converge CRDT Mesh</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab 2: main.star Source Code Viewer -->
+      <div id="tabPanel_code" class="star-tab-panel" style="display: none; padding: 1.75rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.85rem;">
+          <span style="font-family: var(--font-mono); font-size: 0.85rem; font-weight: 800; color: #fff;">
+            main.star · Pure Declarative Star Language Application
+          </span>
+          <button id="copyStarBtn" onclick="copyStarSource()" class="btn btn-secondary btn-sm">
+            <span>COPY STAR CODE</span>
+          </button>
+        </div>
+
+        <pre id="starSourceCode" class="code-block" style="max-height: 480px;"># ==============================================================================
+# 🌟 ODCS Master Portal — Pure Star Declarative UI (main.star)
+# Specification: ODCS-2.0.0 · Dual-Engine Sovereign Stack
+# Architect: Anirudha Puthraya · Veyra-Programming
+# ==============================================================================
+
+use UI
+use Material
+
+app ODCSContinuityPortal
+
+    # 1. State & Reactive Properties
+    variable _current_mode = "OPTIMAL_ONLINE"
+    variable _rtt_latency = 0.04
+    variable _staged_receipts = 142
+    variable _crdt_counter = 512
+
+    # 2. Brand & Header Bar
+    UI.row(
+        UI.title("🏛️ ODCS v2.0", 1, { "fg": "#00f0ff" }),
+        UI.spacer(),
+        UI.badge("STANDARD: ODCS-2.0.0", "primary"),
+        UI.badge("FRONTEND: STAR v1.2 GA", "success"),
+        UI.badge("BACKEND: HAVEN v2.0", "warning")
+    )
+
+    UI.text("Open Digital Continuity Standard — Digital experiences that endure without the network.")
+    UI.divider()
+
+    # 3. Disruption Status HUD (The 4 Layers of ODCS)
+    UI.row(
+        UI.card(
+            UI.badge("LAYER 1 · LOCAL DURABILITY", "primary"),
+            UI.title("IndexedDB / NVMe WAL", 3),
+            UI.text("RFC 8785 Canonical JSON SHA-256 Merkle Chain Active")
+        ),
+        UI.card(
+            UI.badge("LAYER 2 · MESH CONSENSUS", "success"),
+            UI.title("CRDT Strong Consistency", 3),
+            UI.text("PN-Counter Replicas & Add-Wins OR-Sets Converged")
+        ),
+        UI.card(
+            UI.badge("LAYER 3 · TELEMETRY SENSING", "accent"),
+            UI.title("Adaptive Latency Probe", 3),
+            UI.text("Carrier Wave Sensing: " + _rtt_latency + "ms")
+        ),
+        UI.card(
+            UI.badge("LAYER 4 · ZERO INTENT LOSS", "warning"),
+            UI.title("< 16ms Local Authority", 3),
+            UI.text("Tamper-Evident Receipts Minted Before Upstream Sockets")
+        )
+    )
+
+    UI.divider()
+
+    # 4. Interactive Continuity Actions
+    UI.row(
+        UI.button("▶ Mint Layer 4 ZIL Receipt (<16ms)", function()
+            _staged_receipts = _staged_receipts + 1
+            show "Minted Zero Intent Loss Cryptographic Receipt"
+        end),
+        UI.button("🛰️ Simulate 480ms Satellite Jitter", function()
+            _current_mode = "DEGRADED_JITTER"
+            _rtt_latency = 480.0
+        end),
+        UI.button("🛑 Trigger Total Network Blackout", function()
+            _current_mode = "SEVERED_OFFLINE"
+            _rtt_latency = 9999.0
+        end),
+        UI.button("🔄 Converge Multi-Node CRDT Mesh", function()
+            _crdt_counter = _crdt_counter + 4
+            _current_mode = "OPTIMAL_ONLINE"
+        end)
+    )
+
+end</pre>
+      </div>
+
+      <!-- Tab 3: Merkle WAL Explorer -->
+      <div id="tabPanel_wal" class="star-tab-panel" style="display: none; padding: 1.75rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+          <span style="font-size: 0.85rem; font-weight: 800; color: #fff;">
+            🌳 IMMUTABLE SHA-256 MERKLE WRITE-AHEAD LOG (WAL)
+          </span>
+          <span class="badge badge-emerald">RFC 8785 DETERMINISTIC</span>
+        </div>
+
+        <div id="walFeedList" style="display: flex; flex-direction: column; gap: 0.65rem;">
+          <!-- Dynamically populated by app.js -->
+        </div>
+      </div>
+
+      <!-- Studio Footer -->
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; padding: 0.75rem 1.5rem; background: rgba(0, 0, 0, 0.6); border-top: 1px solid var(--border-cyan); font-size: 0.75rem; color: var(--text-dim);">
+        <div>
+          World's First Working UI for <strong>Star Programming Language (v1.2.0 GA)</strong> compiled to <code style="color: var(--cyan);">app.wasm</code>.
+        </div>
+        <div style="display: flex; gap: 1rem;">
+          <a href="https://github.com/Veyra-Programming/star-haven/tree/main/star" target="_blank" rel="noreferrer" style="color: var(--cyan); text-decoration: none; font-weight: 700;">⭐ Star Compiler ↗</a>
+          <a href="/downloads/Star-1.2.0-Windows-x64-Setup.exe" download style="color: #fff; text-decoration: none; font-weight: 700;">📥 Download Star SDK</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================================
+         🏆 MILESTONE 1 RATIFICATION & VERIFICATION CENTER
+         ======================================================================== -->
+    <section id="milestone-1" style="margin-bottom: 5rem;">
+      <div class="section-header">
+        <span class="section-tag" style="color: var(--amber);">Standard Milestone 1 · General Availability</span>
+        <h2 class="section-title">🏆 Milestone 1 Shipped &amp; Ratified</h2>
+        <p class="section-desc">
+          The ODCS Standards Foundation has officially completed Milestone 1. All 8 core continuity objectives have passed conformance verification.
+        </p>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.25rem;">
+        <div class="glass-card" style="border-color: rgba(251, 191, 36, 0.3);">
+          <div class="badge badge-amber" style="margin-bottom: 0.5rem;">OBJECTIVE 1 · SHIPPED</div>
+          <h4 style="font-size: 1rem; font-weight: 800; color: #fff; margin-bottom: 0.35rem;">Layer 1: Monotonic Merkle WAL</h4>
+          <p style="font-size: 0.82rem; color: var(--text-muted); line-height: 1.5;">
+            RFC 8785 Canonical JSON &amp; SHA-256 chaining guarantees 100% bit-for-bit replay from Genesis without remote servers.
+          </p>
+        </div>
+
+        <div class="glass-card" style="border-color: rgba(16, 185, 129, 0.3);">
+          <div class="badge badge-emerald" style="margin-bottom: 0.5rem;">OBJECTIVE 2 · SHIPPED</div>
+          <h4 style="font-size: 1rem; font-weight: 800; color: #fff; margin-bottom: 0.35rem;">Layer 2: CRDT Mesh Replicas</h4>
+          <p style="font-size: 0.82rem; color: var(--text-muted); line-height: 1.5;">
+            PN-Counters and Add-Wins OR-Sets converge algebraically across network partitions without central coordinators.
+          </p>
+        </div>
+
+        <div class="glass-card" style="border-color: rgba(0, 240, 255, 0.3);">
+          <div class="badge badge-cyan" style="margin-bottom: 0.5rem;">OBJECTIVE 3 · SHIPPED</div>
+          <h4 style="font-size: 1rem; font-weight: 800; color: #fff; margin-bottom: 0.35rem;">Layer 3: Dynamic Jitter Probing</h4>
+          <p style="font-size: 0.82rem; color: var(--text-muted); line-height: 1.5;">
+            0.04ms telemetry sensing transitions seamlessly between Optimal Online, Degraded Jitter, and Offline Partitions.
+          </p>
+        </div>
+
+        <div class="glass-card" style="border-color: rgba(244, 63, 94, 0.3);">
+          <div class="badge badge-rose" style="margin-bottom: 0.5rem;">OBJECTIVE 4 · SHIPPED</div>
+          <h4 style="font-size: 1rem; font-weight: 800; color: #fff; margin-bottom: 0.35rem;">Layer 4: Zero Intent Loss (<16ms)</h4>
+          <p style="font-size: 0.82rem; color: var(--text-muted); line-height: 1.5;">
+            Hardware-sealed receipts minted in &lt; 0.15ms. Form inputs and transactions are preserved permanently before socket creation.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================================
+         ⚡ DUAL-SOVEREIGN ENGINES: STAR (UI) + HAVEN (BACKEND)
+         ======================================================================== -->
+    <section id="dual-engines" style="margin-bottom: 5rem;">
+      <div class="section-header">
+        <span class="section-tag">Dual-Sovereign Technology Stack</span>
+        <h2 class="section-title">⭐ Star Language &amp; 🕊️ Haven Language Architecture</h2>
+        <p class="section-desc">
+          Two sovereign languages engineered from first principles to replace fragile client-server web architectures.
+        </p>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem;">
+        <!-- Star Language Card -->
+        <div class="glass-card" style="border-color: var(--border-cyan);">
+          <div style="display: flex; align-items: center; gap: 0.85rem; margin-bottom: 1.25rem;">
+            <div style="width: 44px; height: 44px; border-radius: 12px; background: rgba(0, 240, 255, 0.15); border: 1.5px solid var(--border-cyan); display: flex; align-items: center; justify-content: center; font-size: 1.4rem;">
+              ⭐
+            </div>
+            <div>
+              <h3 style="font-size: 1.25rem; font-weight: 800; color: #fff;">Star Programming Language</h3>
+              <div style="font-size: 0.8rem; color: var(--cyan); font-family: var(--font-mono);">v1.2.0 GA · WebAssembly Core</div>
+            </div>
+          </div>
+
+          <p style="font-size: 0.92rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 1.25rem;">
+            The frontend UI is authored in pure Star declarative syntax and compiled to <code style="color: var(--cyan);">app.wasm</code>. Delivers single-frame 60 FPS reactive updates with zero virtual-DOM overhead, zero React, and zero npm dependencies.
+          </p>
+
+          <pre class="code-block" style="margin-bottom: 1.25rem;">use UI
+
+app ODCSContinuityPortal
+    variable _zil_counter = 42
+
+    Button("▶ Mint ZIL Receipt", function()
+        _zil_counter = _zil_counter + 1
+        show "Sealed with Zero Intent Loss!"
+    end)
+end</pre>
+
+          <div style="display: flex; flex-direction: column; gap: 0.65rem;">
+            <a href="/downloads/Star-1.2.0-Windows-x64-Setup.exe" download class="btn btn-primary" style="width: 100%;">
+              <span>Download Star Windows (.exe)</span>
+            </a>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.65rem;">
+              <a href="/downloads/Star-1.2.0-Windows-x64.zip" download class="btn btn-secondary btn-sm">📦 Portable (.zip)</a>
+              <a href="/downloads/star-1.2.0-universal-sdk.tar.gz" download class="btn btn-secondary btn-sm">🐧 Linux SDK</a>
+            </div>
+            <a href="https://github.com/Veyra-Programming/star-haven/tree/main/star" target="_blank" rel="noreferrer" class="btn btn-secondary" style="width: 100%;">
+              <span>Star GitHub Repository ↗</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Haven Language Card -->
+        <div class="glass-card" style="border-color: var(--border-violet);">
+          <div style="display: flex; align-items: center; gap: 0.85rem; margin-bottom: 1.25rem;">
+            <div style="width: 44px; height: 44px; border-radius: 12px; background: rgba(168, 85, 247, 0.15); border: 1.5px solid var(--border-violet); display: flex; align-items: center; justify-content: center; font-size: 1.4rem;">
+              🕊️
+            </div>
+            <div>
+              <h3 style="font-size: 1.25rem; font-weight: 800; color: #fff;">Haven (Heaven) Language</h3>
+              <div style="font-size: 0.8rem; color: #c084fc; font-family: var(--font-mono);">v2.0 · Natural-English Continuity Engine</div>
+            </div>
+          </div>
+
+          <p style="font-size: 0.92rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 1.25rem;">
+            The continuity backend is authored in Haven Natural-English grammar. Features native ODCS Layer 1-4 primitives: RFC 8785 Canonical JSON, SHA-256 Merkle WAL trees, PN-Counter CRDT mesh convergence, and sub-16ms ZIL receipts.
+          </p>
+
+          <pre class="code-block" style="margin-bottom: 1.25rem; color: #c084fc;">durable record EmergencyEncounter:
+    patient_id: String
+    heart_rate: Integer
+
+set encounter to EmergencyEncounter("PT-901", 78)
+checkpoint encounter as "triage_vital" into ledger
+give back "Sealed with Zero Intent Loss!"</pre>
+
+          <div style="display: flex; flex-direction: column; gap: 0.65rem;">
+            <a href="/downloads/Haven-1.0.0-win64-Setup.exe" download class="btn btn-violet" style="width: 100%;">
+              <span>Download Haven Windows (.exe)</span>
+            </a>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.65rem;">
+              <a href="/downloads/Haven-1.0.0-win64-portable.zip" download class="btn btn-secondary btn-sm">📦 Portable (.zip)</a>
+              <a href="/downloads/haven-1.0.0-r0.apk" download class="btn btn-secondary btn-sm">📱 Android APK</a>
+            </div>
+            <a href="https://github.com/Veyra-Programming/star-haven/tree/main/haven" target="_blank" rel="noreferrer" class="btn btn-secondary" style="width: 100%;">
+              <span>Haven GitHub Repository ↗</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================================
+         📦 20-OS MULTI-PLATFORM RELEASE VAULT
+         ======================================================================== -->
+    <section id="downloads" style="margin-bottom: 5rem;">
+      <div class="section-header">
+        <span class="section-tag">Cross-Platform Distribution</span>
+        <h2 class="section-title">📦 Multi-OS Release Vault</h2>
+        <p class="section-desc">
+          Production binaries, WebAssembly runtimes, container images, and installer bundles verified against ODCS-2.0.0 GA.
+        </p>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.25rem;">
+        <div class="glass-card">
+          <div class="badge badge-cyan" style="margin-bottom: 0.5rem;">WINDOWS x64 / ARM64</div>
+          <h4 style="font-size: 1.05rem; font-weight: 800; color: #fff; margin-bottom: 0.5rem;">Windows Sovereign Bundle</h4>
+          <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem;">Complete Star CLI compiler, StarVM stack machine, Haven v2.0 runtime &amp; Explorer shell integration.</p>
+          <div style="display: flex; flex-direction: column; gap: 0.4rem;">
+            <a href="/downloads/Star-1.2.0-Windows-x64-Setup.exe" download class="btn btn-primary btn-sm">Star Setup (.exe)</a>
+            <a href="/downloads/Haven-1.0.0-win64-Setup.exe" download class="btn btn-violet btn-sm">Haven Setup (.exe)</a>
+            <a href="/downloads/Star-1.2.0-Windows-x64.zip" download class="btn btn-secondary btn-sm">Star Portable (.zip)</a>
+          </div>
+        </div>
+
+        <div class="glass-card">
+          <div class="badge badge-emerald" style="margin-bottom: 0.5rem;">UNIVERSAL LINUX</div>
+          <h4 style="font-size: 1.05rem; font-weight: 800; color: #fff; margin-bottom: 0.5rem;">Linux SDK &amp; Systemd Server</h4>
+          <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem;">Debian, Ubuntu, Fedora, Alpine, Arch packages and bare-metal systemd continuity bundles.</p>
+          <div style="display: flex; flex-direction: column; gap: 0.4rem;">
+            <a href="/downloads/star-1.2.0-universal-sdk.tar.gz" download class="btn btn-secondary btn-sm">star-universal-sdk.tar.gz</a>
+            <a href="/downloads/haven-1.0.0-x86_64.AppImage" download class="btn btn-secondary btn-sm">Haven AppImage (x86_64)</a>
+            <a href="/downloads/haven_1.0.0_amd64.deb" download class="btn btn-secondary btn-sm">Haven Ubuntu (.deb)</a>
+          </div>
+        </div>
+
+        <div class="glass-card">
+          <div class="badge badge-amber" style="margin-bottom: 0.5rem;">MACOS UNIVERSAL</div>
+          <h4 style="font-size: 1.05rem; font-weight: 800; color: #fff; margin-bottom: 0.5rem;">macOS Silicon &amp; Intel</h4>
+          <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem;">Native Apple Silicon M1/M2/M3/M4 &amp; Intel universal DMG installer suites with notarization.</p>
+          <div style="display: flex; flex-direction: column; gap: 0.4rem;">
+            <a href="/downloads/Haven-1.0.0-macOS-AppleSilicon.dmg" download class="btn btn-secondary btn-sm">Apple Silicon DMG</a>
+            <a href="/downloads/Haven-1.0.0-macOS-Intel.dmg" download class="btn btn-secondary btn-sm">Intel x86_64 DMG</a>
+          </div>
+        </div>
+
+        <div class="glass-card">
+          <div class="badge badge-rose" style="margin-bottom: 0.5rem;">MOBILE &amp; WASM</div>
+          <h4 style="font-size: 1.05rem; font-weight: 800; color: #fff; margin-bottom: 0.5rem;">Android &amp; Browser Engine</h4>
+          <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem;">Lightweight native Android runtime APK and pure WebAssembly bytecode engine.</p>
+          <div style="display: flex; flex-direction: column; gap: 0.4rem;">
+            <a href="/downloads/haven-1.0.0-r0.apk" download class="btn btn-primary btn-sm">Haven Android APK (72 KB)</a>
+            <a href="/downloads/app.wasm" download class="btn btn-secondary btn-sm">Star app.wasm (4.9 KB)</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ========================================================================
+       FOOTER & MULTI-REPOSITORY GOVERNANCE
+       ======================================================================== -->
+  <footer style="border-top: 1px solid rgba(255, 255, 255, 0.08); background: rgba(3, 7, 18, 0.9); padding: 4rem 1.5rem 6rem;">
+    <div style="max-width: 1240px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 3rem; margin-bottom: 3rem;">
+      <div style="display: flex; flex-direction: column; gap: 1rem;">
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
+          <span style="font-size: 1.6rem;">🌟</span>
+          <div style="display: flex; flex-direction: column;">
+            <span style="font-size: 1.25rem; font-weight: 800; color: #ffffff;">ODCS Foundation</span>
+            <span style="font-size: 0.68rem; color: var(--cyan); font-family: var(--font-mono); font-weight: 700;">
+              BUILT &amp; MAINTAINED BY ANIRUDHA PUTHRAYA
+            </span>
+          </div>
+        </div>
+        <p style="font-size: 0.86rem; color: var(--text-muted); line-height: 1.6;">
+          The Open Digital Continuity Standard (ODCS-2.0.0) guarantees zero intent loss, sub-16ms local authority, and partition-tolerant offline-first resilience.
+        </p>
+      </div>
+
+      <div>
+        <h4 style="font-size: 0.92rem; font-weight: 800; color: #ffffff; text-transform: uppercase; margin-bottom: 1.25rem; letter-spacing: 0.05em;">
+          Official Repositories
+        </h4>
+        <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.75rem; font-size: 0.86rem;">
+          <li><a href="https://github.com/Veyra-Programming/star-haven" target="_blank" rel="noreferrer" style="color: var(--cyan); text-decoration: none; font-weight: 700;">🌟 Star &amp; Haven Dual Repo</a></li>
+          <li><a href="https://github.com/Veyra-Programming/odcs-website" target="_blank" rel="noreferrer" style="color: #38bdf8; text-decoration: none;">🌐 Portal Web Repo (odcs-website)</a></li>
+          <li><a href="https://github.com/Veyra-Programming/open-digital-continuity-standard-" target="_blank" rel="noreferrer" style="color: var(--text-muted); text-decoration: none;">🐙 ODCS Standard Specification</a></li>
+          <li><a href="https://github.com/Veyra-Programming/star-haven/issues" target="_blank" rel="noreferrer" style="color: var(--text-muted); text-decoration: none;">📋 Issue Tracker &amp; Roadmap</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4 style="font-size: 0.92rem; font-weight: 800; color: #ffffff; text-transform: uppercase; margin-bottom: 1.25rem; letter-spacing: 0.05em;">
+          Standards &amp; Governance
+        </h4>
+        <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.75rem; font-size: 0.86rem;">
+          <li><a href="https://github.com/Veyra-Programming/open-digital-continuity-standard-/blob/main/SPECIFICATION.md" target="_blank" rel="noreferrer" style="color: var(--text-muted); text-decoration: none;">📐 ODCS-2.0.0 Specification</a></li>
+          <li><a href="https://github.com/Veyra-Programming/open-digital-continuity-standard-/blob/main/RELEASE_NOTES.md" target="_blank" rel="noreferrer" style="color: var(--text-muted); text-decoration: none;">📜 Milestone 1 Release Notes</a></li>
+          <li><a href="https://github.com/Veyra-Programming/open-digital-continuity-standard-/blob/main/GOVERNANCE.md" target="_blank" rel="noreferrer" style="color: var(--text-muted); text-decoration: none;">🏛️ Standards Working Group</a></li>
+          <li><a href="#downloads" style="color: var(--text-muted); text-decoration: none;">📦 20-OS Release Vault</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div style="max-width: 1240px; margin: 0 auto; padding-top: 1.5rem; border-top: 1px solid rgba(255, 255, 255, 0.05); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; font-size: 0.78rem; color: var(--text-dim);">
+      <div>Licensed under Apache 2.0 Open Standard License · All Rights Reserved © 2026</div>
+      <div>Pure Sovereign Architecture · Star Language WASM Core</div>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
