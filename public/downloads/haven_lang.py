@@ -1,36 +1,56 @@
 #!/usr/bin/env python3
 """
-Haven Language v2.5 — Natural-English, Modern Functional & Continuity Transpiler + VM CLI
-Companion Language for the Open Digital Continuity Standard (ODCS)
+Haven Language v3.0 — General-Purpose, Natural-English & Continuity Toolchain + VM
+Designed for Enterprise Applications, Offline Systems, Web Services, and Scripting.
 
 Features:
-  - Natural English syntax (assignments, conditionals, loops, functions, pattern matching).
-  - Advanced left-to-right pipelines with '_' placeholder.
+  - Natural English syntax (assignments, conditionals, loops, functions, pattern matching, classes).
+  - Object-Oriented Programming (define class <Name>, define init(self, ...), inheritance).
+  - Modern functional pipelines (|>) with placeholder '_' and nested expression support.
   - Pattern matching: inspect <expr>: when <pattern>: ... otherwise: ...
-  - Durable immutable records with functional evolution (copy <record> with (...)).
+  - Complete general-purpose standard library:
+      * Math & Statistics: sqrt, power, sin, cos, tan, abs_val, clamp, mean, median, stdev, PI.
+      * Web Networking & HTTP: fetch_get, fetch_post, fetch_json.
+      * JSON & CSV Data Processing: parse_json, to_json, read_csv, write_csv.
+      * Filesystem & OS Automation: current_directory, list_directory, file_exists, read_lines, execute_command.
+      * Date & Time: current_date, current_time, format_timestamp, parse_date.
+      * Cryptography & Encodings: base64_encode, base64_decode, hash_sha256, hash_sha512, hash_md5.
+      * Regex & Text Utilities: regex_match, regex_find_all, regex_replace, snake_case, camel_case.
+  - Durable records with functional evolution (copy <record> with (...)).
   - Tamper-evident ledger checkpointing (checkpoint <record> [as <label>] into <ledger>).
-  - Modern functional collection primitives (filter_by, map_by, take_first, sort_by, unique_items, etc.).
-  - Natural duration & time syntax (wait N milliseconds / seconds / minutes).
-  - Safe null-coalescing (or else).
-  - Natural file operations (save <expr> to <path>, read text from <path> as <var>, append <expr> to <path>).
-  - Built-in test runner (haven test <path>).
-  - Supercharged interactive REPL with ANSI colors, instant expressions, and :help.
+  - Full CLI tooling: run, compile, lint, test, repl, new, format, info.
 """
 
 from __future__ import annotations
 
 import argparse
 import ast
+import base64
+import csv
+import datetime
 import hashlib
+import io
 import json
+import math
 import os
+import pathlib
+import platform
 import re
+import shutil
+import subprocess
 import sys
 import textwrap
 import time
+import urllib.error
+import urllib.parse
+import urllib.request
 import uuid
 from dataclasses import dataclass, field, is_dataclass, asdict
 from typing import Any, Dict, List, Optional, Tuple
+
+
+HAVEN_VERSION = "3.0.0"
+HAVEN_CODENAME = "General-Purpose Enterprise Edition"
 
 
 class HavenSyntaxError(SyntaxError):
@@ -38,21 +58,697 @@ class HavenSyntaxError(SyntaxError):
 
 
 # ---------------------------------------------------------------------------
-# Runtime Prelude injected before executing transpiled Haven programs
+# General-Purpose Runtime Prelude injected before executing Haven programs
 # ---------------------------------------------------------------------------
 
 HAVEN_PRELUDE = '''
+import base64 as _b64
+import csv as _csv
 import dataclasses as _dc
+import datetime as _dt
 import hashlib as _hashlib
+import io as _io
 import json as _json
+import math as _math
 import os as _os
+import pathlib as _pathlib
+import re as _re
+import shutil as _shutil
+import subprocess as _subprocess
 import time as _time
+import urllib.error as _url_err
+import urllib.parse as _url_parse
+import urllib.request as _url_req
 import uuid as _uuid
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple, Union
 
+
+# ---------------------------------------------------------------------------
+# General-Purpose Math & Numerical Functions
+# ---------------------------------------------------------------------------
+
+PI = _math.pi
+EULER_E = _math.e
+
+
+def sqrt(x):
+    return _math.sqrt(float(x))
+
+
+def power(base, exp):
+    return _math.pow(float(base), float(exp))
+
+
+def abs_val(x):
+    return abs(x)
+
+
+def floor(x):
+    return _math.floor(float(x))
+
+
+def ceil(x):
+    return _math.ceil(float(x))
+
+
+def round_to(x, digits=0):
+    d = int(digits)
+    return round(float(x), d) if d > 0 else int(round(float(x)))
+
+
+def clamp(val, min_val, max_val):
+    return max(min_val, min(max_val, val))
+
+
+def sin(x):
+    return _math.sin(float(x))
+
+
+def cos(x):
+    return _math.cos(float(x))
+
+
+def tan(x):
+    return _math.tan(float(x))
+
+
+def range_of(start, end=None, step=1):
+    st = int(step)
+    if end is None:
+        return list(range(int(start)))
+    stop = int(end) + (1 if st > 0 else -1)
+    return list(range(int(start), stop, st))
+
+
+# ---------------------------------------------------------------------------
+# JSON & CSV Data Processing
+# ---------------------------------------------------------------------------
+
+def parse_json(text):
+    if isinstance(text, (dict, list)):
+        return text
+    return _json.loads(str(text))
+
+
+def to_json(obj, indent=2):
+    if hasattr(obj, "to_dict"):
+        obj = obj.to_dict()
+    elif _dc.is_dataclass(obj):
+        obj = _dc.asdict(obj)
+    return _json.dumps(obj, indent=int(indent), sort_keys=True, default=str)
+
+
+def to_compact_json(obj):
+    return canonical_json(obj)
+
+
+def read_csv(path):
+    with open(str(path), "r", encoding="utf-8") as f:
+        reader = _csv.DictReader(f)
+        return [dict(row) for row in reader]
+
+
+def write_csv(path, rows, headers=None):
+    if not rows:
+        return 0
+    if headers is None:
+        if isinstance(rows[0], dict):
+            headers = list(rows[0].keys())
+        else:
+            headers = [f"col_{i}" for i in range(len(rows[0]))]
+    with open(str(path), "w", encoding="utf-8", newline="") as f:
+        if isinstance(rows[0], dict):
+            writer = _csv.DictWriter(f, fieldnames=headers)
+            writer.writeheader()
+            writer.writerows(rows)
+        else:
+            writer = _csv.writer(f)
+            writer.writerow(headers)
+            writer.writerows(rows)
+    return len(rows)
+
+
+# ---------------------------------------------------------------------------
+# HTTP & Web Networking (Zero External Dependencies)
+# ---------------------------------------------------------------------------
+
+def fetch_get(url, headers=None, timeout=10):
+    req_headers = {"User-Agent": "Haven-Language/3.0"}
+    if headers and isinstance(headers, dict):
+        req_headers.update(headers)
+    req = _url_req.Request(str(url), headers=req_headers, method="GET")
+    try:
+        with _url_req.urlopen(req, timeout=float(timeout)) as resp:
+            status = resp.status
+            body_bytes = resp.read()
+            body_text = _HavenStr(body_bytes.decode("utf-8", errors="replace"))
+            parsed_json = None
+            try:
+                parsed_json = _json.loads(body_text)
+            except Exception:
+                pass
+            return {
+                "status": status,
+                "ok": 200 <= status < 300,
+                "text": body_text,
+                "json": parsed_json,
+                "headers": dict(resp.headers),
+            }
+    except _url_err.HTTPError as exc:
+        err_text = exc.read().decode("utf-8", errors="replace")
+        return {
+            "status": exc.code,
+            "ok": False,
+            "text": _HavenStr(err_text),
+            "json": None,
+            "headers": dict(exc.headers),
+            "error": str(exc),
+        }
+    except Exception as exc:
+        return {
+            "status": 0,
+            "ok": False,
+            "text": _HavenStr(""),
+            "json": None,
+            "headers": {},
+            "error": str(exc),
+        }
+
+
+def fetch_post(url, payload=None, headers=None, timeout=10):
+    req_headers = {"User-Agent": "Haven-Language/3.0"}
+    if headers and isinstance(headers, dict):
+        req_headers.update(headers)
+    body_bytes = b""
+    if payload is not None:
+        if isinstance(payload, (dict, list)):
+            body_bytes = _json.dumps(payload).encode("utf-8")
+            if "Content-Type" not in req_headers:
+                req_headers["Content-Type"] = "application/json"
+        elif isinstance(payload, str):
+            body_bytes = payload.encode("utf-8")
+        elif isinstance(payload, bytes):
+            body_bytes = payload
+    req = _url_req.Request(str(url), data=body_bytes, headers=req_headers, method="POST")
+    try:
+        with _url_req.urlopen(req, timeout=float(timeout)) as resp:
+            status = resp.status
+            resp_bytes = resp.read()
+            resp_text = _HavenStr(resp_bytes.decode("utf-8", errors="replace"))
+            parsed_json = None
+            try:
+                parsed_json = _json.loads(resp_text)
+            except Exception:
+                pass
+            return {
+                "status": status,
+                "ok": 200 <= status < 300,
+                "text": resp_text,
+                "json": parsed_json,
+                "headers": dict(resp.headers),
+            }
+    except _url_err.HTTPError as exc:
+        err_text = exc.read().decode("utf-8", errors="replace")
+        return {
+            "status": exc.code,
+            "ok": False,
+            "text": _HavenStr(err_text),
+            "json": None,
+            "headers": dict(exc.headers),
+            "error": str(exc),
+        }
+    except Exception as exc:
+        return {
+            "status": 0,
+            "ok": False,
+            "text": _HavenStr(""),
+            "json": None,
+            "headers": {},
+            "error": str(exc),
+        }
+
+
+def fetch_json(url, headers=None, timeout=10):
+    res = fetch_get(url, headers=headers, timeout=timeout)
+    if res["ok"] and res["json"] is not None:
+        return res["json"]
+    return None
+
+
+# ---------------------------------------------------------------------------
+# Operating System & Filesystem Automation
+# ---------------------------------------------------------------------------
+
+def current_directory():
+    return _HavenStr(_os.getcwd())
+
+
+def list_directory(path="."):
+    return [_HavenStr(item) for item in sorted(_os.listdir(str(path)))]
+
+
+def file_exists(path):
+    return _os.path.isfile(str(path))
+
+
+def directory_exists(path):
+    return _os.path.isdir(str(path))
+
+
+def create_directory(path):
+    _os.makedirs(str(path), exist_ok=True)
+    return True
+
+
+def delete_file(path):
+    p = str(path)
+    if _os.path.exists(p):
+        if _os.path.isdir(p):
+            _shutil.rmtree(p)
+        else:
+            _os.remove(p)
+        return True
+    return False
+
+
+def file_size(path):
+    p = str(path)
+    return _os.path.getsize(p) if _os.path.exists(p) else 0
+
+
+def file_extension(path):
+    return _HavenStr(_pathlib.Path(str(path)).suffix)
+
+
+def file_name(path):
+    return _HavenStr(_pathlib.Path(str(path)).name)
+
+
+def path_join(*parts):
+    return _HavenStr(_os.path.join(*(str(p) for p in parts)))
+
+
+def read_lines(path):
+    with open(str(path), "r", encoding="utf-8") as f:
+        return [_HavenStr(line.rstrip("\\r\\n")) for line in f]
+
+
+def write_lines(path, lines):
+    with open(str(path), "w", encoding="utf-8") as f:
+        for line in lines:
+            f.write(str(line) + "\\n")
+    return len(lines)
+
+
+def execute_command(command):
+    res = _subprocess.run(str(command), shell=True, capture_output=True, text=True)
+    return {
+        "exit_code": res.returncode,
+        "ok": res.returncode == 0,
+        "stdout": _HavenStr(res.stdout),
+        "stderr": _HavenStr(res.stderr),
+    }
+
+
+# ---------------------------------------------------------------------------
+# Date & Time Utilities
+# ---------------------------------------------------------------------------
+
+def current_date():
+    return _HavenStr(_dt.datetime.now().strftime("%Y-%m-%d"))
+
+
+def current_time():
+    return _HavenStr(_dt.datetime.now().strftime("%H:%M:%S"))
+
+
+def current_timestamp():
+    return _time.time()
+
+
+def format_timestamp(ts, format_str="%Y-%m-%d %H:%M:%S"):
+    return _HavenStr(_dt.datetime.fromtimestamp(float(ts)).strftime(str(format_str)))
+
+
+def parse_date(date_str, format_str="%Y-%m-%d"):
+    return _dt.datetime.strptime(str(date_str), str(format_str)).timestamp()
+
+
+# ---------------------------------------------------------------------------
+# Cryptography, Hashing & Encodings
+# ---------------------------------------------------------------------------
+
+def base64_encode(value):
+    raw = value.encode("utf-8") if isinstance(value, str) else bytes(value)
+    return _HavenStr(_b64.b64encode(raw).decode("ascii"))
+
+
+def base64_decode(encoded_str):
+    raw = _b64.b64decode(str(encoded_str).encode("ascii"))
+    return _HavenStr(raw.decode("utf-8", errors="replace"))
+
+
+def hash_sha512(value):
+    raw = value.encode("utf-8") if isinstance(value, str) else canonical_json(value).encode("utf-8")
+    return _hashlib.sha512(raw).hexdigest()
+
+
+def hash_md5(value):
+    raw = value.encode("utf-8") if isinstance(value, str) else canonical_json(value).encode("utf-8")
+    return _hashlib.md5(raw).hexdigest()
+
+
+def hash_sha256(value):
+    return seal_hash(value)
+
+
+def url_encode(text):
+    return _HavenStr(_url_parse.quote(str(text)))
+
+
+def url_decode(encoded_text):
+    return _HavenStr(_url_parse.unquote(str(encoded_text)))
+
+
+# ---------------------------------------------------------------------------
+# Regex & Text Utilities
+# ---------------------------------------------------------------------------
+
+def regex_match(pattern, text):
+    return bool(_re.search(str(pattern), str(text)))
+
+
+def regex_find(pattern, text):
+    m = _re.search(str(pattern), str(text))
+    return _HavenStr(m.group(0)) if m else None
+
+
+def regex_find_all(pattern, text):
+    return [_HavenStr(m) for m in _re.findall(str(pattern), str(text))]
+
+
+def regex_replace(pattern, replacement, text):
+    return _HavenStr(_re.sub(str(pattern), str(replacement), str(text)))
+
+
+def snake_case(text):
+    s = _re.sub(r"([A-Z]+)([A-Z][a-z])", r"\\1_\\2", str(text))
+    s = _re.sub(r"([a-z\\d])([A-Z])", r"\\1_\\2", s)
+    return _HavenStr(s.replace("-", "_").replace(" ", "_").lower())
+
+
+def camel_case(text):
+    words = str(text).replace("-", " ").replace("_", " ").split()
+    if not words:
+        return _HavenStr("")
+    return _HavenStr(words[0].lower() + "".join(w.capitalize() for w in words[1:]))
+
+
+def kebab_case(text):
+    return _HavenStr(snake_case(text).replace("_", "-"))
+
+
+def title_case(text):
+    return _HavenStr(str(text).title())
+
+
+# ---------------------------------------------------------------------------
+# Safe Fallbacks & File Helpers
+# ---------------------------------------------------------------------------
+
+def _haven_coalesce(primary, fallback):
+    if primary is not None:
+        return primary
+    if callable(fallback):
+        return fallback()
+    return fallback
+
+
+def _haven_save_file(path, content):
+    if not isinstance(content, str):
+        content = canonical_json(content)
+    with open(str(path), "w", encoding="utf-8") as f:
+        f.write(content)
+    return len(content)
+
+
+def _haven_append_file(path, content):
+    if not isinstance(content, str):
+        content = canonical_json(content)
+    with open(str(path), "a", encoding="utf-8") as f:
+        f.write(content)
+    return len(content)
+
+
+def _haven_read_file(path):
+    with open(str(path), "r", encoding="utf-8") as f:
+        return _HavenStr(f.read())
+
+
+class _HavenStr(str):
+    """Enriched general-purpose string with method chaining."""
+    def trim(self):
+        return _HavenStr(self.strip())
+
+    def to_uppercase(self):
+        return _HavenStr(self.upper())
+
+    def to_lowercase(self):
+        return _HavenStr(self.lower())
+
+    def contains(self, sub):
+        return str(sub) in self
+
+    def starts_with(self, prefix):
+        return self.startswith(str(prefix))
+
+    def ends_with(self, suffix):
+        return self.endswith(str(suffix))
+
+    def split_by(self, sep=" "):
+        return [_HavenStr(s) for s in self.split(str(sep))]
+
+    def replace_text(self, old_val, new_val):
+        return _HavenStr(self.replace(str(old_val), str(new_val)))
+
+    def pad_left(self, width, fill=" "):
+        return _HavenStr(self.rjust(int(width), str(fill)))
+
+    def pad_right(self, width, fill=" "):
+        return _HavenStr(self.ljust(int(width), str(fill)))
+
+    def to_snake_case(self):
+        return snake_case(self)
+
+    def to_camel_case(self):
+        return camel_case(self)
+
+    def to_kebab_case(self):
+        return kebab_case(self)
+
+    def to_title_case(self):
+        return title_case(self)
+
+    def to_base64(self):
+        return base64_encode(self)
+
+    def from_base64(self):
+        return base64_decode(self)
+
+    def to_int(self, default=0):
+        try:
+            return int(self)
+        except ValueError:
+            return default
+
+    def to_float(self, default=0.0):
+        try:
+            return float(self)
+        except ValueError:
+            return default
+
+    def sha256(self):
+        return hash_sha256(self)
+
+
+def trim(value):
+    return _HavenStr(str(value).strip())
+
+
+def uppercase(value):
+    return _HavenStr(str(value).upper())
+
+
+def lowercase(value):
+    return _HavenStr(str(value).lower())
+
+
+def contains_text(text, substring):
+    return str(substring) in str(text)
+
+
+def starts_with(text, prefix):
+    return str(text).startswith(str(prefix))
+
+
+def ends_with(text, suffix):
+    return str(text).endswith(str(suffix))
+
+
+def split_by(text, delimiter=" "):
+    return [_HavenStr(s) for s in str(text).split(str(delimiter))]
+
+
+def replace_text(text, old_val, new_val):
+    return _HavenStr(str(text).replace(str(old_val), str(new_val)))
+
+
+def pad_left(text, width, fill_char=" "):
+    return _HavenStr(str(text).rjust(int(width), str(fill_char)))
+
+
+def pad_right(text, width, fill_char=" "):
+    return _HavenStr(str(text).ljust(int(width), str(fill_char)))
+
+
+def capitalize_text(text):
+    return _HavenStr(str(text).capitalize())
+
+
+def String(value):
+    return _HavenStr(str(value))
+
+
+def Integer(value):
+    return int(value)
+
+
+def Float(value):
+    return float(value)
+
+
+def Boolean(value):
+    return bool(value)
+
+
+# ---------------------------------------------------------------------------
+# Functional Collection Utilities & Statistics
+# ---------------------------------------------------------------------------
+
+def filter_by(coll, predicate):
+    return [x for x in coll if predicate(x)]
+
+
+def map_by(coll, transform):
+    return [transform(x) for x in coll]
+
+
+def take_first(coll, n):
+    return list(coll)[:int(n)]
+
+
+def drop_first(coll, n):
+    return list(coll)[int(n):]
+
+
+def sort_by(coll, key_fn=None, descending=False):
+    if key_fn is None or key_fn == "asc":
+        return sorted(list(coll), reverse=descending)
+    if key_fn == "desc":
+        return sorted(list(coll), reverse=True)
+    return sorted(list(coll), key=key_fn, reverse=descending)
+
+
+def reverse_items(coll):
+    return list(reversed(list(coll)))
+
+
+def unique_items(coll):
+    seen = set()
+    out = []
+    for x in coll:
+        try:
+            h = x
+            if h not in seen:
+                seen.add(h)
+                out.append(x)
+        except TypeError:
+            key = canonical_json(x)
+            if key not in seen:
+                seen.add(key)
+                out.append(x)
+    return out
+
+
+def sum_all(coll):
+    return sum(coll)
+
+
+def average(coll):
+    c = list(coll)
+    return (sum(c) / len(c)) if c else 0.0
+
+
+def mean(coll):
+    return average(coll)
+
+
+def median(coll):
+    c = sorted(list(coll))
+    if not c:
+        return 0.0
+    n = len(c)
+    mid = n // 2
+    return (c[mid] if n % 2 == 1 else (c[mid - 1] + c[mid]) / 2.0)
+
+
+def variance(coll):
+    c = list(coll)
+    if len(c) < 2:
+        return 0.0
+    m = average(c)
+    return sum((x - m) ** 2 for x in c) / (len(c) - 1)
+
+
+def stdev(coll):
+    return _math.sqrt(variance(coll))
+
+
+def minimum_of(coll):
+    return min(coll)
+
+
+def maximum_of(coll):
+    return max(coll)
+
+
+def join_with(coll, sep=""):
+    return str(sep).join(str(x) for x in coll)
+
+
+def tally(coll):
+    counts = {}
+    for x in coll:
+        counts[x] = counts.get(x, 0) + 1
+    return counts
+
+
+def chunk_by(coll, chunk_size):
+    size = max(1, int(chunk_size))
+    c = list(coll)
+    return [c[i:i + size] for i in range(0, len(c), size)]
+
+
+def zip_with(coll_a, coll_b):
+    return list(zip(coll_a, coll_b))
+
+
+# ---------------------------------------------------------------------------
+# Digital Continuity, Immutability & Cryptography
+# ---------------------------------------------------------------------------
 
 class ContinuityImmutabilityError(Exception):
-    """Raised when attempting to mutate a hardware-sealed ODCS durable record."""
+    """Raised when attempting to mutate a sealed immutable durable record."""
 
 
 def canonical_json(obj):
@@ -129,219 +825,18 @@ def env_var(key, default=None):
     return _os.environ.get(str(key), default)
 
 
-def _haven_coalesce(primary, fallback):
-    if primary is not None:
-        return primary
-    if callable(fallback):
-        return fallback()
-    return fallback
-
-
-def _haven_save_file(path, content):
-    if not isinstance(content, str):
-        content = canonical_json(content)
-    with open(str(path), "w", encoding="utf-8") as f:
-        f.write(content)
-    return len(content)
-
-
-def _haven_append_file(path, content):
-    if not isinstance(content, str):
-        content = canonical_json(content)
-    with open(str(path), "a", encoding="utf-8") as f:
-        f.write(content)
-    return len(content)
-
-
-def _haven_read_file(path):
-    with open(str(path), "r", encoding="utf-8") as f:
-        return _HavenStr(f.read())
-
-
-class _HavenStr(str):
-    """String subclass providing ergonomic Haven chain helpers."""
-    def trim(self):
-        return _HavenStr(self.strip())
-
-    def to_uppercase(self):
-        return _HavenStr(self.upper())
-
-    def to_lowercase(self):
-        return _HavenStr(self.lower())
-
-    def contains(self, sub):
-        return str(sub) in self
-
-    def starts_with(self, prefix):
-        return self.startswith(str(prefix))
-
-    def ends_with(self, suffix):
-        return self.endswith(str(suffix))
-
-    def split_by(self, sep=" "):
-        return [_HavenStr(s) for s in self.split(str(sep))]
-
-    def replace_text(self, old_val, new_val):
-        return _HavenStr(self.replace(str(old_val), str(new_val)))
-
-    def pad_left(self, width, fill=" "):
-        return _HavenStr(self.rjust(int(width), str(fill)))
-
-    def pad_right(self, width, fill=" "):
-        return _HavenStr(self.ljust(int(width), str(fill)))
-
-
-def trim(value):
-    return _HavenStr(str(value).strip())
-
-
-def uppercase(value):
-    return _HavenStr(str(value).upper())
-
-
-def lowercase(value):
-    return _HavenStr(str(value).lower())
-
-
-def contains_text(text, substring):
-    return str(substring) in str(text)
-
-
-def starts_with(text, prefix):
-    return str(text).startswith(str(prefix))
-
-
-def ends_with(text, suffix):
-    return str(text).endswith(str(suffix))
-
-
-def split_by(text, delimiter=" "):
-    return [_HavenStr(s) for s in str(text).split(str(delimiter))]
-
-
-def replace_text(text, old_val, new_val):
-    return _HavenStr(str(text).replace(str(old_val), str(new_val)))
-
-
-def pad_left(text, width, fill_char=" "):
-    return _HavenStr(str(text).rjust(int(width), str(fill_char)))
-
-
-def pad_right(text, width, fill_char=" "):
-    return _HavenStr(str(text).ljust(int(width), str(fill_char)))
-
-
-def capitalize_text(text):
-    return _HavenStr(str(text).capitalize())
-
-
-def String(value):
-    return _HavenStr(str(value))
-
-
-def Integer(value):
-    return int(value)
-
-
-def Float(value):
-    return float(value)
-
-
-def Boolean(value):
-    return bool(value)
-
-
-# ---------------------------------------------------------------------------
-# Functional Collection Utilities for Native Haven Pipelines
-# ---------------------------------------------------------------------------
-
-def filter_by(coll, predicate):
-    return [x for x in coll if predicate(x)]
-
-
-def map_by(coll, transform):
-    return [transform(x) for x in coll]
-
-
-def take_first(coll, n):
-    return list(coll)[:int(n)]
-
-
-def drop_first(coll, n):
-    return list(coll)[int(n):]
-
-
-def sort_by(coll, key_fn=None, descending=False):
-    if key_fn is None or key_fn == "asc":
-        return sorted(list(coll), reverse=descending)
-    if key_fn == "desc":
-        return sorted(list(coll), reverse=True)
-    return sorted(list(coll), key=key_fn, reverse=descending)
-
-
-def reverse_items(coll):
-    return list(reversed(list(coll)))
-
-
-def unique_items(coll):
-    seen = set()
-    out = []
-    for x in coll:
-        try:
-            h = x
-            if h not in seen:
-                seen.add(h)
-                out.append(x)
-        except TypeError:
-            key = canonical_json(x)
-            if key not in seen:
-                seen.add(key)
-                out.append(x)
-    return out
-
-
-def sum_all(coll):
-    return sum(coll)
-
-
-def average(coll):
-    c = list(coll)
-    return (sum(c) / len(c)) if c else 0.0
-
-
-def minimum_of(coll):
-    return min(coll)
-
-
-def maximum_of(coll):
-    return max(coll)
-
-
-def join_with(coll, sep=""):
-    return str(sep).join(str(x) for x in coll)
-
-
-def tally(coll):
-    counts = {}
-    for x in coll:
-        counts[x] = counts.get(x, 0) + 1
-    return counts
-
-
-def chunk_by(coll, chunk_size):
-    size = max(1, int(chunk_size))
-    c = list(coll)
-    return [c[i:i + size] for i in range(0, len(c), size)]
-
-
-def zip_with(coll_a, coll_b):
-    return list(zip(coll_a, coll_b))
-
-
 class _CryptoMod:
     @staticmethod
     def sha256(value):
         return seal_hash(value)
+
+    @staticmethod
+    def sha512(value):
+        return hash_sha512(value)
+
+    @staticmethod
+    def md5(value):
+        return hash_md5(value)
 
     @staticmethod
     def verify(value, expected_hex):
@@ -352,7 +847,7 @@ crypto = _CryptoMod()
 
 
 class DurableRecord:
-    """Base mixin for ODCS sealed immutable records."""
+    """Base mixin for sealed immutable records."""
     def __setattr__(self, name, value):
         if getattr(self, "_sealed_lock", False):
             raise ContinuityImmutabilityError(
@@ -377,7 +872,7 @@ class DurableRecord:
 
 
 class PNCounter:
-    """ODCS Layer 2 Conflict-Free Replicated Positive-Negative Counter."""
+    """Conflict-Free Replicated Positive-Negative Counter."""
     def __init__(self, node_id="local-node"):
         self.node_id = node_id
         self.p = {node_id: 0}
@@ -405,7 +900,7 @@ class PNCounter:
 
 
 class ZeroIntentLoss:
-    """ODCS Layer 4 Zero Intent Loss local receipt minter & staging log."""
+    """Zero Intent Loss local receipt minter & staging log."""
     _receipts = []
 
     @classmethod
@@ -428,7 +923,7 @@ class ZeroIntentLoss:
 
 
 class ContinuityLedger:
-    """ODCS Layer 1 append-only Merkle-chained ledger."""
+    """Append-only Merkle-chained ledger."""
     def __init__(self, uri="haven://local-wal"):
         self.uri = uri
         self.blocks = []
@@ -490,7 +985,7 @@ class ContinuityLedger:
 
 
 class TelemetryProbe:
-    """ODCS Layer 3 Environmental Adaptation helper."""
+    """Environmental Network & Health Adaptation helper."""
     @staticmethod
     def classify(rtt_ms, battery_pct=100):
         if rtt_ms < 0:
@@ -532,10 +1027,8 @@ def _split_strings_and_code(text: str) -> List[Tuple[bool, str]]:
         ch = text[i]
         if in_quote is None:
             if ch == "/" and i + 1 < n and text[i + 1] == "/":
-                # Single-line // comment outside string: discard remainder
                 break
             if ch == "#":
-                # Python # comment outside string: keep untouched and stop scanning
                 buf.append(text[i:])
                 break
             if ch in ('"', "'"):
@@ -623,7 +1116,7 @@ def _replace_english_ops(code_chunk: str) -> str:
 
 
 def _convert_call_named_colons(expr: str) -> str:
-    """Convert `fn(key: val, other: val2)` named args to Python `fn(key=val, other=val2)` without touching dicts `{k: v}`, comments, or lambdas."""
+    """Convert `fn(key: val, other: val2)` named args to Python `fn(key=val, other=val2)`."""
     out: List[str] = []
     stack: List[str] = []
     i = 0
@@ -1022,7 +1515,7 @@ def _fold_pipeline(expr: str) -> str:
 
 
 def is_pure_python(source: str) -> bool:
-    """Return True if the source parses cleanly as standard Python and uses no Haven extensions."""
+    """Return True if the source parses cleanly as standard Python."""
     try:
         ast.parse(source)
         return True
@@ -1048,8 +1541,7 @@ def _preprocess_multiline_pipelines(lines: List[str]) -> List[str]:
 
 def transpile_haven(source: str, include_prelude: bool = True) -> str:
     """
-    Transpile Haven (.hvn) Natural-English, Modern Functional & Continuity syntax to Python 3.
-    Preserves standard Python compatibility when given valid Python scripts.
+    Transpile Haven (.hvn) Natural-English, Object-Oriented & General-Purpose syntax to Python 3.
     """
     lines = _preprocess_multiline_pipelines(source.splitlines())
     out_lines: List[str] = []
@@ -1067,22 +1559,26 @@ def transpile_haven(source: str, include_prelude: bool = True) -> str:
             i += 1
             continue
 
-        # Close any inspect blocks whose scope has ended due to decrease in indentation
         while inspect_stack and indent_len <= inspect_stack[-1]["base_indent"]:
             inspect_stack.pop()
 
-        # Calculate active dedent shift from all active inspect blocks
         shift = sum(ctx["delta"] for ctx in inspect_stack)
         effective_indent_len = max(0, indent_len - shift)
         indent = " " * effective_indent_len
 
-        # Preserve # comments untouched
         if cleaned.startswith("#"):
             out_lines.append(indent + cleaned)
             i += 1
             continue
 
-        # 1. Durable Immutable Record Block
+        # 1. Object-Oriented Class Definitions: define class Name / class Name(Base):
+        m_cls = re.match(r"^(?:define\s+class|class)\s+([a-zA-Z_][a-zA-Z0-9_]*(?:\([^\)]*\))?)\s*:\s*$", cleaned)
+        if m_cls:
+            out_lines.append(f"{indent}class {m_cls.group(1)}:")
+            i += 1
+            continue
+
+        # 2. Durable Immutable Record Block
         m_rec = re.match(r"^durable\s+record\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*:\s*$", cleaned)
         if m_rec:
             rec_name = m_rec.group(1)
@@ -1115,20 +1611,26 @@ def transpile_haven(source: str, include_prelude: bool = True) -> str:
                 out_lines.append(f"{indent}    pass")
             continue
 
-        # 2. Virtual module import shims
+        # 3. Virtual module import shims
         if re.match(r"^(?:from\s+(?:odcs|haven_ai|crypto)(?:\.[a-zA-Z0-9_]+)?\s+import|import\s+(?:crypto|odcs))\b", cleaned):
             out_lines.append(f"{indent}# [haven-builtin] {cleaned}")
             i += 1
             continue
 
-        # 3. Natural English Function Definitions
-        m_fn = re.match(r"^(?:define|to|task|function)\s+([a-zA-Z_][a-zA-Z0-9_]*\s*\(.*\))\s*:\s*$", cleaned)
+        # 4. Natural English Function / Method Definitions
+        m_fn = re.match(r"^(?:define|to|task|function)\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*\((.*)\)\s*:\s*$", cleaned)
         if m_fn:
-            out_lines.append(f"{indent}def {m_fn.group(1)}:")
+            fn_name = m_fn.group(1)
+            fn_args = m_fn.group(2)
+            if fn_name == "init":
+                fn_name = "__init__"
+            elif fn_name in ("to_string", "as_string"):
+                fn_name = "__str__"
+            out_lines.append(f"{indent}def {fn_name}({fn_args}):")
             i += 1
             continue
 
-        # 4. Pattern Matching: inspect <expr>: and when <pattern>:
+        # 5. Pattern Matching: inspect <expr>: and when <pattern>:
         m_inspect = re.match(r"^inspect\s+(.+)\s*:\s*$", cleaned)
         if m_inspect:
             var_name = f"_haven_inspect_{len(inspect_stack)}"
@@ -1152,7 +1654,7 @@ def transpile_haven(source: str, include_prelude: bool = True) -> str:
             i += 1
             continue
 
-        # 5. Natural English Control Flow & Loops
+        # 6. Natural English Control Flow & Loops
         if re.match(r"^repeat\s+(.+)\s+times\s*:\s*$", cleaned):
             count_expr = re.match(r"^repeat\s+(.+)\s+times\s*:\s*$", cleaned).group(1)
             out_lines.append(f"{indent}for iteration in range(1, int({count_expr}) + 1):")
@@ -1161,19 +1663,19 @@ def transpile_haven(source: str, include_prelude: bool = True) -> str:
 
         m_each = re.match(r"^for\s+each\s+(.+?)\s+in\s+(.+)\s*:\s*$", cleaned)
         if m_each:
-            out_lines.append(f"{indent}for {m_each.group(1)} in {m_each.group(2)}:")
+            out_lines.append(f"{indent}for {m_each.group(1)} in {_fold_pipeline(m_each.group(2))}:")
             i += 1
             continue
 
         m_unless = re.match(r"^unless\s+(.+)\s*:\s*$", cleaned)
         if m_unless:
-            out_lines.append(f"{indent}if not ({m_unless.group(1)}):")
+            out_lines.append(f"{indent}if not ({_fold_pipeline(m_unless.group(1))}):")
             i += 1
             continue
 
         m_until = re.match(r"^until\s+(.+)\s*:\s*$", cleaned)
         if m_until:
-            out_lines.append(f"{indent}while not ({m_until.group(1)}):")
+            out_lines.append(f"{indent}while not ({_fold_pipeline(m_until.group(1))}):")
             i += 1
             continue
 
@@ -1192,7 +1694,7 @@ def transpile_haven(source: str, include_prelude: bool = True) -> str:
             i += 1
             continue
 
-        # Duration & Sleep: wait N milliseconds / seconds / minutes
+        # Duration & Timers
         m_wait = re.match(
             r"^(?:wait|sleep)\s+(.+?)(?:\s+(milliseconds|millis|ms|seconds|second|sec|s|minutes|minute|min|m))?\s*$",
             cleaned,
@@ -1210,7 +1712,7 @@ def transpile_haven(source: str, include_prelude: bool = True) -> str:
             i += 1
             continue
 
-        # Invariants & Assertions: ensure / verify <condition> otherwise "<message>"
+        # Invariants & Assertions: ensure / verify
         m_ensure = re.match(r"^(?:ensure|verify)\s+(.+?)(?:\s+(?:otherwise|because)\s+(.+))?$", cleaned)
         if m_ensure:
             cond_expr = _fold_pipeline(m_ensure.group(1).strip())
@@ -1221,13 +1723,13 @@ def transpile_haven(source: str, include_prelude: bool = True) -> str:
 
         m_elif = re.match(r"^(?:otherwise\s+if|or\s+whenever)\s+(.+)\s*:\s*$", cleaned)
         if m_elif:
-            out_lines.append(f"{indent}elif {m_elif.group(1)}:")
+            out_lines.append(f"{indent}elif {_fold_pipeline(m_elif.group(1))}:")
             i += 1
             continue
 
         m_if = re.match(r"^(?:whenever|when)\s+(.+)\s*:\s*$", cleaned)
         if m_if:
-            out_lines.append(f"{indent}if {m_if.group(1)}:")
+            out_lines.append(f"{indent}if {_fold_pipeline(m_if.group(1))}:")
             i += 1
             continue
 
@@ -1236,7 +1738,7 @@ def transpile_haven(source: str, include_prelude: bool = True) -> str:
             i += 1
             continue
 
-        # 6. Natural Error Handling (try / on error as e: / recover / always)
+        # 7. Error Handling
         m_err_as = re.match(r"^(?:on\s+error|recover)\s+as\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*:\s*$", cleaned)
         if m_err_as:
             out_lines.append(f"{indent}except Exception as {m_err_as.group(1)}:")
@@ -1253,7 +1755,7 @@ def transpile_haven(source: str, include_prelude: bool = True) -> str:
             i += 1
             continue
 
-        # 7. Checkpointing: checkpoint <record> [as <label>] into <ledger>
+        # 8. Checkpointing
         m_chk = re.match(r"^checkpoint\s+(.+?)(?:\s+as\s+(.+?))?\s+into\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*$", cleaned)
         if m_chk:
             rec_expr = _fold_pipeline(m_chk.group(1).strip())
@@ -1263,7 +1765,7 @@ def transpile_haven(source: str, include_prelude: bool = True) -> str:
             i += 1
             continue
 
-        # 8. File I/O Natural Statements
+        # 9. Natural File I/O
         if cleaned.startswith("save "):
             split_res = _split_keyword_outside_strings(cleaned[5:], "to")
             if split_res:
@@ -1292,28 +1794,31 @@ def transpile_haven(source: str, include_prelude: bool = True) -> str:
             i += 1
             continue
 
-        # 9. Natural English Assignments & Mutations
-        m_set = re.match(r"^(?:set\s+([a-zA-Z_][a-zA-Z0-9_]*)\s+to|let\s+([a-zA-Z_][a-zA-Z0-9_]*)\s+(?:be|=)|remember\s+([a-zA-Z_][a-zA-Z0-9_]*)\s+as)\s+(.+)$", cleaned)
+        # 10. Natural English Assignments & Multi-variable Unpacking
+        m_set = re.match(
+            r"^(?:set\s+([a-zA-Z0-9_.,\s]+?)\s+to|let\s+([a-zA-Z0-9_.,\s]+?)\s+(?:be|=)|remember\s+([a-zA-Z0-9_.,\s]+?)\s+as)\s+(.+)$",
+            cleaned,
+        )
         if m_set:
-            var_name = m_set.group(1) or m_set.group(2) or m_set.group(3)
+            var_name = (m_set.group(1) or m_set.group(2) or m_set.group(3)).strip()
             rhs = _fold_pipeline(m_set.group(4))
             out_lines.append(f"{indent}{var_name} = {rhs}")
             i += 1
             continue
 
-        m_inc = re.match(r"^increase\s+([a-zA-Z_][a-zA-Z0-9_]*)\s+by\s+(.+)$", cleaned)
+        m_inc = re.match(r"^increase\s+([a-zA-Z_][a-zA-Z0-9_.]*)\s+by\s+(.+)$", cleaned)
         if m_inc:
             out_lines.append(f"{indent}{m_inc.group(1)} += {_fold_pipeline(m_inc.group(2))}")
             i += 1
             continue
 
-        m_dec = re.match(r"^decrease\s+([a-zA-Z_][a-zA-Z0-9_]*)\s+by\s+(.+)$", cleaned)
+        m_dec = re.match(r"^decrease\s+([a-zA-Z_][a-zA-Z0-9_.]*)\s+by\s+(.+)$", cleaned)
         if m_dec:
             out_lines.append(f"{indent}{m_dec.group(1)} -= {_fold_pipeline(m_dec.group(2))}")
             i += 1
             continue
 
-        # 10. Return / Give Back
+        # 11. Return / Give Back
         m_ret = re.match(r"^give\s+back(?:\s+(.+))?$", cleaned)
         if m_ret:
             expr = m_ret.group(1)
@@ -1324,7 +1829,7 @@ def transpile_haven(source: str, include_prelude: bool = True) -> str:
             i += 1
             continue
 
-        # 11. ODCS Native Intent Preservation
+        # 12. Intent Preservation
         m_intent = re.match(
             r"^preserve\s+intent\s+(.+?)(?:\s+with\s+(.+?))?(?:\s+as\s+([a-zA-Z_][a-zA-Z0-9_]*))?$",
             cleaned,
@@ -1337,7 +1842,7 @@ def transpile_haven(source: str, include_prelude: bool = True) -> str:
             i += 1
             continue
 
-        # 12. Natural Print / Say / Show statements
+        # 13. Output: say / show / print
         m_say = re.match(r"^(?:say|show|print)\s+(.+)$", cleaned)
         if m_say and not cleaned.startswith("print("):
             inner = m_say.group(1).strip()
@@ -1345,7 +1850,7 @@ def transpile_haven(source: str, include_prelude: bool = True) -> str:
             i += 1
             continue
 
-        # 13. Default pipeline & expression
+        # 14. Fallback pipeline & expression
         out_lines.append(f"{indent}{_fold_pipeline(cleaned)}")
         i += 1
 
@@ -1414,7 +1919,7 @@ def run_haven_tests(target_path: str = ".") -> int:
         return 0
 
     print("============================================================")
-    print("🧪 Haven Language v2.5 Automated Test Suite Runner")
+    print(f"🧪 Haven Language v{HAVEN_VERSION} Automated Test Suite Runner")
     print(f"   Target: {target_path} | Discovered: {len(test_files)} suite(s)")
     print("============================================================")
 
@@ -1446,15 +1951,175 @@ def run_haven_tests(target_path: str = ".") -> int:
     return 0 if failed == 0 else 1
 
 
+def scaffold_new_project(project_name: str) -> int:
+    """Scaffold a professional Haven Language project structure."""
+    base_dir = os.path.abspath(project_name)
+    if os.path.exists(base_dir):
+        print(f"\033[91m[Error]\033[0m Directory '{project_name}' already exists.")
+        return 1
+
+    src_dir = os.path.join(base_dir, "src")
+    tests_dir = os.path.join(base_dir, "tests")
+    os.makedirs(src_dir, exist_ok=True)
+    os.makedirs(tests_dir, exist_ok=True)
+
+    # 1. haven.json
+    manifest = {
+        "name": project_name,
+        "version": "1.0.0",
+        "description": f"Professional application authored in Haven Language v{HAVEN_VERSION}",
+        "entry": "src/main.hvn",
+        "test_target": "tests/",
+        "author": "Haven Developer",
+        "license": "Apache-2.0",
+        "haven_version": f">={HAVEN_VERSION}",
+    }
+    with open(os.path.join(base_dir, "haven.json"), "w", encoding="utf-8") as f:
+        json.dump(manifest, f, indent=2)
+
+    # 2. src/main.hvn
+    main_code = textwrap.dedent(f"""\
+        // {project_name} — Haven Language Application Entry Point
+        // Authored in Haven v{HAVEN_VERSION} Natural-English Syntax
+
+        say "============================================================"
+        say "🕊️  {project_name.upper()} • HAVEN APPLICATION STARTED"
+        say "============================================================"
+
+        define class ApplicationService:
+            define init(self, service_name):
+                set self.service_name to service_name
+                set self.boot_time to current_date() + " " + current_time()
+
+            define run(self):
+                say "Service: {{self.service_name}} online since {{self.boot_time}}"
+                set metrics to [12, 45, 88, 19, 73, 94]
+                    |> unique_items(_)
+                    |> filter_by(lambda x: x >= 20)
+                    |> sort_by(_)
+
+                say "Processed cluster metrics: {{metrics}}"
+                say "Average: {{round_to(average(metrics), 2)}} | Peak: {{maximum_of(metrics)}}"
+                give back true
+
+        set app to ApplicationService("{project_name}")
+        app.run()
+    """)
+    with open(os.path.join(src_dir, "main.hvn"), "w", encoding="utf-8") as f:
+        f.write(main_code)
+
+    # 3. tests/test_main.hvn
+    test_code = textwrap.dedent("""\
+        // Automated Test Suite for Haven Application
+        say "Running test suite..."
+
+        verify 2 + 2 is equal to 4 otherwise "Basic arithmetic integrity check failed"
+        set sample to [10, 20, 30] |> sum_all(_)
+        verify sample is equal to 60 otherwise "Collection sum check failed"
+
+        say "All tests passed with 100% verification!"
+    """)
+    with open(os.path.join(tests_dir, "test_main.hvn"), "w", encoding="utf-8") as f:
+        f.write(test_code)
+
+    # 4. README.md
+    readme_content = textwrap.dedent(f"""\
+        # {project_name}
+
+        Professional application authored in **Haven Language v{HAVEN_VERSION} ({HAVEN_CODENAME})**.
+
+        ## Getting Started
+
+        ### Run the application:
+        ```bash
+        haven run src/main.hvn
+        ```
+
+        ### Run automated tests:
+        ```bash
+        haven test tests/
+        ```
+
+        ### Validate syntax (lint):
+        ```bash
+        haven lint src/main.hvn
+        ```
+    """)
+    with open(os.path.join(base_dir, "README.md"), "w", encoding="utf-8") as f:
+        f.write(readme_content)
+
+    # 5. .gitignore
+    with open(os.path.join(base_dir, ".gitignore"), "w", encoding="utf-8") as f:
+        f.write("__pycache__/\n*.wal\n*.log\n*.tmp\n")
+
+    print(f"\033[92m✓ Successfully created Haven project:\033[0m {project_name}/")
+    print(f"   • {project_name}/haven.json")
+    print(f"   • {project_name}/src/main.hvn")
+    print(f"   • {project_name}/tests/test_main.hvn")
+    print(f"   • {project_name}/README.md")
+    print(f"\nTo get started:\n  cd {project_name}\n  haven run src/main.hvn")
+    return 0
+
+
+def format_haven_source(file_path: str) -> int:
+    """Format and clean up a Haven source code file."""
+    if not os.path.isfile(file_path):
+        print(f"\033[91m[Error]\033[0m File '{file_path}' not found.")
+        return 1
+
+    with open(file_path, "r", encoding="utf-8") as f:
+        lines = f.readlines()
+
+    formatted_lines = []
+    for line in lines:
+        stripped = line.rstrip()
+        # Clean trailing whitespace
+        formatted_lines.append(stripped + "\n" if stripped else "\n")
+
+    # Ensure single trailing newline
+    content = "".join(formatted_lines).rstrip() + "\n"
+    with open(file_path, "w", encoding="utf-8") as f:
+        f.write(content)
+
+    print(f"\033[92m✓ [Formatted]\033[0m {file_path}")
+    return 0
+
+
+def print_system_info() -> int:
+    """Print complete enterprise toolchain and system diagnostic report."""
+    print("============================================================")
+    print(f"🕊️  HAVEN PROGRAMMING LANGUAGE • RUNTIME SYSTEM REPORT")
+    print("============================================================")
+    print(f"  Language Version:   Haven v{HAVEN_VERSION} ({HAVEN_CODENAME})")
+    print(f"  VM Runtime Engine:  Python {sys.version.split()[0]} ({platform.python_implementation()})")
+    print(f"  Operating System:   {platform.system()} {platform.release()} ({platform.machine()})")
+    print(f"  Platform Node:      {platform.node()}")
+    print("------------------------------------------------------------")
+    print("  Standard Library Batteries (Built-in Zero-Dependency):")
+    print("    • Math & Stats:   sqrt, power, sin, cos, abs_val, clamp, mean, median, stdev, PI")
+    print("    • HTTP & Web:     fetch_get, fetch_post, fetch_json (built-in client)")
+    print("    • JSON & CSV:     parse_json, to_json, read_csv, write_csv")
+    print("    • OS & Storage:   list_directory, file_exists, read_lines, execute_command")
+    print("    • Date & Time:    current_date, current_time, format_timestamp, parse_date")
+    print("    • Cryptography:   hash_sha256, hash_sha512, hash_md5, base64_encode/decode")
+    print("    • Regex & Text:   regex_match, regex_find_all, regex_replace, snake_case")
+    print("    • Continuity:     ContinuityLedger, PNCounter, ZeroIntentLoss, seal_hash")
+    print("------------------------------------------------------------")
+    print("  CLI Commands:       run, compile, lint, test, repl, new, format, info")
+    print("============================================================")
+    return 0
+
+
 def launch_haven_repl() -> int:
-    """Launch interactive Haven command-line REPL with instant evaluation and helper commands."""
+    """Launch interactive Haven command-line REPL with live evaluation and helper commands."""
     try:
-        import readline  # Enable arrow key history on platforms that support it
+        import readline
     except ImportError:
         pass
 
-    print("\033[95m🕊️  Haven Language v2.5 Interactive REPL\033[0m")
-    print("   Type \033[93m:help\033[0m for cheatsheet, \033[93m:builtins\033[0m for standard library, \033[93mexit\033[0m to quit.")
+    print(f"\033[95m🕊️  Haven Language v{HAVEN_VERSION} Interactive REPL\033[0m")
+    print(f"   Edition: {HAVEN_CODENAME} | Batteries: 80+ Built-in Functions")
+    print("   Type \033[93m:help\033[0m for cheatsheet, \033[93m:modules\033[0m for standard library, \033[93mexit\033[0m to quit.")
     print("------------------------------------------------------------")
 
     ns: Dict[str, Any] = {}
@@ -1475,7 +2140,8 @@ def launch_haven_repl() -> int:
             break
         if stripped == ":help":
             print(textwrap.dedent("""
-                Haven Language v2.5 Cheatsheet:
+                Haven Language v3.0 Cheatsheet:
+                  Classes:     define class Task: define init(self, name): ...
                   Variables:   set name to "Alpha" | let port be 8080 | remember KEY as "val"
                   Mutations:   increase count by 1 | decrease quota by 5
                   Flow:        whenever x is greater than 10: ... otherwise: ...
@@ -1486,30 +2152,35 @@ def launch_haven_repl() -> int:
                   Durations:   wait 250 milliseconds | wait 2 seconds
                   Null-safe:   name or else "Guest"
                   Files:       save "data" to "f.txt" | read text from "f.txt" as content
-                  REPL Meta:   :builtins, :examples, :clear, :reset, :exit
+                  REPL Meta:   :modules, :examples, :info, :clear, :reset, :exit
             """).strip())
             continue
-        if stripped == ":builtins":
+        if stripped in (":modules", ":builtins"):
             print(textwrap.dedent("""
-                Built-in Haven Standard Library:
-                  Collections: filter_by, map_by, take_first, drop_first, sort_by, reverse_items,
-                               unique_items, sum_all, average, minimum_of, maximum_of, join_with,
-                               tally, chunk_by, zip_with
-                  Strings:     trim, uppercase, lowercase, contains_text, starts_with, ends_with,
-                               split_by, replace_text, pad_left, pad_right, capitalize_text
-                  Time/Env:    now_ms(), now_iso(), seconds(n), milliseconds(n), minutes(n),
-                               random_int(a, b), random_item(list), env_var(key, default)
-                  Continuity:  ContinuityLedger, PNCounter, ZeroIntentLoss, seal_hash,
-                               canonical_json, merkle_root, uuid7
+                Standard Library Modules & Functions:
+                  • Math:        sqrt, power, sin, cos, tan, abs_val, clamp, floor, ceil, round_to, range_of, PI
+                  • Stats:       mean, median, variance, stdev, average, sum_all, minimum_of, maximum_of
+                  • Web/HTTP:    fetch_get, fetch_post, fetch_json
+                  • Data/CSV:    parse_json, to_json, read_csv, write_csv
+                  • File/OS:     current_directory, list_directory, file_exists, read_lines, execute_command
+                  • Date/Time:   current_date, current_time, format_timestamp, parse_date, now_ms, now_iso
+                  • Crypto:      hash_sha256, hash_sha512, hash_md5, base64_encode, base64_decode, seal_hash
+                  • Regex/Text:  regex_match, regex_find_all, regex_replace, snake_case, camel_case, title_case
+                  • Collections: filter_by, map_by, take_first, sort_by, unique_items, chunk_by, zip_with, tally
+                  • Continuity:  ContinuityLedger, PNCounter, ZeroIntentLoss, MerkleRoot
             """).strip())
             continue
         if stripped == ":examples":
             print(textwrap.dedent("""
-                Quick Haven Examples:
-                  1. set nums to [5, 12, 3, 19, 8] |> filter_by(lambda x: x > 5) |> sort_by(_)
-                  2. inspect "healthy": when "healthy": say "Cluster Green" otherwise: say "Alert"
-                  3. set user to (env_var("USER") or else "DefaultUser")
+                Quick Interactive Snippets:
+                  1. [10, 25, 4, 88, 32] |> filter_by(lambda x: x > 20) |> sort_by(_)
+                  2. define class User: define init(self, name): set self.name to name
+                  3. set json_data to parse_json('{"status": "ok", "code": 200}')
+                  4. inspect 200: when 200: say "OK" otherwise: say "Failed"
             """).strip())
+            continue
+        if stripped == ":info":
+            print_system_info()
             continue
         if stripped == ":clear":
             os.system("cls" if os.name == "nt" else "clear")
@@ -1522,14 +2193,12 @@ def launch_haven_repl() -> int:
 
         try:
             py = transpile_haven(line, include_prelude=False).strip()
-            # Try evaluating as an expression first
             try:
                 code_obj = compile(py, "<repl>", "eval")
                 val = eval(code_obj, ns)
                 if val is not None:
                     print(f"\033[96m➜\033[0m {repr(val)}")
             except SyntaxError:
-                # Fall back to statement execution
                 code_obj = compile(py, "<repl>", "exec")
                 exec(code_obj, ns)
         except Exception as exc:
@@ -1539,7 +2208,15 @@ def launch_haven_repl() -> int:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Haven Language v2.5 Natural-English Toolchain & VM")
+    parser = argparse.ArgumentParser(
+        description=f"Haven Language v{HAVEN_VERSION} ({HAVEN_CODENAME}) Toolchain & VM"
+    )
+    parser.add_argument(
+        "--version",
+        "-v",
+        action="version",
+        version=f"Haven Language v{HAVEN_VERSION} ({HAVEN_CODENAME})",
+    )
     sub = parser.add_subparsers(dest="cmd")
 
     p_run = sub.add_parser("run", help="Run a .hvn script")
@@ -1557,6 +2234,14 @@ def main() -> int:
     p_test = sub.add_parser("test", help="Discover and execute Haven test suites")
     p_test.add_argument("target", nargs="?", default="heaven/examples", help="Target test directory or file")
 
+    p_new = sub.add_parser("new", help="Scaffold a new professional Haven project")
+    p_new.add_argument("name", help="Name of project to create")
+
+    p_fmt = sub.add_parser("format", help="Format and clean up Haven source file")
+    p_fmt.add_argument("file", help="Path to .hvn file to format")
+
+    sub.add_parser("info", help="Print system and runtime diagnostic report")
+
     args, unknown = parser.parse_known_args()
     if args.cmd == "run":
         sys.argv = [args.file] + unknown
@@ -1570,13 +2255,19 @@ def main() -> int:
             compiled = transpile_haven(fh.read(), include_prelude=True)
         try:
             ast.parse(compiled)
-            print(f"\033[92m[OK]\033[0m {args.file} passed Haven v2.5 AST verification.")
+            print(f"\033[92m[OK]\033[0m {args.file} passed Haven v{HAVEN_VERSION} AST verification.")
             return 0
         except SyntaxError as exc:
             print(format_haven_diagnostic(compiled, exc, args.file), file=sys.stderr)
             return 1
     if args.cmd == "test":
         return run_haven_tests(args.target)
+    if args.cmd == "new":
+        return scaffold_new_project(args.name)
+    if args.cmd == "format":
+        return format_haven_source(args.file)
+    if args.cmd == "info":
+        return print_system_info()
     if args.cmd == "repl":
         return launch_haven_repl()
 
