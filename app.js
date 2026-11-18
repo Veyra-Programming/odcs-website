@@ -313,10 +313,10 @@
     window.addEventListener('resize', resizeCanvas);
 
     const layers = [
-      { name: 'Layer 4: Zero Intent Loss (Star UI)', color: '#fbbf24', y: 40 },
-      { name: 'Layer 3: Telemetry & Sensing Probes', color: '#00f0ff', y: 90 },
-      { name: 'Layer 2: CRDT Consensus & Mesh Sync', color: '#10b981', y: 140 },
-      { name: 'Layer 1: Cryptographic Durability & WAL', color: '#a855f7', y: 190 }
+      { name: 'Layer 4: Zero Intent Loss (Star UI)', shortName: 'L4: Zero Intent Loss (<16ms)', color: '#fbbf24', y: 40 },
+      { name: 'Layer 3: Telemetry & Sensing Probes', shortName: 'L3: Telemetry & Sensing', color: '#00f0ff', y: 90 },
+      { name: 'Layer 2: CRDT Consensus & Mesh Sync', shortName: 'L2: CRDT Mesh Consensus', color: '#10b981', y: 140 },
+      { name: 'Layer 1: Cryptographic Durability & WAL', shortName: 'L1: Cryptographic WAL', color: '#a855f7', y: 190 }
     ];
 
     function drawTopology() {
@@ -325,10 +325,12 @@
       angle += 0.015;
 
       const cx = rect.width / 2;
+      const isNarrow = rect.width < 450;
+      const isTiny = rect.width < 340;
 
       layers.forEach((l, i) => {
-        const offset = Math.sin(angle + i * 0.8) * 15;
-        const width = rect.width * 0.75;
+        const offset = Math.sin(angle + i * 0.8) * (isTiny ? 3 : isNarrow ? 6 : 14);
+        const width = isTiny ? Math.max(rect.width - 16, 180) : isNarrow ? (rect.width - 24) : (rect.width * 0.82);
         const x = cx - width / 2 + offset;
         const y = l.y;
 
@@ -341,15 +343,31 @@
         ctx.fill();
         ctx.stroke();
 
-        // Label
+        // Label Text with dynamic sizing
+        const labelText = isNarrow ? l.shortName : l.name;
+        const fontSize = isTiny ? 10 : isNarrow ? 11 : 12;
         ctx.fillStyle = '#ffffff';
-        ctx.font = '700 12px ' + getComputedStyle(document.body).fontFamily;
-        ctx.fillText(l.name, x + 16, y + 21);
+        ctx.font = `700 ${fontSize}px ` + getComputedStyle(document.body).fontFamily;
 
-        // Right Tag
-        ctx.fillStyle = l.color;
+        // Clip text inside slab boundaries
+        ctx.save();
+        ctx.beginPath();
+        ctx.rect(x + 4, y, width - 8, 34);
+        ctx.clip();
+        ctx.fillText(labelText, x + (isTiny ? 8 : 14), y + 21);
+
+        // Right Tag: strictly check space to prevent ANY visual collision
+        const labelWidth = ctx.measureText(labelText).width;
+        const tagText = 'ODCS-2.0.0';
         ctx.font = '800 10px monospace';
-        ctx.fillText('ODCS-2.0.0', x + width - 85, y + 21);
+        const tagWidth = ctx.measureText(tagText).width;
+        const rightEdgeSpace = width - (isTiny ? 8 : 14) - labelWidth;
+
+        if (rightEdgeSpace > tagWidth + 24) {
+          ctx.fillStyle = l.color;
+          ctx.fillText(tagText, x + width - tagWidth - (isTiny ? 8 : 12), y + 21);
+        }
+        ctx.restore();
       });
 
       requestAnimationFrame(drawTopology);
