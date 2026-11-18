@@ -67,6 +67,31 @@
     }
   });
 
+  // Active Section Observer for Desktop & Mobile Nav
+  const observedSections = document.querySelectorAll('section[id], div[id].star-studio');
+  if ('IntersectionObserver' in window && observedSections.length > 0) {
+    const navLinks = document.querySelectorAll('.desktop-nav .nav-link, .mobile-drawer .mobile-drawer-link');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const id = entry.target.id;
+          navLinks.forEach(link => {
+            const href = link.getAttribute('href');
+            if (href === `#${id}`) {
+              link.classList.add('active');
+            } else if (href && href.startsWith('#')) {
+              link.classList.remove('active');
+            }
+          });
+        }
+      });
+    }, {
+      rootMargin: '-20% 0px -70% 0px',
+      threshold: 0
+    });
+    observedSections.forEach(s => observer.observe(s));
+  }
+
   // ============================================================================
   // 2. AMBIENT TELEMETRY PROBE JITTER SIMULATOR
   // ============================================================================
@@ -259,36 +284,17 @@
   // Toast Notification System
   function showNotification(msg) {
     const toast = document.createElement('div');
-    toast.style.cssText = `
-      position: fixed;
-      bottom: 24px;
-      right: 24px;
-      background: rgba(10, 15, 30, 0.95);
-      border: 1px solid #00f0ff;
-      color: #00f0ff;
-      font-family: var(--font-mono);
-      font-size: 0.8rem;
-      font-weight: 700;
-      padding: 0.75rem 1.25rem;
-      border-radius: 12px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 20px rgba(0, 240, 255, 0.3);
-      z-index: 10000;
-      transition: opacity 0.3s ease, transform 0.3s ease;
-      transform: translateY(10px);
-      opacity: 0;
-    `;
+    toast.className = 'odcs-toast';
     toast.textContent = msg;
     document.body.appendChild(toast);
 
     requestAnimationFrame(() => {
-      toast.style.transform = 'translateY(0)';
-      toast.style.opacity = '1';
+      toast.classList.add('visible');
     });
 
     setTimeout(() => {
-      toast.style.opacity = '0';
-      toast.style.transform = 'translateY(10px)';
-      setTimeout(() => toast.remove(), 300);
+      toast.classList.remove('visible');
+      setTimeout(() => toast.remove(), 320);
     }, 3000);
   }
 
@@ -313,10 +319,10 @@
     window.addEventListener('resize', resizeCanvas);
 
     const layers = [
-      { name: 'Layer 4: Zero Intent Loss (Star UI)', color: '#fbbf24', y: 40 },
-      { name: 'Layer 3: Telemetry & Sensing Probes', color: '#00f0ff', y: 90 },
-      { name: 'Layer 2: CRDT Consensus & Mesh Sync', color: '#10b981', y: 140 },
-      { name: 'Layer 1: Cryptographic Durability & WAL', color: '#a855f7', y: 190 }
+      { name: 'Layer 4: Zero Intent Loss (Star UI)', shortName: 'L4: Zero Intent Loss (<16ms)', color: '#fbbf24', y: 40 },
+      { name: 'Layer 3: Telemetry & Sensing Probes', shortName: 'L3: Telemetry & Sensing', color: '#00f0ff', y: 90 },
+      { name: 'Layer 2: CRDT Consensus & Mesh Sync', shortName: 'L2: CRDT Mesh Consensus', color: '#10b981', y: 140 },
+      { name: 'Layer 1: Cryptographic Durability & WAL', shortName: 'L1: Cryptographic WAL', color: '#a855f7', y: 190 }
     ];
 
     function drawTopology() {
@@ -325,10 +331,12 @@
       angle += 0.015;
 
       const cx = rect.width / 2;
+      const isNarrow = rect.width < 450;
+      const isTiny = rect.width < 340;
 
       layers.forEach((l, i) => {
-        const offset = Math.sin(angle + i * 0.8) * 15;
-        const width = rect.width * 0.75;
+        const offset = Math.sin(angle + i * 0.8) * (isTiny ? 3 : isNarrow ? 6 : 14);
+        const width = isTiny ? Math.max(rect.width - 16, 180) : isNarrow ? (rect.width - 24) : (rect.width * 0.82);
         const x = cx - width / 2 + offset;
         const y = l.y;
 
@@ -341,15 +349,31 @@
         ctx.fill();
         ctx.stroke();
 
-        // Label
+        // Label Text with dynamic sizing
+        const labelText = isNarrow ? l.shortName : l.name;
+        const fontSize = isTiny ? 10 : isNarrow ? 11 : 12;
         ctx.fillStyle = '#ffffff';
-        ctx.font = '700 12px ' + getComputedStyle(document.body).fontFamily;
-        ctx.fillText(l.name, x + 16, y + 21);
+        ctx.font = `700 ${fontSize}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
 
-        // Right Tag
-        ctx.fillStyle = l.color;
-        ctx.font = '800 10px monospace';
-        ctx.fillText('ODCS-2.0.0', x + width - 85, y + 21);
+        // Clip text inside slab boundaries
+        ctx.save();
+        ctx.beginPath();
+        ctx.rect(x + 4, y, width - 8, 34);
+        ctx.clip();
+        ctx.fillText(labelText, x + (isTiny ? 8 : 14), y + 21);
+
+        // Right Tag: strictly check space to prevent ANY visual collision
+        const labelWidth = ctx.measureText(labelText).width;
+        const tagText = 'ODCS-2.0.0';
+        ctx.font = '800 10px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace';
+        const tagWidth = ctx.measureText(tagText).width;
+        const rightEdgeSpace = width - (isTiny ? 8 : 14) - labelWidth;
+
+        if (rightEdgeSpace > tagWidth + 24) {
+          ctx.fillStyle = l.color;
+          ctx.fillText(tagText, x + width - tagWidth - (isTiny ? 8 : 12), y + 21);
+        }
+        ctx.restore();
       });
 
       requestAnimationFrame(drawTopology);

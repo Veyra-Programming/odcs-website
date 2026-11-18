@@ -44,12 +44,11 @@
           <a href="#star-ui" class="nav-link nav-link-highlight">⭐ Star UI</a>
           <a href="#milestone-1" class="nav-link" style="color: #fbbf24;">🏆 Milestone 1</a>
           <a href="#dual-engines" class="nav-link">⚡ Dual Engines</a>
-          <a href="#articles" class="nav-link" style="color: var(--cyan);">📰 Flagship Article</a>
-          <a href="#packages" class="nav-link">📦 235 Modules</a>
-          <a href="#docs" class="nav-link">📖 RFC Docs</a>
+          <a href="#articles" class="nav-link" style="color: var(--cyan);">📰 Article</a>
+          <a href="#packages" class="nav-link">📦 Modules</a>
+          <a href="#docs" class="nav-link">📖 RFCs</a>
           <a href="#downloads" class="nav-link">📥 Vault</a>
           <a href="/contribute/" class="nav-link" style="color: #f472b6; font-weight: 800;">💖 Contribute</a>
-          <a href="#community" class="nav-link" style="color: #38bdf8;">✈️ Community</a>
         </nav>
 
         <!-- Right Controls & Telemetry -->
@@ -59,8 +58,9 @@
             <span>ONLINE (<span id="telemetryLatency">0.04ms</span>)</span>
           </div>
 
-          <a href="https://t.me/opendigitalcontinuity" target="_blank" rel="noreferrer" class="btn btn-secondary btn-sm"
-            style="display: inline-flex; align-items: center; gap: 0.35rem; border-color: rgba(36, 161, 222, 0.5); color: #38bdf8; background: rgba(36, 161, 222, 0.12);">
+          <a href="https://t.me/opendigitalcontinuity" target="_blank" rel="noreferrer"
+            class="btn btn-secondary btn-sm header-cta-btn"
+            style="align-items: center; gap: 0.35rem; border-color: rgba(36, 161, 222, 0.5); color: #38bdf8; background: rgba(36, 161, 222, 0.12);">
             <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor">
               <path
                 d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z" />
@@ -69,7 +69,7 @@
           </a>
 
           <a href="https://github.com/Veyra-Programming/star-haven" target="_blank" rel="noreferrer"
-            class="btn btn-secondary btn-sm" style="display: inline-flex;">
+            class="btn btn-secondary btn-sm header-cta-btn">
             <svg viewBox="0 0 24 24" fill="currentColor">
               <path fill-rule="evenodd" clip-rule="evenodd"
                 d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" />
@@ -87,6 +87,45 @@
 
       <!-- Mobile Dropdown Drawer -->
       <div id="mobileDrawer" class="mobile-drawer">
+        <!-- Live System Telemetry Status (Prominent in Drawer) -->
+        <div
+          style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.35); border-radius: 10px; padding: 0.65rem 0.85rem; display: flex; align-items: center; justify-content: space-between; font-family: var(--font-mono); font-size: 0.74rem;">
+          <div style="display: flex; align-items: center; gap: 0.5rem;">
+            <span class="telemetry-dot"></span>
+            <span style="font-weight: 800; color: var(--emerald);">SYSTEM ONLINE</span>
+          </div>
+          <span style="color: var(--cyan); font-weight: 700;">LATENCY: <span
+              id="mobileTelemetryLatency">0.04ms</span></span>
+          <span class="badge badge-emerald" style="font-size: 0.65rem;">60 FPS</span>
+        </div>
+
+        <!-- Quick Social & Community Action Bar -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+          <a href="https://t.me/opendigitalcontinuity" target="_blank" rel="noreferrer" class="mobile-drawer-link"
+            style="display: flex; align-items: center; justify-content: center; gap: 0.45rem; padding: 0.65rem 0.6rem; background: rgba(36, 161, 222, 0.18); border: 1px solid rgba(36, 161, 222, 0.45); color: #38bdf8; border-radius: 10px; font-size: 0.78rem; font-weight: 800; text-decoration: none; min-height: 44px;">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor">
+              <path
+                d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z" />
+            </svg>
+            <span>Telegram Community</span>
+          </a>
+          <a href="https://github.com/Veyra-Programming/star-haven" target="_blank" rel="noreferrer"
+            class="mobile-drawer-link"
+            style="display: flex; align-items: center; justify-content: center; gap: 0.45rem; padding: 0.65rem 0.6rem; background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.15); color: #fff; border-radius: 10px; font-size: 0.78rem; font-weight: 800; text-decoration: none; min-height: 44px;">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor">
+              <path fill-rule="evenodd" clip-rule="evenodd"
+                d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" />
+            </svg>
+            <span>GitHub Repos</span>
+          </a>
+        </div>
+
+        <!-- Direct Contribute Sponsorship Banner Link -->
+        <a href="/contribute/" class="mobile-drawer-link"
+          style="padding: 0.75rem 0.85rem; border-radius: 10px; background: linear-gradient(135deg, rgba(236, 72, 153, 0.2), rgba(139, 92, 246, 0.2)); border: 1.5px solid rgba(244, 114, 182, 0.5); color: #f472b6; text-decoration: none; font-size: 0.84rem; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 0.5rem; min-height: 44px;">
+          <span>💖 Support Anirudha Puthraya &amp; Contribute (UPI QR) ↗</span>
+        </a>
+
         <!-- Quick Verified Runtimes Download -->
         <div
           style="background: rgba(15, 23, 42, 0.95); border: 1px solid var(--border-cyan); border-radius: 12px; padding: 0.85rem; display: flex; flex-direction: column; gap: 0.5rem;">
@@ -97,7 +136,7 @@
           </div>
           <div style="grid-template-columns: 1fr; display: grid; gap: 0.45rem;">
             <a href="/downloads/haven-1.0.0-r0.apk" download class="mobile-drawer-link"
-              style="display: flex; align-items: center; gap: 0.65rem; background: rgba(168, 85, 247, 0.15); border: 1px solid var(--border-violet); border-radius: 8px; padding: 0.55rem 0.75rem; text-decoration: none; color: #fff;">
+              style="display: flex; align-items: center; gap: 0.65rem; background: rgba(168, 85, 247, 0.15); border: 1px solid var(--border-violet); border-radius: 8px; padding: 0.55rem 0.75rem; text-decoration: none; color: #fff; min-height: 44px;">
               <span style="font-size: 1.2rem;">🕊️</span>
               <div style="flex: 1; min-width: 0;">
                 <div style="font-size: 0.76rem; font-weight: 800;">Haven Android Runtime</div>
@@ -110,7 +149,7 @@
             </a>
 
             <a href="/downloads/app.wasm" download class="mobile-drawer-link"
-              style="display: flex; align-items: center; gap: 0.65rem; background: rgba(0, 240, 255, 0.12); border: 1px solid var(--border-cyan); border-radius: 8px; padding: 0.55rem 0.75rem; text-decoration: none; color: #fff;">
+              style="display: flex; align-items: center; gap: 0.65rem; background: rgba(0, 240, 255, 0.12); border: 1px solid var(--border-cyan); border-radius: 8px; padding: 0.55rem 0.75rem; text-decoration: none; color: #fff; min-height: 44px;">
               <span style="font-size: 1.2rem;">⭐</span>
               <div style="flex: 1; min-width: 0;">
                 <div style="font-size: 0.76rem; font-weight: 800;">Star Universal WASM Core</div>
@@ -124,49 +163,37 @@
         </div>
 
         <!-- Categorized Navigation Links in Drawer -->
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)) ; gap: 0.4rem;">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 0.45rem;">
           <a href="#star-ui" class="mobile-drawer-link"
-            style="padding: 0.6rem 0.75rem; border-radius: 8px; background: rgba(0, 240, 255, 0.12); border: 1px solid var(--border-cyan); color: var(--cyan); text-decoration: none; font-size: 0.82rem; font-weight: 800;">⭐
+            style="display: flex; align-items: center; min-height: 44px; padding: 0.6rem 0.75rem; border-radius: 8px; background: rgba(0, 240, 255, 0.12); border: 1px solid var(--border-cyan); color: var(--cyan); text-decoration: none; font-size: 0.82rem; font-weight: 800;">⭐
             Star UI Engine</a>
           <a href="#milestone-1" class="mobile-drawer-link"
-            style="padding: 0.6rem 0.75rem; border-radius: 8px; background: rgba(251, 191, 36, 0.12); border: 1px solid var(--border-amber); color: var(--amber); text-decoration: none; font-size: 0.82rem; font-weight: 800;">🏆
+            style="display: flex; align-items: center; min-height: 44px; padding: 0.6rem 0.75rem; border-radius: 8px; background: rgba(251, 191, 36, 0.12); border: 1px solid var(--border-amber); color: var(--amber); text-decoration: none; font-size: 0.82rem; font-weight: 800;">🏆
             Milestone 1</a>
           <a href="#dual-engines" class="mobile-drawer-link"
-            style="padding: 0.6rem 0.75rem; border-radius: 8px; background: rgba(255, 255, 255, 0.04); color: #fff; text-decoration: none; font-size: 0.82rem; font-weight: 700;">⚡
+            style="display: flex; align-items: center; min-height: 44px; padding: 0.6rem 0.75rem; border-radius: 8px; background: rgba(255, 255, 255, 0.04); color: #fff; text-decoration: none; font-size: 0.82rem; font-weight: 700;">⚡
             Dual Engines</a>
           <a href="#articles" class="mobile-drawer-link"
-            style="padding: 0.6rem 0.75rem; border-radius: 8px; background: rgba(0, 240, 255, 0.08); color: var(--cyan); text-decoration: none; font-size: 0.82rem; font-weight: 800;">📰
+            style="display: flex; align-items: center; min-height: 44px; padding: 0.6rem 0.75rem; border-radius: 8px; background: rgba(0, 240, 255, 0.08); color: var(--cyan); text-decoration: none; font-size: 0.82rem; font-weight: 800;">📰
             Flagship Article</a>
           <a href="#packages" class="mobile-drawer-link"
-            style="padding: 0.6rem 0.75rem; border-radius: 8px; background: rgba(255, 255, 255, 0.04); color: #fff; text-decoration: none; font-size: 0.82rem; font-weight: 700;">📦
+            style="display: flex; align-items: center; min-height: 44px; padding: 0.6rem 0.75rem; border-radius: 8px; background: rgba(255, 255, 255, 0.04); color: #fff; text-decoration: none; font-size: 0.82rem; font-weight: 700;">📦
             235 Modules</a>
           <a href="#docs" class="mobile-drawer-link"
-            style="padding: 0.6rem 0.75rem; border-radius: 8px; background: rgba(255, 255, 255, 0.04); color: #fff; text-decoration: none; font-size: 0.82rem; font-weight: 700;">📖
+            style="display: flex; align-items: center; min-height: 44px; padding: 0.6rem 0.75rem; border-radius: 8px; background: rgba(255, 255, 255, 0.04); color: #fff; text-decoration: none; font-size: 0.82rem; font-weight: 700;">📖
             RFC Docs</a>
           <a href="#downloads" class="mobile-drawer-link"
-            style="padding: 0.6rem 0.75rem; border-radius: 8px; background: rgba(255, 255, 255, 0.04); color: #fff; text-decoration: none; font-size: 0.82rem; font-weight: 700;">📥
+            style="display: flex; align-items: center; min-height: 44px; padding: 0.6rem 0.75rem; border-radius: 8px; background: rgba(255, 255, 255, 0.04); color: #fff; text-decoration: none; font-size: 0.82rem; font-weight: 700;">📥
             20-OS Vault</a>
           <a href="/admin/" class="mobile-drawer-link"
-            style="padding: 0.6rem 0.75rem; border-radius: 8px; background: rgba(0, 240, 255, 0.15); border: 1px solid var(--border-cyan); color: var(--cyan); text-decoration: none; font-size: 0.82rem; font-weight: 800;">🔐
+            style="display: flex; align-items: center; min-height: 44px; padding: 0.6rem 0.75rem; border-radius: 8px; background: rgba(0, 240, 255, 0.15); border: 1px solid var(--border-cyan); color: var(--cyan); text-decoration: none; font-size: 0.82rem; font-weight: 800;">🔐
             Admin Cockpit</a>
           <a href="/privacy-policy/" class="mobile-drawer-link"
-            style="padding: 0.6rem 0.75rem; border-radius: 8px; background: rgba(255, 255, 255, 0.04); color: #38bdf8; text-decoration: none; font-size: 0.82rem; font-weight: 700;">🔐
+            style="display: flex; align-items: center; min-height: 44px; padding: 0.6rem 0.75rem; border-radius: 8px; background: rgba(255, 255, 255, 0.04); color: #38bdf8; text-decoration: none; font-size: 0.82rem; font-weight: 700;">🔐
             Privacy Policy</a>
           <a href="/terms/" class="mobile-drawer-link"
-            style="padding: 0.6rem 0.75rem; border-radius: 8px; background: rgba(255, 255, 255, 0.04); color: #94a3b8; text-decoration: none; font-size: 0.82rem; font-weight: 700;">⚖️
+            style="display: flex; align-items: center; min-height: 44px; padding: 0.6rem 0.75rem; border-radius: 8px; background: rgba(255, 255, 255, 0.04); color: #94a3b8; text-decoration: none; font-size: 0.82rem; font-weight: 700;">⚖️
             Terms of Service</a>
-          <a href="/contribute/" class="mobile-drawer-link"
-            style="grid-column: 1 / -1; padding: 0.7rem 0.85rem; border-radius: 8px; background: linear-gradient(135deg, rgba(236, 72, 153, 0.2), rgba(139, 92, 246, 0.2)); border: 1.5px solid rgba(244, 114, 182, 0.5); color: #f472b6; text-decoration: none; font-size: 0.85rem; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
-            <span>💖 Support Anirudha Puthraya &amp; Contribute (UPI QR) ↗</span>
-          </a>
-          <a href="https://t.me/opendigitalcontinuity" target="_blank" rel="noreferrer" class="mobile-drawer-link"
-            style="grid-column: 1 / -1; padding: 0.65rem 0.75rem; border-radius: 8px; background: rgba(36, 161, 222, 0.2); border: 1px solid rgba(36, 161, 222, 0.5); color: #38bdf8; text-decoration: none; font-size: 0.84rem; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
-              <path
-                d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z" />
-            </svg>
-            <span>✈️ Join Official Telegram Community</span>
-          </a>
         </div>
       </div>
     </div>
@@ -180,23 +207,24 @@
          ======================================================================== -->
     <div class="victory-hero-banner">
       <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
-        <div style="display: flex; align-items: center; gap: 1rem;">
+        <div style="display: flex; align-items: center; gap: 1rem; min-width: 0; flex: 1 1 300px;">
           <div
-            style="width: 52px; height: 52px; border-radius: 14px; background: rgba(251, 191, 36, 0.2); border: 2px solid #fbbf24; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; box-shadow: 0 0 25px rgba(251, 191, 36, 0.4);">
+            style="width: 52px; height: 52px; border-radius: 14px; background: rgba(251, 191, 36, 0.2); border: 2px solid #fbbf24; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; box-shadow: 0 0 25px rgba(251, 191, 36, 0.4); flex-shrink: 0;">
             🏆
           </div>
-          <div>
-            <div style="display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.25rem;">
-              <span class="badge badge-gold">MILESTONE 1 RATIFIED &amp; ACHIEVED</span>
+          <div style="min-width: 0; flex: 1;">
+            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.35rem; flex-wrap: wrap;">
+              <span class="badge badge-gold">MILESTONE 1 RATIFIED</span>
               <span class="badge badge-emerald">100% SPEC CONFORMANCE</span>
             </div>
-            <h2 style="font-size: 1.25rem; font-weight: 800; color: #fff; margin: 0;">
+            <h2
+              style="font-size: clamp(1rem, 2.5vw, 1.25rem); font-weight: 800; color: #fff; margin: 0; word-break: break-word;">
               Dual-Engine Sovereignty Shipped: Star Language v1.2 GA + Haven Language v2.0
             </h2>
           </div>
         </div>
 
-        <div style="display: flex; gap: 0.6rem; align-items: center;">
+        <div style="display: flex; gap: 0.6rem; align-items: center; flex-wrap: wrap;">
           <a href="#milestone-1" class="btn btn-gold btn-sm">
             <span>Verify Conformance</span>
           </a>
@@ -215,15 +243,17 @@
         <!-- Creator Spotlight Badge -->
         <div class="hero-creator-badge">
           <div
-            style="font-size: 1.25rem; background: rgba(0, 240, 255, 0.15); border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;">
+            style="font-size: 1.25rem; background: rgba(0, 240, 255, 0.15); border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
             👨‍💻</div>
-          <div style="display: flex; flex-direction: column;">
+          <div style="display: flex; flex-direction: column; min-width: 0; flex: 1;">
             <span style="font-weight: 800; font-size: 0.84rem; color: #ffffff;">Anirudha Puthraya</span>
-            <span style="font-size: 0.66rem; color: var(--cyan); font-family: var(--font-mono);">Standards Director,
+            <span
+              style="font-size: 0.66rem; color: var(--cyan); font-family: var(--font-mono); word-break: break-word;">Standards
+              Director,
               Author &amp; Maintainer · ODCS / Star / Haven</span>
           </div>
           <span
-            style="background: linear-gradient(135deg, #00f0ff, #8b5cf6); color: #020617; font-size: 0.62rem; font-weight: 800; padding: 0.15rem 0.45rem; border-radius: 9999px;">VERIFIED</span>
+            style="background: linear-gradient(135deg, #00f0ff, #8b5cf6); color: #020617; font-size: 0.62rem; font-weight: 800; padding: 0.15rem 0.45rem; border-radius: 9999px; flex-shrink: 0;">VERIFIED</span>
         </div>
 
         <h1 class="hero-title">
@@ -734,7 +764,8 @@ end</pre>
 
       <!-- 8 Ratified Layers Technical Blueprint Grid -->
       <div style="margin-top: 3rem;">
-        <div style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1.5rem;">
+        <div
+          style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1.5rem;">
           <div>
             <span class="section-tag" style="color: #fbbf24;">Cryptographic &amp; Mathematical Invariants</span>
             <h3 style="font-size: 1.45rem; font-weight: 800; color: #fff; margin: 0.2rem 0;">
@@ -749,11 +780,13 @@ end</pre>
           <div class="blueprint-card highlight-emerald">
             <div class="blueprint-header">
               <span class="badge badge-emerald">LAYER 1 · DURABILITY</span>
-              <span style="font-size: 0.72rem; color: var(--text-dim); font-family: var(--font-mono);">RFC 8785 WAL</span>
+              <span style="font-size: 0.72rem; color: var(--text-dim); font-family: var(--font-mono);">RFC 8785
+                WAL</span>
             </div>
             <div class="blueprint-title">Local Monotonic Write-Ahead Log (WAL)</div>
             <p style="font-size: 0.82rem; color: var(--text-muted); line-height: 1.5; margin: 0;">
-              Transactions append deterministically to local NVMe or IndexedDB storage. Every record is canonically encoded per RFC 8785 and chained via SHA-256 hashes to prevent tamper or rollback.
+              Transactions append deterministically to local NVMe or IndexedDB storage. Every record is canonically
+              encoded per RFC 8785 and chained via SHA-256 hashes to prevent tamper or rollback.
             </p>
             <div class="blueprint-guarantee">
               H_i = SHA256(H_{i-1} || Canonical(Record_i))
@@ -768,7 +801,8 @@ end</pre>
             </div>
             <div class="blueprint-title">Conflict-Free Replicated Data Types (CRDT)</div>
             <p style="font-size: 0.82rem; color: var(--text-muted); line-height: 1.5; margin: 0;">
-              State-based PN-Counters and Add-Wins Observed-Removed Sets (OR-Sets) merge over untrusted ad-hoc networks without locks, central servers, or two-phase commit overhead.
+              State-based PN-Counters and Add-Wins Observed-Removed Sets (OR-Sets) merge over untrusted ad-hoc networks
+              without locks, central servers, or two-phase commit overhead.
             </p>
             <div class="blueprint-guarantee" style="border-left-color: #fbbf24; color: #fbbf24;">
               Commutative Monoid: A ⊔ B = B ⊔ A
@@ -779,11 +813,13 @@ end</pre>
           <div class="blueprint-card highlight-emerald">
             <div class="blueprint-header">
               <span class="badge badge-cyan">LAYER 3 · TELEMETRY</span>
-              <span style="font-size: 0.72rem; color: var(--text-dim); font-family: var(--font-mono);">0.04ms CADENCE</span>
+              <span style="font-size: 0.72rem; color: var(--text-dim); font-family: var(--font-mono);">0.04ms
+                CADENCE</span>
             </div>
             <div class="blueprint-title">Carrier Wave Telemetry &amp; Latency Probing</div>
             <p style="font-size: 0.82rem; color: var(--text-muted); line-height: 1.5; margin: 0;">
-              Continuous sub-millisecond sensing shifts UI states seamlessly between Optimal Online, Degraded Jitter (480ms backoff), and Severed Partition without stalling user threads.
+              Continuous sub-millisecond sensing shifts UI states seamlessly between Optimal Online, Degraded Jitter
+              (480ms backoff), and Severed Partition without stalling user threads.
             </p>
             <div class="blueprint-guarantee">
               Dynamic State: OPTIMAL ⇄ JITTER ⇄ SEVERED
@@ -794,11 +830,13 @@ end</pre>
           <div class="blueprint-card highlight-gold">
             <div class="blueprint-header">
               <span class="badge badge-rose">LAYER 4 · GUARANTEE</span>
-              <span style="font-size: 0.72rem; color: var(--text-dim); font-family: var(--font-mono);">&lt;16ms LOCAL</span>
+              <span style="font-size: 0.72rem; color: var(--text-dim); font-family: var(--font-mono);">&lt;16ms
+                LOCAL</span>
             </div>
             <div class="blueprint-title">Zero Intent Loss Local Hardware Authority</div>
             <p style="font-size: 0.82rem; color: var(--text-muted); line-height: 1.5; margin: 0;">
-              User gestures, button taps, and input mutations mint an immutable receipt on the client hardware before any network transmission is attempted. No data is ever dropped on network dropouts.
+              User gestures, button taps, and input mutations mint an immutable receipt on the client hardware before
+              any network transmission is attempted. No data is ever dropped on network dropouts.
             </p>
             <div class="blueprint-guarantee" style="border-left-color: #f43f5e; color: #f43f5e;">
               Receipt Mint Time: &lt; 0.15ms (100% Invariant)
@@ -809,11 +847,13 @@ end</pre>
           <div class="blueprint-card">
             <div class="blueprint-header">
               <span class="badge badge-cyan">LAYER 5 · RUNTIME</span>
-              <span style="font-size: 0.72rem; color: var(--text-dim); font-family: var(--font-mono);">app.wasm · 4.9 KB</span>
+              <span style="font-size: 0.72rem; color: var(--text-dim); font-family: var(--font-mono);">app.wasm · 4.9
+                KB</span>
             </div>
             <div class="blueprint-title">StarVM WebAssembly 60 FPS Reactive Core</div>
             <p style="font-size: 0.82rem; color: var(--text-muted); line-height: 1.5; margin: 0;">
-              Pure stack-based bytecode virtual machine compiled to a 4.9 KB WebAssembly binary. Delivers 60 FPS single-frame UI rendering with zero virtual-DOM diffing and zero React overhead.
+              Pure stack-based bytecode virtual machine compiled to a 4.9 KB WebAssembly binary. Delivers 60 FPS
+              single-frame UI rendering with zero virtual-DOM diffing and zero React overhead.
             </p>
             <div class="blueprint-guarantee">
               Frame Budget: &le; 16.6ms · Memory: 4.9 KB
@@ -824,11 +864,14 @@ end</pre>
           <div class="blueprint-card highlight-violet">
             <div class="blueprint-header">
               <span class="badge badge-violet">LAYER 6 · SYNTAX</span>
-              <span style="font-size: 0.72rem; color: var(--text-dim); font-family: var(--font-mono);">NATURAL ENGLISH</span>
+              <span style="font-size: 0.72rem; color: var(--text-dim); font-family: var(--font-mono);">NATURAL
+                ENGLISH</span>
             </div>
             <div class="blueprint-title">Haven Natural-English Grammar &amp; Durable Records</div>
             <p style="font-size: 0.82rem; color: var(--text-muted); line-height: 1.5; margin: 0;">
-              Syntax maps 1:1 with human cognitive expression. Statements like <code>whenever</code>, <code>checkpoint into ledger</code>, and <code>give back</code> eliminate misunderstandings between regulators and code.
+              Syntax maps 1:1 with human cognitive expression. Statements like <code>whenever</code>,
+              <code>checkpoint into ledger</code>, and <code>give back</code> eliminate misunderstandings between
+              regulators and code.
             </p>
             <div class="blueprint-guarantee" style="border-left-color: #c084fc; color: #c084fc;">
               Zero Semantic Mismatch · Audit-Proof Code
@@ -839,11 +882,13 @@ end</pre>
           <div class="blueprint-card">
             <div class="blueprint-header">
               <span class="badge badge-cyan">LAYER 7 · ECOSYSTEM</span>
-              <span style="font-size: 0.72rem; color: var(--text-dim); font-family: var(--font-mono);">235 MODULES</span>
+              <span style="font-size: 0.72rem; color: var(--text-dim); font-family: var(--font-mono);">235
+                MODULES</span>
             </div>
             <div class="blueprint-title">235 Star Production Standard Modules</div>
             <p style="font-size: 0.82rem; color: var(--text-muted); line-height: 1.5; margin: 0;">
-              18 specialized domains including Math, Collections, Crypto, Networking, Mobile Sensors, Storage, and AI. Thoroughly tested across 243 spec verification test suites.
+              18 specialized domains including Math, Collections, Crypto, Networking, Mobile Sensors, Storage, and AI.
+              Thoroughly tested across 243 spec verification test suites.
             </p>
             <div class="blueprint-guarantee">
               18 Packages · 235 Production Modules · 100% Tested
@@ -854,11 +899,13 @@ end</pre>
           <div class="blueprint-card highlight-gold">
             <div class="blueprint-header">
               <span class="badge badge-gold">LAYER 8 · VAULT</span>
-              <span style="font-size: 0.72rem; color: var(--text-dim); font-family: var(--font-mono);">20 TARGET OS</span>
+              <span style="font-size: 0.72rem; color: var(--text-dim); font-family: var(--font-mono);">20 TARGET
+                OS</span>
             </div>
             <div class="blueprint-title">Multi-OS Universal Release Distribution</div>
             <p style="font-size: 0.82rem; color: var(--text-muted); line-height: 1.5; margin: 0;">
-              Cross-platform release binary integrity verified for Windows x64/ARM64, Linux Debian/Ubuntu/Fedora/AppImage, macOS Apple Silicon/Intel, Android APK (72 KB), and WebAssembly.
+              Cross-platform release binary integrity verified for Windows x64/ARM64, Linux
+              Debian/Ubuntu/Fedora/AppImage, macOS Apple Silicon/Intel, Android APK (72 KB), and WebAssembly.
             </p>
             <div class="blueprint-guarantee" style="border-left-color: #fbbf24; color: #fbbf24;">
               Release Vault: 20 OS Targets · Ed25519 Signed
@@ -869,7 +916,8 @@ end</pre>
 
       <!-- Comparative Paradigm Matrix: Fragile Cloud Stacks vs. Sovereign Dual-Engine -->
       <div class="paradigm-comparison-box">
-        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 0.85rem;">
+        <div
+          style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 0.85rem;">
           <div>
             <span class="section-tag" style="color: var(--cyan);">Architectural Comparison</span>
             <h3 style="font-size: 1.3rem; font-weight: 800; color: #fff; margin: 0.2rem 0;">
@@ -877,141 +925,33 @@ end</pre>
             </h3>
           </div>
           <span class="badge badge-emerald">MATHEMATICALLY PROVEN</span>
-        </div>
+          z
+          variable _status = "OPERATIONAL"
 
-        <p style="font-size: 0.88rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 1rem;">
-          Traditional web architectures break the instant a network socket is severed. The ODCS dual-engine architecture guarantees total operational continuity with zero intent loss.
-        </p>
-
-        <div class="comparison-table-wrapper">
-          <table class="comparison-table">
-            <thead>
-              <tr>
-                <th style="width: 25%;">Architectural Dimension</th>
-                <th style="width: 37%; color: #f43f5e;">Fragile Cloud Stack (React / Next.js / Node.js)</th>
-                <th style="width: 38%; color: #10b981;">Sovereign ODCS Stack (Star UI + Haven Backend)</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><strong>Network Disconnect Behavior</strong></td>
-                <td><span style="color: #f43f5e; font-weight: 700;">Complete Failure</span>: Frozen spinners, HTTP 504 Gateway Timeouts, blank screen errors.</td>
-                <td><span style="color: #10b981; font-weight: 700;">100% Continuity</span>: Immediate local hardware authority with zero degradation in user experience.</td>
-              </tr>
-              <tr>
-                <td><strong>Form &amp; Input Preservation</strong></td>
-                <td><span style="color: #f43f5e; font-weight: 700;">Irretrievable Loss</span>: User input wiped if page is refreshed or socket disconnects during submit.</td>
-                <td><span style="color: #10b981; font-weight: 700;">Zero Intent Loss</span>: Sub-16ms cryptographic receipt minted into WAL before socket dispatch.</td>
-              </tr>
-              <tr>
-                <td><strong>Bundle Size &amp; Memory</strong></td>
-                <td><span style="color: #f43f5e; font-weight: 700;">Bloated Overhead</span>: 50MB+ node_modules, 3MB+ minified JS, hundreds of npm vulnerabilities.</td>
-                <td><span style="color: #10b981; font-weight: 700;">Featherweight</span>: 4.9 KB <code>app.wasm</code>, 72 KB Android runtime, zero npm dependencies.</td>
-              </tr>
-              <tr>
-                <td><strong>UI Rendering &amp; Frame Rate</strong></td>
-                <td><span style="color: #f43f5e; font-weight: 700;">Virtual-DOM Overhead</span>: Costly tree reconciliations, jank, garbage collection pauses.</td>
-                <td><span style="color: #10b981; font-weight: 700;">Deterministic 60 FPS</span>: Pure WebAssembly direct rendering loop with &le;16.6ms frame budget.</td>
-              </tr>
-              <tr>
-                <td><strong>State Synchronization</strong></td>
-                <td><span style="color: #f43f5e; font-weight: 700;">Fragile Optimistic Hacks</span>: Rollback race conditions, database overwrites, sync conflicts.</td>
-                <td><span style="color: #10b981; font-weight: 700;">Algebraic Convergence</span>: Monotonic CRDT semi-lattice join guarantee (PN-Counters &amp; OR-Sets).</td>
-              </tr>
-              <tr>
-                <td><strong>Auditability &amp; Grammar</strong></td>
-                <td><span style="color: #f43f5e; font-weight: 700;">Cryptic &amp; Obfuscated</span>: Minified transpiled JS, deeply nested callbacks, non-deterministic logic.</td>
-                <td><span style="color: #10b981; font-weight: 700;">Natural-English Grammar</span>: Audit-proof statements (<code>whenever</code>, <code>checkpoint into ledger</code>).</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-
-    <!-- ========================================================================
-         ⚡ DUAL-SOVEREIGN ENGINES: STAR (UI) + HAVEN (BACKEND)
-         ======================================================================== -->
-    <section id="dual-engines" style="margin-bottom: 5rem;">
-      <div class="section-header">
-        <span class="section-tag">Dual-Sovereign Technology Stack</span>
-        <h2 class="section-title">⭐ Star Language &amp; 🕊️ Haven Language Architecture</h2>
-        <p class="section-desc">
-          Two sovereign languages engineered from first principles by Anirudha Puthraya to replace fragile client-server web architectures.
-        </p>
-      </div>
-
-      <div class="dual-engines-grid">
-        <!-- Star Language Card -->
-        <div class="glass-card" style="border-color: var(--border-cyan);">
-          <div style="display: flex; align-items: center; gap: 0.85rem; margin-bottom: 1.25rem;">
-            <div
-              style="width: 48px; height: 48px; border-radius: 12px; background: rgba(0, 240, 255, 0.15); border: 1.5px solid var(--border-cyan); display: flex; align-items: center; justify-content: center; font-size: 1.6rem;">
-              ⭐
-            </div>
-            <div>
-              <h3 style="font-size: 1.35rem; font-weight: 800; color: #fff;">Star Programming Language</h3>
-              <div style="font-size: 0.82rem; color: var(--cyan); font-family: var(--font-mono); font-weight: 700;">
-                v1.3.0 GA · 235 Standard Modules · 60,000+ UI Widgets · WebAssembly Core
-              </div>
-            </div>
-          </div>
-
-          <p style="font-size: 0.92rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 1.25rem;">
-            Star delivers universal declarative UI with Flutter syntax parity, a lightweight stack bytecode machine (<code style="color: var(--cyan);">.starb</code>), pure WebAssembly compilation (<code style="color: var(--cyan);">app.wasm</code>, 4.9 KB), and native Android bridges (WallpaperManager &amp; In-App Billing v7).
-          </p>
-
-          <!-- Star Feature Highlights -->
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.65rem; margin-bottom: 1.25rem;">
-            <div style="background: rgba(0,0,0,0.35); padding: 0.55rem 0.75rem; border-radius: 8px; border: 1px solid rgba(0,240,255,0.2); font-size: 0.76rem;">
-              <strong style="color: var(--cyan);">🎨 Flutter Parity</strong><br>
-              <span style="color: var(--text-dim);">60,000+ declarative UI widgets</span>
-            </div>
-            <div style="background: rgba(0,0,0,0.35); padding: 0.55rem 0.75rem; border-radius: 8px; border: 1px solid rgba(0,240,255,0.2); font-size: 0.76rem;">
-              <strong style="color: var(--cyan);">⚡ 60 FPS WASM</strong><br>
-              <span style="color: var(--text-dim);">Zero virtual DOM, 4.9 KB binary</span>
-            </div>
-            <div style="background: rgba(0,0,0,0.35); padding: 0.55rem 0.75rem; border-radius: 8px; border: 1px solid rgba(0,240,255,0.2); font-size: 0.76rem;">
-              <strong style="color: var(--cyan);">📱 Native Bridges</strong><br>
-              <span style="color: var(--text-dim);">WallpaperManager, GoogleBilling v7</span>
-            </div>
-            <div style="background: rgba(0,0,0,0.35); padding: 0.55rem 0.75rem; border-radius: 8px; border: 1px solid rgba(0,240,255,0.2); font-size: 0.76rem;">
-              <strong style="color: var(--cyan);">📦 235 Modules</strong><br>
-              <span style="color: var(--text-dim);">18 standard production packages</span>
-            </div>
-          </div>
-
-          <pre class="code-block" style="margin-bottom: 1.25rem;"># Sovereign Star UI with Native Bridge
-use UI
-use Material
-use "mobile/wallpaper"
-
-app SovereignPortal
-    variable _clicks = 0
-    variable _status = "OPERATIONAL"
-
-    Scaffold(
-        appBar = AppBar(title = Text("ODCS Portal")),
-        body = Column(
-            Container(
-                child = Text("Clicks: " + _clicks)
-            ),
-            Button("▶ Mint ZIL Receipt", function()
-                _clicks = _clicks + 1
-                WallpaperManager.setWallpaper("res/active_theme.png")
-                show "Receipt Minted & Wallpaper Set!"
-            end)
-        )
-    )
-end</pre>
+          Scaffold(
+          appBar = AppBar(title = Text("ODCS Portal")),
+          body = Column(
+          Container(
+          child = Text("Clicks: " + _clicks)
+          ),
+          Button("▶ Mint ZIL Receipt", function()
+          _clicks = _clicks + 1
+          WallpaperManager.setWallpaper("res/active_theme.png")
+          show "Receipt Minted & Wallpaper Set!"
+          end)
+          )
+          )
+          end</pre>
 
           <div style="display: flex; flex-direction: column; gap: 0.55rem;">
             <a href="/downloads/Star-1.2.0-Windows-x64-Setup.exe" download class="btn btn-primary" style="width: 100%;">
               <span>Download Star Windows Setup (.exe)</span>
             </a>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.55rem;">
-              <a href="/downloads/Star-1.2.0-Windows-x64.zip" download class="btn btn-secondary btn-sm">📦 Portable (.zip)</a>
-              <a href="/downloads/star-1.2.0-universal-sdk.tar.gz" download class="btn btn-secondary btn-sm">🐧 Linux SDK</a>
+            <div class="btn-pair-grid">
+              <a href="/downloads/Star-1.2.0-Windows-x64.zip" download class="btn btn-secondary btn-sm">📦 Portable
+                (.zip)</a>
+              <a href="/downloads/star-1.2.0-universal-sdk.tar.gz" download class="btn btn-secondary btn-sm">🐧 Linux
+                SDK</a>
             </div>
             <a href="https://github.com/Veyra-Programming/star-language" target="_blank" rel="noreferrer"
               class="btn btn-secondary btn-sm" style="width: 100%;">
@@ -1036,24 +976,29 @@ end</pre>
           </div>
 
           <p style="font-size: 0.92rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 1.25rem;">
-            Haven replaces cryptic coding abstractions with natural-English statements, durable write-ahead log records, RFC 8785 canonical hashing, CRDT PN-Counter mesh convergence, and sub-16ms Zero Intent Loss local receipts.
+            Haven replaces cryptic coding abstractions with natural-English statements, durable write-ahead log records,
+            RFC 8785 canonical hashing, CRDT PN-Counter mesh convergence, and sub-16ms Zero Intent Loss local receipts.
           </p>
 
           <!-- Haven Feature Highlights -->
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.65rem; margin-bottom: 1.25rem;">
-            <div style="background: rgba(0,0,0,0.35); padding: 0.55rem 0.75rem; border-radius: 8px; border: 1px solid rgba(168,85,247,0.2); font-size: 0.76rem;">
+            <div
+              style="background: rgba(0,0,0,0.35); padding: 0.55rem 0.75rem; border-radius: 8px; border: 1px solid rgba(168,85,247,0.2); font-size: 0.76rem;">
               <strong style="color: #c084fc;">🕊️ Natural English</strong><br>
               <span style="color: var(--text-dim);">whenever, let ... be, give back</span>
             </div>
-            <div style="background: rgba(0,0,0,0.35); padding: 0.55rem 0.75rem; border-radius: 8px; border: 1px solid rgba(168,85,247,0.2); font-size: 0.76rem;">
+            <div
+              style="background: rgba(0,0,0,0.35); padding: 0.55rem 0.75rem; border-radius: 8px; border: 1px solid rgba(168,85,247,0.2); font-size: 0.76rem;">
               <strong style="color: #c084fc;">💾 Durable Records</strong><br>
               <span style="color: var(--text-dim);">RFC 8785 Canonical Merkle WAL</span>
             </div>
-            <div style="background: rgba(0,0,0,0.35); padding: 0.55rem 0.75rem; border-radius: 8px; border: 1px solid rgba(168,85,247,0.2); font-size: 0.76rem;">
+            <div
+              style="background: rgba(0,0,0,0.35); padding: 0.55rem 0.75rem; border-radius: 8px; border: 1px solid rgba(168,85,247,0.2); font-size: 0.76rem;">
               <strong style="color: #c084fc;">🏛️ ODCS Gateway</strong><br>
               <span style="color: var(--text-dim);">PNCounter, ZeroIntentLoss, seal_hash</span>
             </div>
-            <div style="background: rgba(0,0,0,0.35); padding: 0.55rem 0.75rem; border-radius: 8px; border: 1px solid rgba(168,85,247,0.2); font-size: 0.76rem;">
+            <div
+              style="background: rgba(0,0,0,0.35); padding: 0.55rem 0.75rem; border-radius: 8px; border: 1px solid rgba(168,85,247,0.2); font-size: 0.76rem;">
               <strong style="color: #c084fc;">🏢 OFCS Ledgers</strong><br>
               <span style="color: var(--text-dim);">Zero dropout financial reconciliation</span>
             </div>
@@ -1078,9 +1023,11 @@ end</pre>
             <a href="/downloads/Haven-1.0.0-win64-Setup.exe" download class="btn btn-violet" style="width: 100%;">
               <span>Download Haven Windows Setup (.exe)</span>
             </a>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.55rem;">
-              <a href="/downloads/Haven-1.0.0-win64-portable.zip" download class="btn btn-secondary btn-sm">📦 Portable (.zip)</a>
-              <a href="/downloads/haven-1.0.0-r0.apk" download class="btn btn-secondary btn-sm">📱 Android APK (72 KB)</a>
+            <div class="btn-pair-grid">
+              <a href="/downloads/Haven-1.0.0-win64-portable.zip" download class="btn btn-secondary btn-sm">📦 Portable
+                (.zip)</a>
+              <a href="/downloads/haven-1.0.0-r0.apk" download class="btn btn-secondary btn-sm">📱 Android APK (72
+                KB)</a>
             </div>
             <a href="https://github.com/Veyra-Programming/haven-Language-" target="_blank" rel="noreferrer"
               class="btn btn-secondary btn-sm" style="width: 100%;">
@@ -1128,15 +1075,15 @@ end</pre>
         </div>
 
         <!-- Official Package Manager Coming Soon Notice Banner -->
-        <div style="padding: 0 2.5rem;">
+        <div class="article-notice-wrapper">
           <div class="article-notice-box">
             <div style="display: flex; align-items: flex-start; gap: 1rem;">
               <div style="font-size: 2rem;">📦</div>
-              <div>
-                <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.35rem;">
+              <div style="min-width: 0; flex: 1;">
+                <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.35rem;">
                   <span class="badge badge-gold" style="font-size: 0.7rem;">OFFICIAL NOTICE</span>
-                  <strong style="color: #fff; font-size: 0.95rem;">Sovereign Package Managers Coming Soon in Phase
-                    2!</strong>
+                  <strong style="color: #fff; font-size: 0.95rem; word-break: break-word;">Sovereign Package Managers
+                    Coming Soon in Phase 2!</strong>
                 </div>
                 <p style="font-size: 0.85rem; color: #e2e8f0; line-height: 1.5; margin: 0;">
                   The ODCS Standards Working Group officially announces that sovereign decentralized package managers
@@ -1692,14 +1639,17 @@ give back "✓ Tamper-evident receipt sealed into Merkle block in 0.12ms"
     <section id="community" style="margin: 3.5rem 0 1.5rem;">
       <!-- ODCS Assistant Telegram Bot Showcase Cockpit -->
       <div class="bot-showcase-box">
-        <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.25rem;">
+        <div
+          style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.25rem;">
           <div style="display: flex; align-items: center; gap: 0.85rem;">
-            <div style="width: 48px; height: 48px; border-radius: 12px; background: rgba(56, 189, 248, 0.15); border: 1.5px solid rgba(56, 189, 248, 0.4); display: flex; align-items: center; justify-content: center; font-size: 1.6rem;">
+            <div
+              style="width: 48px; height: 48px; border-radius: 12px; background: rgba(56, 189, 248, 0.15); border: 1.5px solid rgba(56, 189, 248, 0.4); display: flex; align-items: center; justify-content: center; font-size: 1.6rem;">
               🤖
             </div>
             <div>
               <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
-                <h3 style="font-size: 1.35rem; font-weight: 800; color: #fff; margin: 0;">ODCS Assistant Telegram Bot</h3>
+                <h3 style="font-size: 1.35rem; font-weight: 800; color: #fff; margin: 0;">ODCS Assistant Telegram Bot
+                </h3>
                 <span class="badge badge-cyan" style="font-size: 0.7rem;">v1.0.0 PRODUCTION</span>
                 <span class="badge badge-emerald" style="font-size: 0.7rem;">● SYSTEMD 24/7 ACTIVE</span>
               </div>
@@ -1716,11 +1666,16 @@ give back "✓ Tamper-evident receipt sealed into Merkle block in 0.12ms"
         </div>
 
         <p style="font-size: 0.92rem; color: #cbd5e1; line-height: 1.6; margin-bottom: 1.25rem; max-width: 960px;">
-          The <strong>ODCS Assistant</strong> is a 24/7 sovereign background service powered by Python 3.12, <code>python-telegram-bot</code>, and an embedded SQLite Write-Ahead Log database. It gives developers instant answers across 100+ ODCS specifications, provides real-time VPS telemetry, automatically welcomes new community members with personalized banners, dispenses verified APK and Windows SDK binaries, generates high-resolution cyber release posters, and broadcasts ratified milestones directly to the official channel.
+          The <strong>ODCS Assistant</strong> is a 24/7 sovereign background service powered by Python 3.12,
+          <code>python-telegram-bot</code>, and an embedded SQLite Write-Ahead Log database. It gives developers instant
+          answers across 100+ ODCS specifications, provides real-time VPS telemetry, automatically welcomes new
+          community members with personalized banners, dispenses verified APK and Windows SDK binaries, generates
+          high-resolution cyber release posters, and broadcasts ratified milestones directly to the official channel.
         </p>
 
         <!-- Bot Command Deck -->
-        <div style="font-size: 0.78rem; font-weight: 800; color: #38bdf8; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem;">
+        <div
+          style="font-size: 0.78rem; font-weight: 800; color: #38bdf8; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem;">
           Verified Bot Commands &amp; Automation Matrix
         </div>
         <div class="bot-command-grid">
@@ -1766,12 +1721,14 @@ give back "✓ Tamper-evident receipt sealed into Merkle block in 0.12ms"
           </div>
         </div>
 
-        <div style="display: flex; flex-wrap: wrap; gap: 0.85rem; align-items: center; margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid rgba(255, 255, 255, 0.08); font-size: 0.76rem; color: var(--text-dim);">
+        <div
+          style="display: flex; flex-wrap: wrap; gap: 0.85rem; align-items: center; margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid rgba(255, 255, 255, 0.08); font-size: 0.76rem; color: var(--text-dim);">
           <div style="display: flex; align-items: center; gap: 0.4rem;">
             <span style="color: #10b981;">✓</span> <span>Systemd Service: <code>odcs-assistant.service</code></span>
           </div>
           <div style="display: flex; align-items: center; gap: 0.4rem;">
-            <span style="color: #10b981;">✓</span> <span>Automated Welcomes: Active for <code>@opendigitalcontinuity</code></span>
+            <span style="color: #10b981;">✓</span> <span>Automated Welcomes: Active for
+              <code>@opendigitalcontinuity</code></span>
           </div>
           <div style="display: flex; align-items: center; gap: 0.4rem;">
             <span style="color: #10b981;">✓</span> <span>Poster Engine: 1200x760 Cyber Visuals Generator</span>
@@ -1783,15 +1740,15 @@ give back "✓ Tamper-evident receipt sealed into Merkle block in 0.12ms"
       </div>
 
       <!-- Telegram Discussion Community Card -->
-      <div class="glass-card"
+      <div class="glass-card community-discussion-card"
         style="border: 1px solid rgba(36, 161, 222, 0.45); background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(12, 74, 110, 0.35)); padding: 2.5rem 2rem; border-radius: 18px; position: relative; overflow: hidden; box-shadow: 0 10px 40px -10px rgba(36, 161, 222, 0.25);">
         <div
-          style="position: absolute; -top: 80px; -right: 80px; width: 260px; height: 260px; background: radial-gradient(circle, rgba(36, 161, 222, 0.15) 0%, transparent 70%); pointer-events: none;">
+          style="position: absolute; top: -80px; right: -80px; width: 260px; height: 260px; background: radial-gradient(circle, rgba(36, 161, 222, 0.15) 0%, transparent 70%); pointer-events: none;">
         </div>
 
         <div
           style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 2rem; position: relative; z-index: 2;">
-          <div style="flex: 1; min-width: 290px;">
+          <div style="flex: 1; min-width: 0; width: 100%;">
             <div style="display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.85rem; flex-wrap: wrap;">
               <span class="badge"
                 style="background: rgba(36, 161, 222, 0.2); border: 1px solid #38bdf8; color: #38bdf8; font-weight: 800; display: inline-flex; align-items: center; gap: 0.35rem;">
@@ -1855,27 +1812,36 @@ give back "✓ Tamper-evident receipt sealed into Merkle block in 0.12ms"
          💖 INDEPENDENT RESEARCH & SPONSORSHIP BANNER (UPI & OPEN TECH)
          ======================================================================== -->
     <section id="contribute-banner" style="margin: 3.5rem 0 2rem;">
-      <div class="glass-card" style="border: 1.5px solid rgba(244, 114, 182, 0.4); background: linear-gradient(135deg, rgba(236, 72, 153, 0.08), rgba(139, 92, 246, 0.08)); padding: 2.25rem 2rem; border-radius: 20px; box-shadow: 0 0 45px rgba(244, 114, 182, 0.12);">
+      <div class="glass-card contribute-banner-card"
+        style="border: 1.5px solid rgba(244, 114, 182, 0.4); background: linear-gradient(135deg, rgba(236, 72, 153, 0.08), rgba(139, 92, 246, 0.08)); padding: 2.25rem 2rem; border-radius: 20px; box-shadow: 0 0 45px rgba(244, 114, 182, 0.12);">
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.75rem;">
           <div style="max-width: 680px;">
             <div style="display: flex; align-items: center; gap: 0.65rem; margin-bottom: 0.75rem; flex-wrap: wrap;">
-              <span class="badge" style="background: rgba(236, 72, 153, 0.2); border: 1px solid rgba(244, 114, 182, 0.5); color: #f472b6; font-weight: 800;">💖 100% INDEPENDENT RESEARCH</span>
+              <span class="badge"
+                style="background: rgba(236, 72, 153, 0.2); border: 1px solid rgba(244, 114, 182, 0.5); color: #f472b6; font-weight: 800;">💖
+                100% INDEPENDENT RESEARCH</span>
               <span class="badge badge-emerald">ZERO VC · ZERO SURVEILLANCE</span>
               <span class="badge badge-cyan">DIRECT UPI SPONSORSHIP</span>
             </div>
-            <h3 style="font-size: clamp(1.4rem, 3.5vw, 1.95rem); font-weight: 900; color: #fff; margin: 0 0 0.65rem; line-height: 1.2;">
+            <h3
+              style="font-size: clamp(1.4rem, 3.5vw, 1.95rem); font-weight: 900; color: #fff; margin: 0 0 0.65rem; line-height: 1.2;">
               Support Anirudha Puthraya &amp; The Sovereign Continuity Mission
             </h3>
             <p style="font-size: 0.94rem; color: #cbd5e1; line-height: 1.65; margin: 0;">
-              Every contribution directly fuels bare-metal VPS hosting (<code>103.71.99.204</code>), zero-intent-loss consensus testing, and the global distribution of Star &amp; Haven compilers. Scan our official Navi UPI QR code or contribute code and RFCs.
+              Every contribution directly fuels bare-metal VPS hosting (<code>103.71.99.204</code>), zero-intent-loss
+              consensus testing, and the global distribution of Star &amp; Haven compilers. Scan our official Navi UPI
+              QR code or contribute code and RFCs.
             </p>
           </div>
-          <div style="display: flex; flex-direction: column; gap: 0.75rem; align-items: flex-start;">
-            <a href="/contribute/" class="btn btn-primary" style="background: linear-gradient(135deg, #ec4899, #8b5cf6); border: none; font-weight: 800; font-size: 1.02rem; padding: 0.95rem 2rem; border-radius: 12px; box-shadow: 0 0 30px rgba(236, 72, 153, 0.4); text-decoration: none; display: inline-flex; align-items: center; gap: 0.65rem;">
+          <div
+            style="display: flex; flex-direction: column; gap: 0.75rem; align-items: flex-start; width: 100%; max-width: 320px;">
+            <a href="/contribute/" class="btn btn-primary contribute-banner-cta">
               <span>💖 Scan UPI QR &amp; Contribute ↗</span>
             </a>
-            <div style="font-size: 0.78rem; color: #f472b6; font-family: var(--font-mono); display: flex; align-items: center; gap: 0.4rem;">
-              <span>UPI ID:</span> <strong style="color: #fff; background: rgba(0,0,0,0.4); padding: 0.2rem 0.5rem; border-radius: 6px; border: 1px solid rgba(244, 114, 182, 0.3);">6361197357@naviaxis</strong>
+            <div
+              style="font-size: 0.78rem; color: #f472b6; font-family: var(--font-mono); display: flex; align-items: center; gap: 0.4rem;">
+              <span>UPI ID:</span> <strong
+                style="color: #fff; background: rgba(0,0,0,0.4); padding: 0.2rem 0.5rem; border-radius: 6px; border: 1px solid rgba(244, 114, 182, 0.3);">6361197357@naviaxis</strong>
             </div>
           </div>
         </div>
@@ -1906,7 +1872,8 @@ give back "✓ Tamper-evident receipt sealed into Merkle block in 0.12ms"
           and partition-tolerant offline-first resilience.
         </p>
         <div>
-          <a href="/contribute/" class="btn btn-primary btn-sm" style="display: inline-flex; align-items: center; gap: 0.5rem; background: linear-gradient(135deg, #ec4899, #8b5cf6); border: none; font-weight: 800; text-decoration: none; padding: 0.5rem 1rem;">
+          <a href="/contribute/" class="btn btn-primary btn-sm"
+            style="display: inline-flex; align-items: center; gap: 0.5rem; background: linear-gradient(135deg, #ec4899, #8b5cf6); border: none; font-weight: 800; text-decoration: none; padding: 0.5rem 1rem;">
             <span>💖 Contribute &amp; Sponsor (UPI QR)</span>
           </a>
         </div>
@@ -1957,10 +1924,12 @@ give back "✓ Tamper-evident receipt sealed into Merkle block in 0.12ms"
               Working Group</a></li>
           <li><a href="#downloads" style="color: var(--text-muted); text-decoration: none;">📦 20-OS Release Vault</a>
           </li>
-          <li><a href="/contribute/" style="color: #f472b6; text-decoration: none; font-weight: 800;">💖 Contribute &amp; Sponsor</a></li>
+          <li><a href="/contribute/" style="color: #f472b6; text-decoration: none; font-weight: 800;">💖 Contribute
+              &amp; Sponsor</a></li>
           <li><a href="/admin/" style="color: var(--cyan); text-decoration: none; font-weight: 700;">🔐 Admin
               Cockpit</a></li>
-          <li><a href="/privacy-policy/" style="color: #38bdf8; text-decoration: none; font-weight: 700;">🔐 Privacy Policy</a></li>
+          <li><a href="/privacy-policy/" style="color: #38bdf8; text-decoration: none; font-weight: 700;">🔐 Privacy
+              Policy</a></li>
           <li><a href="/terms/" style="color: #94a3b8; text-decoration: none;">⚖️ Terms of Service</a></li>
         </ul>
       </div>
@@ -1979,7 +1948,8 @@ give back "✓ Tamper-evident receipt sealed into Merkle block in 0.12ms"
               </svg>
               <span>Official Telegram Community ↗</span>
             </a></li>
-          <li><a href="/contribute/" style="color: #f472b6; text-decoration: none; font-weight: 700;">💖 Sponsor Anirudha Puthraya (UPI QR)</a></li>
+          <li><a href="/contribute/" style="color: #f472b6; text-decoration: none; font-weight: 700;">💖 Sponsor
+              Anirudha Puthraya (UPI QR)</a></li>
           <li><a href="https://t.me/opendigitalcontinuity" target="_blank" rel="noreferrer"
               style="color: var(--text-muted); text-decoration: none;">💬 Developer Discussions &amp; Q&amp;A</a></li>
           <li><a href="https://t.me/opendigitalcontinuity" target="_blank" rel="noreferrer"

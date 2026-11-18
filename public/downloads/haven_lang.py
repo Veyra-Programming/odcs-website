@@ -1,33 +1,32 @@
 #!/usr/bin/env python3
 """
-Haven Language v3.0 — General-Purpose, Natural-English & Continuity Toolchain + VM
-Designed for Enterprise Applications, Offline Systems, Web Services, and Scripting.
+Haven Language v3.5 — Enterprise, Object-Oriented, General-Purpose & Continuity Toolchain + VM
+Engineered for Enterprise Services, Web Applications, Data Engineering, and Digital Continuity.
 
-Features:
-  - Natural English syntax (assignments, conditionals, loops, functions, pattern matching, classes).
-  - Object-Oriented Programming (define class <Name>, define init(self, ...), inheritance).
-  - Modern functional pipelines (|>) with placeholder '_' and nested expression support.
-  - Pattern matching: inspect <expr>: when <pattern>: ... otherwise: ...
-  - Complete general-purpose standard library:
-      * Math & Statistics: sqrt, power, sin, cos, tan, abs_val, clamp, mean, median, stdev, PI.
-      * Web Networking & HTTP: fetch_get, fetch_post, fetch_json.
-      * JSON & CSV Data Processing: parse_json, to_json, read_csv, write_csv.
-      * Filesystem & OS Automation: current_directory, list_directory, file_exists, read_lines, execute_command.
-      * Date & Time: current_date, current_time, format_timestamp, parse_date.
-      * Cryptography & Encodings: base64_encode, base64_decode, hash_sha256, hash_sha512, hash_md5.
-      * Regex & Text Utilities: regex_match, regex_find_all, regex_replace, snake_case, camel_case.
-  - Durable records with functional evolution (copy <record> with (...)).
-  - Tamper-evident ledger checkpointing (checkpoint <record> [as <label>] into <ledger>).
-  - Full CLI tooling: run, compile, lint, test, repl, new, format, info.
+Advanced Concepts Inspired by Enterprise Java, PHP, and Modern Systems:
+  - Interfaces & Abstract Contracts: define interface <Name> / define contract <Name>
+  - Enums & Type-Safe Constants: define enum <Name> with auto-assigned or explicit values
+  - Enterprise Decorators: @memoize, @retry, @timed, @singleton, @deprecated
+  - Fluent Stream API (Java Streams / Laravel Collections): Stream(items).filter().map().sort().to_list()
+  - Inversion of Control & Dependency Injection: ServiceContainer for factories and singletons
+  - Pub/Sub Event Bus: EventBus.on(event, handler) and EventBus.emit(event, payload)
+  - Embedded SQL / Active Record: SqliteDatabase with query(), insert(), query_one(), and migrations
+  - Asynchronous Parallel Concurrency: async_task(fn, *args) and run_parallel([t1, t2])
+  - String Templating Engine: render_template("Hello {{name}}", {"name": "Alice"})
+  - Full CLI Toolchain: run, compile, lint, test, repl, new, format, info
 """
 
 from __future__ import annotations
 
+import abc
 import argparse
 import ast
 import base64
+import concurrent.futures
 import csv
 import datetime
+import enum
+import functools
 import hashlib
 import io
 import json
@@ -37,6 +36,7 @@ import pathlib
 import platform
 import re
 import shutil
+import sqlite3
 import subprocess
 import sys
 import textwrap
@@ -46,11 +46,11 @@ import urllib.parse
 import urllib.request
 import uuid
 from dataclasses import dataclass, field, is_dataclass, asdict
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
 
-HAVEN_VERSION = "3.0.0"
-HAVEN_CODENAME = "General-Purpose Enterprise Edition"
+HAVEN_VERSION = "3.5.0"
+HAVEN_CODENAME = "Enterprise Full-Stack Edition"
 
 
 class HavenSyntaxError(SyntaxError):
@@ -58,14 +58,18 @@ class HavenSyntaxError(SyntaxError):
 
 
 # ---------------------------------------------------------------------------
-# General-Purpose Runtime Prelude injected before executing Haven programs
+# Enterprise Runtime Prelude injected before executing Haven programs
 # ---------------------------------------------------------------------------
 
 HAVEN_PRELUDE = '''
+import abc as _abc
 import base64 as _b64
+import concurrent.futures as _futures
 import csv as _csv
 import dataclasses as _dc
 import datetime as _dt
+import enum as _enum
+import functools as _functools
 import hashlib as _hashlib
 import io as _io
 import json as _json
@@ -74,13 +78,347 @@ import os as _os
 import pathlib as _pathlib
 import re as _re
 import shutil as _shutil
+import sqlite3 as _sqlite3
 import subprocess as _subprocess
+import sys as _sys
 import time as _time
 import urllib.error as _url_err
 import urllib.parse as _url_parse
 import urllib.request as _url_req
 import uuid as _uuid
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Callable, Dict, List, Optional, Tuple, Union
+
+
+# ---------------------------------------------------------------------------
+# Enterprise Annotations & Decorators (Java / PHP / Python style)
+# ---------------------------------------------------------------------------
+
+abstractmethod = _abc.abstractmethod
+abstract = _abc.abstractmethod
+
+
+def memoize(fn):
+    """Cache deterministic function calls based on argument hashes."""
+    return _functools.lru_cache(maxsize=256)(fn)
+
+
+def retry(attempts=3, delay_ms=50):
+    """Automatically retry a failing function call with backoff."""
+    def decorator(fn):
+        @_functools.wraps(fn)
+        def wrapper(*args, **kwargs):
+            last_err = None
+            max_att = max(1, int(attempts))
+            for att in range(1, max_att + 1):
+                try:
+                    return fn(*args, **kwargs)
+                except Exception as exc:
+                    last_err = exc
+                    if att < max_att:
+                        _time.sleep(float(delay_ms) / 1000.0)
+            raise last_err
+        return wrapper
+    return decorator
+
+
+def timed(fn):
+    """Log function execution duration in milliseconds."""
+    @_functools.wraps(fn)
+    def wrapper(*args, **kwargs):
+        t0 = _time.time()
+        res = fn(*args, **kwargs)
+        dt_ms = (_time.time() - t0) * 1000.0
+        print(f"[timed] {fn.__name__} completed in {dt_ms:.2f}ms")
+        return res
+    return wrapper
+
+
+def singleton(cls):
+    """Ensure a class only ever has a single instantiated instance."""
+    instances = {}
+    @_functools.wraps(cls)
+    def get_instance(*args, **kwargs):
+        if cls not in instances:
+            instances[cls] = cls(*args, **kwargs)
+        return instances[cls]
+    return get_instance
+
+
+def deprecated(reason="This function is deprecated."):
+    """Emit warning on calls to deprecated routines."""
+    def decorator(fn):
+        @_functools.wraps(fn)
+        def wrapper(*args, **kwargs):
+            print(f"[DeprecatedWarning] {fn.__name__}: {reason}", file=_sys.stderr)
+            return fn(*args, **kwargs)
+        return wrapper
+    return decorator
+
+
+# ---------------------------------------------------------------------------
+# Fluent Stream API (Java Stream / PHP Laravel Collection style)
+# ---------------------------------------------------------------------------
+
+class Stream:
+    """Fluent chaining pipeline for collections."""
+    def __init__(self, iterable):
+        self._items = list(iterable) if not isinstance(iterable, list) else iterable
+
+    def filter(self, predicate):
+        return Stream([x for x in self._items if predicate(x)])
+
+    def map(self, transform):
+        return Stream([transform(x) for x in self._items])
+
+    def flat_map(self, transform):
+        out = []
+        for x in self._items:
+            res = transform(x)
+            if isinstance(res, (list, tuple)):
+                out.extend(res)
+            else:
+                out.append(res)
+        return Stream(out)
+
+    def sort(self, key_fn=None, descending=False):
+        return Stream(sorted(self._items, key=key_fn, reverse=descending))
+
+    def unique(self):
+        return Stream(unique_items(self._items))
+
+    def take(self, n):
+        return Stream(self._items[:int(n)])
+
+    def drop(self, n):
+        return Stream(self._items[int(n):])
+
+    def chunk(self, size):
+        return Stream(chunk_by(self._items, size))
+
+    def for_each(self, action):
+        for x in self._items:
+            action(x)
+        return self
+
+    def reduce(self, reducer, initial=None):
+        if initial is not None:
+            return _functools.reduce(reducer, self._items, initial)
+        return _functools.reduce(reducer, self._items)
+
+    def count(self):
+        return len(self._items)
+
+    def sum(self):
+        return sum(self._items)
+
+    def average(self):
+        return average(self._items)
+
+    def min(self):
+        return min(self._items)
+
+    def max(self):
+        return max(self._items)
+
+    def first(self, default=None):
+        return self._items[0] if self._items else default
+
+    def last(self, default=None):
+        return self._items[-1] if self._items else default
+
+    def to_list(self):
+        return list(self._items)
+
+    def to_dict(self, key_fn, val_fn=None):
+        if val_fn:
+            return {key_fn(x): val_fn(x) for x in self._items}
+        return {key_fn(x): x for x in self._items}
+
+    def join(self, delimiter=", "):
+        return str(delimiter).join(str(x) for x in self._items)
+
+    def __iter__(self):
+        return iter(self._items)
+
+    def __len__(self):
+        return len(self._items)
+
+    def __repr__(self):
+        return f"Stream({self._items!r})"
+
+
+Collection = Stream
+
+
+# ---------------------------------------------------------------------------
+# Dependency Injection / Service Container (Spring / Laravel style)
+# ---------------------------------------------------------------------------
+
+class ServiceContainer:
+    """Dependency Injection and Inversion of Control service registry."""
+    _default_instance = None
+
+    def __init__(self):
+        self._factories = {}
+        self._singletons = {}
+        self._instances = {}
+
+    @classmethod
+    def default(cls):
+        if cls._default_instance is None:
+            cls._default_instance = cls()
+        return cls._default_instance
+
+    def register(self, name, factory):
+        self._factories[str(name)] = factory
+        return self
+
+    def singleton(self, name, factory):
+        self._singletons[str(name)] = factory
+        return self
+
+    def instance(self, name, instance_obj):
+        self._instances[str(name)] = instance_obj
+        return self
+
+    def resolve(self, name):
+        s = str(name)
+        if s in self._instances:
+            return self._instances[s]
+        if s in self._singletons:
+            obj = self._singletons[s]()
+            self._instances[s] = obj
+            return obj
+        if s in self._factories:
+            return self._factories[s]()
+        raise KeyError(f"Service '{s}' is not registered in ServiceContainer.")
+
+    def has(self, name):
+        s = str(name)
+        return s in self._instances or s in self._singletons or s in self._factories
+
+
+# ---------------------------------------------------------------------------
+# Pub/Sub Event Bus (Spring EventPublisher / Laravel EventBus style)
+# ---------------------------------------------------------------------------
+
+class EventBus:
+    """Process-wide synchronous/asynchronous Event Bus."""
+    _listeners = {}
+
+    @classmethod
+    def on(cls, event_name, callback):
+        ev = str(event_name)
+        if ev not in cls._listeners:
+            cls._listeners[ev] = []
+        cls._listeners[ev].append(callback)
+
+    @classmethod
+    def emit(cls, event_name, payload=None):
+        ev = str(event_name)
+        results = []
+        for cb in cls._listeners.get(ev, []):
+            try:
+                res = cb(payload) if payload is not None else cb()
+                results.append(res)
+            except Exception as exc:
+                print(f"[EventBus Error in listener for '{ev}']: {exc}", file=_sys.stderr)
+        return results
+
+    @classmethod
+    def clear(cls, event_name=None):
+        if event_name is None:
+            cls._listeners.clear()
+        else:
+            cls._listeners.pop(str(event_name), None)
+
+
+# ---------------------------------------------------------------------------
+# SQLite Active Record / Database Helper (PDO / Hibernate style)
+# ---------------------------------------------------------------------------
+
+class SqliteDatabase:
+    """Lightweight zero-dependency SQL database manager."""
+    def __init__(self, db_path=":memory:"):
+        self.db_path = str(db_path)
+        self.conn = _sqlite3.connect(self.db_path)
+        self.conn.row_factory = _sqlite3.Row
+
+    def execute(self, sql, params=()):
+        with self.conn:
+            cur = self.conn.cursor()
+            cur.execute(str(sql), tuple(params))
+            return cur
+
+    def query(self, sql, params=()):
+        cur = self.execute(sql, params)
+        return [dict(row) for row in cur.fetchall()]
+
+    def query_one(self, sql, params=()):
+        cur = self.execute(sql, params)
+        row = cur.fetchone()
+        return dict(row) if row else None
+
+    def insert(self, table_name, data):
+        columns = list(data.keys())
+        placeholders = ", ".join(["?"] * len(columns))
+        col_names = ", ".join(columns)
+        sql = f"INSERT INTO {table_name} ({col_names}) VALUES ({placeholders})"
+        cur = self.execute(sql, tuple(data.values()))
+        return cur.lastrowid
+
+    def close(self):
+        self.conn.close()
+
+
+# ---------------------------------------------------------------------------
+# Asynchronous Concurrency & Thread Pooling (CompletableFuture / Fibers style)
+# ---------------------------------------------------------------------------
+
+_HAVEN_EXECUTOR = None
+
+
+def _get_executor():
+    global _HAVEN_EXECUTOR
+    if _HAVEN_EXECUTOR is None:
+        _HAVEN_EXECUTOR = _futures.ThreadPoolExecutor(max_workers=16, thread_name_prefix="haven-worker")
+    return _HAVEN_EXECUTOR
+
+
+class FutureTask:
+    def __init__(self, future):
+        self._future = future
+
+    def await_result(self, timeout=None):
+        return self._future.result(timeout=timeout)
+
+    def is_done(self):
+        return self._future.done()
+
+
+def async_task(fn, *args, **kwargs):
+    executor = _get_executor()
+    fut = executor.submit(fn, *args, **kwargs)
+    return FutureTask(fut)
+
+
+def run_parallel(tasks):
+    executor = _get_executor()
+    futures = [executor.submit(t) if callable(t) else t for t in tasks]
+    return [f.result() for f in futures]
+
+
+# ---------------------------------------------------------------------------
+# String Templating Engine (PHP Blade / Java Velocity style)
+# ---------------------------------------------------------------------------
+
+def render_template(template_str, context):
+    res = str(template_str)
+    for k, v in context.items():
+        res = res.replace("{{" + str(k) + "}}", str(v))
+        res = res.replace("{{ " + str(k) + " }}", str(v))
+        res = res.replace("{" + str(k) + "}", str(v))
+    return _HavenStr(res)
 
 
 # ---------------------------------------------------------------------------
@@ -189,11 +527,11 @@ def write_csv(path, rows, headers=None):
 
 
 # ---------------------------------------------------------------------------
-# HTTP & Web Networking (Zero External Dependencies)
+# HTTP & Web Networking
 # ---------------------------------------------------------------------------
 
 def fetch_get(url, headers=None, timeout=10):
-    req_headers = {"User-Agent": "Haven-Language/3.0"}
+    req_headers = {"User-Agent": f"Haven-Language/{HAVEN_VERSION}"}
     if headers and isinstance(headers, dict):
         req_headers.update(headers)
     req = _url_req.Request(str(url), headers=req_headers, method="GET")
@@ -236,7 +574,7 @@ def fetch_get(url, headers=None, timeout=10):
 
 
 def fetch_post(url, payload=None, headers=None, timeout=10):
-    req_headers = {"User-Agent": "Haven-Language/3.0"}
+    req_headers = {"User-Agent": f"Haven-Language/{HAVEN_VERSION}"}
     if headers and isinstance(headers, dict):
         req_headers.update(headers)
     body_bytes = b""
@@ -506,7 +844,7 @@ def _haven_read_file(path):
 
 
 class _HavenStr(str):
-    """Enriched general-purpose string with method chaining."""
+    """Enriched string with fluent method chaining."""
     def trim(self):
         return _HavenStr(self.strip())
 
@@ -1524,16 +1862,16 @@ def is_pure_python(source: str) -> bool:
 
 
 def _preprocess_multiline_pipelines(lines: List[str]) -> List[str]:
-    """Attach continuation lines starting with `|>` onto the preceding expression line."""
+    """Attach continuation lines starting with `|>` or `.` onto the preceding expression line."""
     merged: List[str] = []
     for raw in lines:
         stripped = raw.strip()
-        if stripped.startswith("|>") and merged:
+        if (stripped.startswith("|>") or stripped.startswith(".")) and merged:
             k = len(merged) - 1
             while k >= 0 and not merged[k].strip():
                 k -= 1
             if k >= 0:
-                merged[k] = merged[k].rstrip() + " " + stripped
+                merged[k] = merged[k].rstrip() + (" " if stripped.startswith("|>") else "") + stripped
                 continue
         merged.append(raw)
     return merged
@@ -1541,7 +1879,7 @@ def _preprocess_multiline_pipelines(lines: List[str]) -> List[str]:
 
 def transpile_haven(source: str, include_prelude: bool = True) -> str:
     """
-    Transpile Haven (.hvn) Natural-English, Object-Oriented & General-Purpose syntax to Python 3.
+    Transpile Haven (.hvn) Natural-English, Object-Oriented & Enterprise syntax to Python 3.
     """
     lines = _preprocess_multiline_pipelines(source.splitlines())
     out_lines: List[str] = []
@@ -1571,14 +1909,57 @@ def transpile_haven(source: str, include_prelude: bool = True) -> str:
             i += 1
             continue
 
-        # 1. Object-Oriented Class Definitions: define class Name / class Name(Base):
+        # 1. Interfaces & Abstract Contracts: define interface Name: / define contract Name:
+        m_iface = re.match(r"^(?:define\s+(?:interface|contract)|interface|contract)\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*:\s*$", cleaned)
+        if m_iface:
+            out_lines.append(f"{indent}class {m_iface.group(1)}(_abc.ABC):")
+            i += 1
+            continue
+
+        # 2. Type-Safe Enums: define enum Name:
+        m_enum = re.match(r"^(?:define\s+enum|enum)\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*:\s*$", cleaned)
+        if m_enum:
+            enum_name = m_enum.group(1)
+            out_lines.append(f"{indent}class {enum_name}(_enum.Enum):")
+            i += 1
+            has_enum_fields = False
+            while i < n:
+                sub_raw = lines[i]
+                sub_stripped = _rewrite_parts(sub_raw).strip()
+                if not sub_stripped:
+                    i += 1
+                    continue
+                sub_indent = len(sub_raw) - len(sub_raw.lstrip(" "))
+                if sub_indent <= indent_len:
+                    break
+                if "=" in sub_stripped:
+                    out_lines.append(f"{' ' * sub_indent}{sub_stripped}")
+                    has_enum_fields = True
+                else:
+                    parts = [p.strip() for p in sub_stripped.split(",") if p.strip()]
+                    for p in parts:
+                        out_lines.append(f"{' ' * sub_indent}{p} = \"{p}\"")
+                        has_enum_fields = True
+                i += 1
+            if not has_enum_fields:
+                out_lines.append(f"{indent}    pass")
+            continue
+
+        # 3. Traits & Mixins: define trait Name:
+        m_trait = re.match(r"^(?:define\s+trait|trait)\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*:\s*$", cleaned)
+        if m_trait:
+            out_lines.append(f"{indent}class {m_trait.group(1)}:")
+            i += 1
+            continue
+
+        # 4. Object-Oriented Class Definitions: define class Name / class Name(Base):
         m_cls = re.match(r"^(?:define\s+class|class)\s+([a-zA-Z_][a-zA-Z0-9_]*(?:\([^\)]*\))?)\s*:\s*$", cleaned)
         if m_cls:
             out_lines.append(f"{indent}class {m_cls.group(1)}:")
             i += 1
             continue
 
-        # 2. Durable Immutable Record Block
+        # 5. Durable Immutable Record Block
         m_rec = re.match(r"^durable\s+record\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*:\s*$", cleaned)
         if m_rec:
             rec_name = m_rec.group(1)
@@ -1611,26 +1992,32 @@ def transpile_haven(source: str, include_prelude: bool = True) -> str:
                 out_lines.append(f"{indent}    pass")
             continue
 
-        # 3. Virtual module import shims
+        # 6. Virtual module import shims
         if re.match(r"^(?:from\s+(?:odcs|haven_ai|crypto)(?:\.[a-zA-Z0-9_]+)?\s+import|import\s+(?:crypto|odcs))\b", cleaned):
             out_lines.append(f"{indent}# [haven-builtin] {cleaned}")
             i += 1
             continue
 
-        # 4. Natural English Function / Method Definitions
-        m_fn = re.match(r"^(?:define|to|task|function)\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*\((.*)\)\s*:\s*$", cleaned)
+        # 7. Function / Method Definitions with abstract & init support
+        m_fn = re.match(r"^(?:define|to|task|function)\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*\((.*)\)\s*:\s*(pass|\.\.\.)?$", cleaned)
         if m_fn:
             fn_name = m_fn.group(1)
             fn_args = m_fn.group(2)
+            has_pass = bool(m_fn.group(3))
             if fn_name == "init":
                 fn_name = "__init__"
             elif fn_name in ("to_string", "as_string"):
                 fn_name = "__str__"
-            out_lines.append(f"{indent}def {fn_name}({fn_args}):")
+            if has_pass:
+                out_lines.append(f"{indent}@_abc.abstractmethod")
+                out_lines.append(f"{indent}def {fn_name}({fn_args}):")
+                out_lines.append(f"{indent}    pass")
+            else:
+                out_lines.append(f"{indent}def {fn_name}({fn_args}):")
             i += 1
             continue
 
-        # 5. Pattern Matching: inspect <expr>: and when <pattern>:
+        # 8. Pattern Matching: inspect <expr>: and when <pattern>:
         m_inspect = re.match(r"^inspect\s+(.+)\s*:\s*$", cleaned)
         if m_inspect:
             var_name = f"_haven_inspect_{len(inspect_stack)}"
@@ -1654,7 +2041,7 @@ def transpile_haven(source: str, include_prelude: bool = True) -> str:
             i += 1
             continue
 
-        # 6. Natural English Control Flow & Loops
+        # 9. Control Flow & Loops
         if re.match(r"^repeat\s+(.+)\s+times\s*:\s*$", cleaned):
             count_expr = re.match(r"^repeat\s+(.+)\s+times\s*:\s*$", cleaned).group(1)
             out_lines.append(f"{indent}for iteration in range(1, int({count_expr}) + 1):")
@@ -1738,7 +2125,7 @@ def transpile_haven(source: str, include_prelude: bool = True) -> str:
             i += 1
             continue
 
-        # 7. Error Handling
+        # 10. Error Handling
         m_err_as = re.match(r"^(?:on\s+error|recover)\s+as\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*:\s*$", cleaned)
         if m_err_as:
             out_lines.append(f"{indent}except Exception as {m_err_as.group(1)}:")
@@ -1755,7 +2142,7 @@ def transpile_haven(source: str, include_prelude: bool = True) -> str:
             i += 1
             continue
 
-        # 8. Checkpointing
+        # 11. Checkpointing
         m_chk = re.match(r"^checkpoint\s+(.+?)(?:\s+as\s+(.+?))?\s+into\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*$", cleaned)
         if m_chk:
             rec_expr = _fold_pipeline(m_chk.group(1).strip())
@@ -1765,7 +2152,7 @@ def transpile_haven(source: str, include_prelude: bool = True) -> str:
             i += 1
             continue
 
-        # 9. Natural File I/O
+        # 12. Natural File I/O
         if cleaned.startswith("save "):
             split_res = _split_keyword_outside_strings(cleaned[5:], "to")
             if split_res:
@@ -1794,7 +2181,7 @@ def transpile_haven(source: str, include_prelude: bool = True) -> str:
             i += 1
             continue
 
-        # 10. Natural English Assignments & Multi-variable Unpacking
+        # 13. Natural English Assignments & Multi-variable Unpacking
         m_set = re.match(
             r"^(?:set\s+([a-zA-Z0-9_.,\s]+?)\s+to|let\s+([a-zA-Z0-9_.,\s]+?)\s+(?:be|=)|remember\s+([a-zA-Z0-9_.,\s]+?)\s+as)\s+(.+)$",
             cleaned,
@@ -1818,7 +2205,7 @@ def transpile_haven(source: str, include_prelude: bool = True) -> str:
             i += 1
             continue
 
-        # 11. Return / Give Back
+        # 14. Return / Give Back
         m_ret = re.match(r"^give\s+back(?:\s+(.+))?$", cleaned)
         if m_ret:
             expr = m_ret.group(1)
@@ -1829,7 +2216,7 @@ def transpile_haven(source: str, include_prelude: bool = True) -> str:
             i += 1
             continue
 
-        # 12. Intent Preservation
+        # 15. Intent Preservation
         m_intent = re.match(
             r"^preserve\s+intent\s+(.+?)(?:\s+with\s+(.+?))?(?:\s+as\s+([a-zA-Z_][a-zA-Z0-9_]*))?$",
             cleaned,
@@ -1842,7 +2229,7 @@ def transpile_haven(source: str, include_prelude: bool = True) -> str:
             i += 1
             continue
 
-        # 13. Output: say / show / print
+        # 16. Output: say / show / print
         m_say = re.match(r"^(?:say|show|print)\s+(.+)$", cleaned)
         if m_say and not cleaned.startswith("print("):
             inner = m_say.group(1).strip()
@@ -1850,7 +2237,7 @@ def transpile_haven(source: str, include_prelude: bool = True) -> str:
             i += 1
             continue
 
-        # 14. Fallback pipeline & expression
+        # 17. Fallback pipeline & expression
         out_lines.append(f"{indent}{_fold_pipeline(cleaned)}")
         i += 1
 
@@ -1952,7 +2339,7 @@ def run_haven_tests(target_path: str = ".") -> int:
 
 
 def scaffold_new_project(project_name: str) -> int:
-    """Scaffold a professional Haven Language project structure."""
+    """Scaffold a professional enterprise Haven project."""
     base_dir = os.path.abspath(project_name)
     if os.path.exists(base_dir):
         print(f"\033[91m[Error]\033[0m Directory '{project_name}' already exists.")
@@ -1963,70 +2350,76 @@ def scaffold_new_project(project_name: str) -> int:
     os.makedirs(src_dir, exist_ok=True)
     os.makedirs(tests_dir, exist_ok=True)
 
-    # 1. haven.json
     manifest = {
         "name": project_name,
         "version": "1.0.0",
-        "description": f"Professional application authored in Haven Language v{HAVEN_VERSION}",
+        "description": f"Enterprise application authored in Haven Language v{HAVEN_VERSION}",
         "entry": "src/main.hvn",
         "test_target": "tests/",
-        "author": "Haven Developer",
+        "author": "Haven Enterprise Architect",
         "license": "Apache-2.0",
         "haven_version": f">={HAVEN_VERSION}",
     }
     with open(os.path.join(base_dir, "haven.json"), "w", encoding="utf-8") as f:
         json.dump(manifest, f, indent=2)
 
-    # 2. src/main.hvn
     main_code = textwrap.dedent(f"""\
-        // {project_name} — Haven Language Application Entry Point
+        // {project_name} — Haven Language Enterprise Application
         // Authored in Haven v{HAVEN_VERSION} Natural-English Syntax
 
         say "============================================================"
-        say "🕊️  {project_name.upper()} • HAVEN APPLICATION STARTED"
+        say "🕊️  {project_name.upper()} • ENTERPRISE SERVICE ONLINE"
         say "============================================================"
 
-        define class ApplicationService:
-            define init(self, service_name):
-                set self.service_name to service_name
-                set self.boot_time to current_date() + " " + current_time()
+        define interface IOrderService:
+            define create_order(self, customer, items): pass
+            define calculate_total(self, items): pass
 
-            define run(self):
-                say "Service: {{self.service_name}} online since {{self.boot_time}}"
-                set metrics to [12, 45, 88, 19, 73, 94]
-                    |> unique_items(_)
-                    |> filter_by(lambda x: x >= 20)
-                    |> sort_by(_)
+        define class OrderService(IOrderService):
+            define init(self):
+                set self.db to SqliteDatabase(":memory:")
+                self.db.execute("CREATE TABLE orders (id INTEGER PRIMARY KEY, customer TEXT, total REAL)")
 
-                say "Processed cluster metrics: {{metrics}}"
-                say "Average: {{round_to(average(metrics), 2)}} | Peak: {{maximum_of(metrics)}}"
-                give back true
+            define create_order(self, customer, items):
+                set total to self.calculate_total(items)
+                set order_id to self.db.insert("orders", {{"customer": customer, "total": total}})
+                EventBus.emit("order.created", {{"id": order_id, "customer": customer, "total": total}})
+                give back order_id
 
-        set app to ApplicationService("{project_name}")
-        app.run()
+            define calculate_total(self, items):
+                give back Stream(items).map(lambda i: i["price"] * i["qty"]).sum()
+
+        // Register listener on event bus
+        EventBus.on("order.created", lambda o: say(f"  [EventBus] Order #{{o['id']}} placed by {{o['customer']}} (${{o['total']}})"))
+
+        set service to OrderService()
+        set sample_items to [
+            {{"item": "Laptop", "price": 1200.0, "qty": 1}},
+            {{"item": "Mouse", "price": 45.0, "qty": 2}}
+        ]
+        set order_id to service.create_order("Acme Corp", sample_items)
+        say "Application workflow completed successfully [Order #{{order_id}}]."
     """)
     with open(os.path.join(src_dir, "main.hvn"), "w", encoding="utf-8") as f:
         f.write(main_code)
 
-    # 3. tests/test_main.hvn
     test_code = textwrap.dedent("""\
-        // Automated Test Suite for Haven Application
-        say "Running test suite..."
+        // Automated Unit Tests for Haven Application
+        say "Verifying application service integrity..."
 
-        verify 2 + 2 is equal to 4 otherwise "Basic arithmetic integrity check failed"
-        set sample to [10, 20, 30] |> sum_all(_)
-        verify sample is equal to 60 otherwise "Collection sum check failed"
+        verify 2 + 2 is equal to 4 otherwise "Math assertion failed"
+        set stream_sum to Stream([10, 20, 30]).filter(lambda x: x > 15).sum()
+        verify stream_sum is equal to 50 otherwise "Stream filter/sum failed"
 
         say "All tests passed with 100% verification!"
     """)
     with open(os.path.join(tests_dir, "test_main.hvn"), "w", encoding="utf-8") as f:
         f.write(test_code)
 
-    # 4. README.md
     readme_content = textwrap.dedent(f"""\
         # {project_name}
 
-        Professional application authored in **Haven Language v{HAVEN_VERSION} ({HAVEN_CODENAME})**.
+        Enterprise application authored in **Haven Language v{HAVEN_VERSION} ({HAVEN_CODENAME})**.
 
         ## Getting Started
 
@@ -2048,9 +2441,8 @@ def scaffold_new_project(project_name: str) -> int:
     with open(os.path.join(base_dir, "README.md"), "w", encoding="utf-8") as f:
         f.write(readme_content)
 
-    # 5. .gitignore
     with open(os.path.join(base_dir, ".gitignore"), "w", encoding="utf-8") as f:
-        f.write("__pycache__/\n*.wal\n*.log\n*.tmp\n")
+        f.write("__pycache__/\n*.wal\n*.log\n*.tmp\n*.db\n")
 
     print(f"\033[92m✓ Successfully created Haven project:\033[0m {project_name}/")
     print(f"   • {project_name}/haven.json")
@@ -2073,10 +2465,8 @@ def format_haven_source(file_path: str) -> int:
     formatted_lines = []
     for line in lines:
         stripped = line.rstrip()
-        # Clean trailing whitespace
         formatted_lines.append(stripped + "\n" if stripped else "\n")
 
-    # Ensure single trailing newline
     content = "".join(formatted_lines).rstrip() + "\n"
     with open(file_path, "w", encoding="utf-8") as f:
         f.write(content)
@@ -2095,14 +2485,22 @@ def print_system_info() -> int:
     print(f"  Operating System:   {platform.system()} {platform.release()} ({platform.machine()})")
     print(f"  Platform Node:      {platform.node()}")
     print("------------------------------------------------------------")
-    print("  Standard Library Batteries (Built-in Zero-Dependency):")
-    print("    • Math & Stats:   sqrt, power, sin, cos, abs_val, clamp, mean, median, stdev, PI")
-    print("    • HTTP & Web:     fetch_get, fetch_post, fetch_json (built-in client)")
+    print("  Enterprise Standard Batteries (Zero-Dependency Built-ins):")
+    print("    • Interfaces:     define interface / define contract with @abstractmethod")
+    print("    • Enums:          define enum Priority: LOW, MEDIUM, HIGH, CRITICAL")
+    print("    • Decorators:     @memoize, @retry, @timed, @singleton, @deprecated")
+    print("    • Streams:        Stream(items).filter().map().sort().unique().to_list()")
+    print("    • DI Container:   ServiceContainer.default().singleton() / resolve()")
+    print("    • Event Bus:      EventBus.on(event, handler) / EventBus.emit(event, data)")
+    print("    • Database:       SqliteDatabase with query(), insert(), query_one()")
+    print("    • Async Concur:   async_task(fn), run_parallel(tasks), FutureTask")
+    print("    • Templating:     render_template(tpl, context)")
+    print("    • Math & Stats:   sqrt, power, sin, cos, clamp, mean, median, stdev, PI")
+    print("    • HTTP & Web:     fetch_get, fetch_post, fetch_json")
     print("    • JSON & CSV:     parse_json, to_json, read_csv, write_csv")
     print("    • OS & Storage:   list_directory, file_exists, read_lines, execute_command")
     print("    • Date & Time:    current_date, current_time, format_timestamp, parse_date")
     print("    • Cryptography:   hash_sha256, hash_sha512, hash_md5, base64_encode/decode")
-    print("    • Regex & Text:   regex_match, regex_find_all, regex_replace, snake_case")
     print("    • Continuity:     ContinuityLedger, PNCounter, ZeroIntentLoss, seal_hash")
     print("------------------------------------------------------------")
     print("  CLI Commands:       run, compile, lint, test, repl, new, format, info")
@@ -2118,7 +2516,7 @@ def launch_haven_repl() -> int:
         pass
 
     print(f"\033[95m🕊️  Haven Language v{HAVEN_VERSION} Interactive REPL\033[0m")
-    print(f"   Edition: {HAVEN_CODENAME} | Batteries: 80+ Built-in Functions")
+    print(f"   Edition: {HAVEN_CODENAME} | Batteries: 100+ Enterprise Functions")
     print("   Type \033[93m:help\033[0m for cheatsheet, \033[93m:modules\033[0m for standard library, \033[93mexit\033[0m to quit.")
     print("------------------------------------------------------------")
 
@@ -2140,7 +2538,14 @@ def launch_haven_repl() -> int:
             break
         if stripped == ":help":
             print(textwrap.dedent("""
-                Haven Language v3.0 Cheatsheet:
+                Haven Language v3.5 Enterprise Cheatsheet:
+                  Interfaces:  define interface IService: define handle(self, x): pass
+                  Enums:       define enum Role: ADMIN, MEMBER, GUEST
+                  Decorators:  @memoize | @retry(attempts=3) | @timed | @singleton
+                  Streams:     Stream([1, 2, 3]).map(lambda x: x * 10).to_list()
+                  DI Box:      ServiceContainer.default().singleton("db", fn).resolve("db")
+                  EventBus:    EventBus.on("log", fn) | EventBus.emit("log", "data")
+                  Database:    set db to SqliteDatabase(":memory:") | db.query("SELECT 1")
                   Classes:     define class Task: define init(self, name): ...
                   Variables:   set name to "Alpha" | let port be 8080 | remember KEY as "val"
                   Mutations:   increase count by 1 | decrease quota by 5
@@ -2157,26 +2562,35 @@ def launch_haven_repl() -> int:
             continue
         if stripped in (":modules", ":builtins"):
             print(textwrap.dedent("""
-                Standard Library Modules & Functions:
-                  • Math:        sqrt, power, sin, cos, tan, abs_val, clamp, floor, ceil, round_to, range_of, PI
-                  • Stats:       mean, median, variance, stdev, average, sum_all, minimum_of, maximum_of
-                  • Web/HTTP:    fetch_get, fetch_post, fetch_json
-                  • Data/CSV:    parse_json, to_json, read_csv, write_csv
-                  • File/OS:     current_directory, list_directory, file_exists, read_lines, execute_command
-                  • Date/Time:   current_date, current_time, format_timestamp, parse_date, now_ms, now_iso
-                  • Crypto:      hash_sha256, hash_sha512, hash_md5, base64_encode, base64_decode, seal_hash
-                  • Regex/Text:  regex_match, regex_find_all, regex_replace, snake_case, camel_case, title_case
-                  • Collections: filter_by, map_by, take_first, sort_by, unique_items, chunk_by, zip_with, tally
-                  • Continuity:  ContinuityLedger, PNCounter, ZeroIntentLoss, MerkleRoot
+                Enterprise Modules & Batteries:
+                  • OOP/Contract: define interface, define contract, define enum, define trait, define class
+                  • Decorators:   @memoize, @retry, @timed, @singleton, @deprecated, @abstract
+                  • Streams:      Stream, Collection (.filter, .map, .sort, .unique, .chunk, .reduce)
+                  • Services/DI:  ServiceContainer (.singleton, .register, .resolve)
+                  • Event Bus:    EventBus (.on, .emit, .clear)
+                  • Database/SQL: SqliteDatabase (.execute, .query, .query_one, .insert)
+                  • Async Tasks:  async_task, run_parallel, FutureTask
+                  • Templates:    render_template("Hello {{name}}", context)
+                  • Math/Stats:   sqrt, power, sin, cos, clamp, mean, median, stdev, range_of, PI
+                  • Web/HTTP:     fetch_get, fetch_post, fetch_json
+                  • Data/CSV:     parse_json, to_json, read_csv, write_csv
+                  • File/OS:      current_directory, list_directory, file_exists, read_lines, execute_command
+                  • Date/Time:    current_date, current_time, format_timestamp, parse_date, now_ms, now_iso
+                  • Crypto:       hash_sha256, hash_sha512, hash_md5, base64_encode, base64_decode, seal_hash
+                  • Regex/Text:   regex_match, regex_find_all, regex_replace, snake_case, camel_case, title_case
+                  • Continuity:   ContinuityLedger, PNCounter, ZeroIntentLoss, MerkleRoot
             """).strip())
             continue
         if stripped == ":examples":
             print(textwrap.dedent("""
                 Quick Interactive Snippets:
-                  1. [10, 25, 4, 88, 32] |> filter_by(lambda x: x > 20) |> sort_by(_)
-                  2. define class User: define init(self, name): set self.name to name
-                  3. set json_data to parse_json('{"status": "ok", "code": 200}')
-                  4. inspect 200: when 200: say "OK" otherwise: say "Failed"
+                  1. Stream([1, 2, 3, 4, 5]).filter(lambda x: x > 2).map(lambda x: x * 10).to_list()
+                  2. define enum Status: PENDING, APPROVED, REJECTED
+                  3. set db to SqliteDatabase(":memory:")
+                     db.execute("CREATE TABLE t (id INT, v TEXT)")
+                     db.insert("t", {"id": 1, "v": "hello"})
+                     db.query("SELECT * FROM t")
+                  4. render_template("Welcome, {{user}} to Haven v3.5!", {"user": "Architect"})
             """).strip())
             continue
         if stripped == ":info":
@@ -2234,7 +2648,7 @@ def main() -> int:
     p_test = sub.add_parser("test", help="Discover and execute Haven test suites")
     p_test.add_argument("target", nargs="?", default="heaven/examples", help="Target test directory or file")
 
-    p_new = sub.add_parser("new", help="Scaffold a new professional Haven project")
+    p_new = sub.add_parser("new", help="Scaffold a new professional enterprise Haven project")
     p_new.add_argument("name", help="Name of project to create")
 
     p_fmt = sub.add_parser("format", help="Format and clean up Haven source file")
