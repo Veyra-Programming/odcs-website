@@ -36,9 +36,9 @@
   --radius-lg: 20px;
   --radius-full: 9999px;
 
-  /* Responsive Header Geometry */
+  /* Responsive Header Geometry with Safe-Area Inset Support */
   --header-height: 64px;
-  --header-top-offset: 12px;
+  --header-top-offset: calc(12px + env(safe-area-inset-top, 0px));
   --header-total-space: calc(var(--header-height) + var(--header-top-offset) + 16px);
 }
 
@@ -360,6 +360,63 @@ svg {
 
 .mobile-drawer.open {
   display: flex;
+}
+
+.mobile-drawer-link {
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.mobile-drawer-link:active {
+  transform: scale(0.97);
+}
+
+.mobile-drawer-link.active {
+  border-color: var(--cyan) !important;
+  background: rgba(0, 240, 255, 0.15) !important;
+  color: var(--cyan) !important;
+  box-shadow: 0 0 15px rgba(0, 240, 255, 0.2);
+}
+
+/* Toast Notification System */
+.odcs-toast {
+  position: fixed;
+  bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+  right: 24px;
+  background: rgba(10, 15, 30, 0.95);
+  border: 1px solid var(--cyan);
+  border-radius: var(--radius-md);
+  padding: 0.85rem 1.4rem;
+  color: #fff;
+  font-family: var(--font-mono);
+  font-size: 0.84rem;
+  font-weight: 700;
+  box-shadow: 0 10px 40px rgba(0, 240, 255, 0.35);
+  z-index: 10000;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transform: translateY(10px);
+  opacity: 0;
+  pointer-events: none;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  max-width: 420px;
+}
+
+.odcs-toast.visible {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+@media (max-width: 480px) {
+  .odcs-toast {
+    left: 16px !important;
+    right: 16px !important;
+    bottom: calc(16px + env(safe-area-inset-bottom, 0px)) !important;
+    max-width: calc(100% - 32px) !important;
+    text-align: center !important;
+    font-size: 0.78rem !important;
+    padding: 0.75rem 1rem !important;
+  }
 }
 
 /* Buttons */
@@ -755,12 +812,12 @@ pre.code-block {
 @media (max-width: 768px) {
   :root {
     --header-height: 52px;
-    --header-top-offset: 6px;
+    --header-top-offset: calc(6px + env(safe-area-inset-top, 0px));
     --header-total-space: calc(var(--header-height) + var(--header-top-offset) + 12px);
   }
 
   .page-container {
-    padding: 0.65rem 0.85rem 4rem;
+    padding: 0.65rem 0.85rem calc(4rem + env(safe-area-inset-bottom, 0px));
   }
 
   /* Sticky Capsule Header */
@@ -1114,8 +1171,8 @@ pre.code-block {
   }
 
   .bot-command-grid {
-    grid-template-columns: 1fr;
-    gap: 0.55rem;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)) !important;
+    gap: 0.65rem;
   }
 
   /* Contribution Mobile Rules */

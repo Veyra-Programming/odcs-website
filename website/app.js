@@ -67,6 +67,31 @@
     }
   });
 
+  // Active Section Observer for Desktop & Mobile Nav
+  const observedSections = document.querySelectorAll('section[id], div[id].star-studio');
+  if ('IntersectionObserver' in window && observedSections.length > 0) {
+    const navLinks = document.querySelectorAll('.desktop-nav .nav-link, .mobile-drawer .mobile-drawer-link');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const id = entry.target.id;
+          navLinks.forEach(link => {
+            const href = link.getAttribute('href');
+            if (href === `#${id}`) {
+              link.classList.add('active');
+            } else if (href && href.startsWith('#')) {
+              link.classList.remove('active');
+            }
+          });
+        }
+      });
+    }, {
+      rootMargin: '-20% 0px -70% 0px',
+      threshold: 0
+    });
+    observedSections.forEach(s => observer.observe(s));
+  }
+
   // ============================================================================
   // 2. AMBIENT TELEMETRY PROBE JITTER SIMULATOR
   // ============================================================================
@@ -259,36 +284,17 @@
   // Toast Notification System
   function showNotification(msg) {
     const toast = document.createElement('div');
-    toast.style.cssText = `
-      position: fixed;
-      bottom: 24px;
-      right: 24px;
-      background: rgba(10, 15, 30, 0.95);
-      border: 1px solid #00f0ff;
-      color: #00f0ff;
-      font-family: var(--font-mono);
-      font-size: 0.8rem;
-      font-weight: 700;
-      padding: 0.75rem 1.25rem;
-      border-radius: 12px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 20px rgba(0, 240, 255, 0.3);
-      z-index: 10000;
-      transition: opacity 0.3s ease, transform 0.3s ease;
-      transform: translateY(10px);
-      opacity: 0;
-    `;
+    toast.className = 'odcs-toast';
     toast.textContent = msg;
     document.body.appendChild(toast);
 
     requestAnimationFrame(() => {
-      toast.style.transform = 'translateY(0)';
-      toast.style.opacity = '1';
+      toast.classList.add('visible');
     });
 
     setTimeout(() => {
-      toast.style.opacity = '0';
-      toast.style.transform = 'translateY(10px)';
-      setTimeout(() => toast.remove(), 300);
+      toast.classList.remove('visible');
+      setTimeout(() => toast.remove(), 320);
     }, 3000);
   }
 
@@ -347,7 +353,7 @@
         const labelText = isNarrow ? l.shortName : l.name;
         const fontSize = isTiny ? 10 : isNarrow ? 11 : 12;
         ctx.fillStyle = '#ffffff';
-        ctx.font = `700 ${fontSize}px ` + getComputedStyle(document.body).fontFamily;
+        ctx.font = `700 ${fontSize}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
 
         // Clip text inside slab boundaries
         ctx.save();
@@ -359,7 +365,7 @@
         // Right Tag: strictly check space to prevent ANY visual collision
         const labelWidth = ctx.measureText(labelText).width;
         const tagText = 'ODCS-2.0.0';
-        ctx.font = '800 10px monospace';
+        ctx.font = '800 10px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace';
         const tagWidth = ctx.measureText(tagText).width;
         const rightEdgeSpace = width - (isTiny ? 8 : 14) - labelWidth;
 
