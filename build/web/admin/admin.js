@@ -26,66 +26,107 @@
   // ============================================================================
   // 2. MASTER ARTICLES DATASET & LOCAL STORAGE PERSISTENCE
   // ============================================================================
-  const STORAGE_KEY = 'ODCS_ADMIN_ARTICLES_v2';
+  const STORAGE_KEY = 'ODCS_ADMIN_ARTICLES_v3';
 
   const DEFAULT_ARTICLES = [
-    {
-      id: 'zero-intent-loss',
-      num: 1,
-      title: 'The Zero Intent Loss Invariant: Why Human Expression Must Never Be Discarded',
-      subtitle: 'How the Open Digital Continuity Standard replaces 504 timeouts, wiped forms, and spinner screens with deterministic local authority.',
-      author: 'Anirudha Puthraya',
-      role: 'Lead Architect & Creator of Haven Language',
-      date: 'November 2026',
-      category: 'Architecture & Philosophy',
-      read_time: '8 min read',
-      tags: ['ODCS', 'ZeroIntentLoss', 'Resilience', 'UX Invariants'],
-      summary: 'Every day, billions of human inputs are permanently lost to network jitter, server timeouts, and fragile client-server sessions. This essay formalizes the Zero Intent Loss Invariant—mandating that human intent expressed through software must achieve local permanence under 16 milliseconds.',
-      content: `# The Zero Intent Loss Invariant\n### By Anirudha Puthraya • Creator & Lead Architect\n\nEvery day, billions of human thoughts, financial transfers, medical observations, and legal contracts are destroyed by an invisible design flaw in contemporary computing: **the fragile assumption of continuous connectivity**.\n\nA paramedic in an underground parking garage types emergency patient vitals and presses "Submit." A spinner appears. Three seconds later, an HTTP 504 Gateway Timeout wipes the input fields. The paramedic must begin again, but time is running out.\n\nThis is not a network failure. **It is an architectural failure.**\n\n---\n\n## 1. The Core Invariant\n\n> *"The user's expressed intention shall never be rejected, wiped, or blocked by the software interface due to network latency, server downtime, or physical disconnection."*\n\nUnder ODCS Layer 4, the moment a user presses a key, checks a box, or seals a record, that action achieves **immediate local cryptographic durability** in under 16 milliseconds. The local node acts as an autonomous sovereign authority.\n\n---\n\n## 2. The 16ms Rule: Local Authority over Remote Permission\n\n1. **Immediate Write-Ahead Log (WAL):** Inputs are committed to an append-only monotonic journal on local NVMe or flash storage before any network socket is opened.\n2. **Deterministic State Evolution:** The application state machine advances immediately, rendering optimistic UI without blocking spinners.\n3. **Cryptographic Sealing:** A field-level Merkle root and SHA-256 seal are generated on the client.\n4. **Convergent Background Mesh:** When connectivity returns, the ledger synchronizes monotonically without double-spends or data loss.`
-    },
-    {
-      id: 'why-we-built-haven',
-      num: 2,
-      title: 'Why We Built Haven: Fixing 30 Years of Broken Client-Server Fragility',
-      subtitle: 'The journey of engineering a native disruption-tolerant runtime for sovereign local-first systems.',
-      author: 'Anirudha Puthraya',
-      role: 'Lead Architect & Creator of Haven Language',
-      date: 'November 2026',
-      category: 'Compilers & Language Design',
-      read_time: '12 min read',
-      tags: ['Haven', 'LanguageDesign', 'DistributedSystems', 'WAL'],
-      summary: 'For three decades, web software has been authored under the assumption that the cloud is permanent. Haven Language is the first programming language designed from syntax to bytecode to treat connectivity as an asynchronous transport.',
-      content: `# Why We Built Haven: Fixing 30 Years of Broken Client-Server Fragility\n### By Anirudha Puthraya • Standards Director\n\nEvery programming language carries an implicit worldview. C views the computer as memory addresses and CPU registers. JavaScript views the computer as an event loop embedded inside a browser. Python views the computer as readable scripting.\n\n**Haven views the computer as an autonomous node in an untrusted, intermittent universe.**\n\n---\n\n## 1. Natural English as an Audit Primitive\n\nIn Haven, business rules and emergency triage logic are written in plain human English sentences:\n\n\`\`\`haven\ndurable record EmergencyEncounter:\n    patient_id: String\n    heart_rate: Integer\n\nset encounter to EmergencyEncounter("PT-901", 78)\ncheckpoint encounter as "triage_vital" into hospital_ledger\ngive back "Sealed with Zero Intent Loss!"\n\`\`\`\n\nThis guarantees that medical staff, systems auditors, and engineers can verify mission-critical invariants directly without translation barriers.`
-    },
-    {
-      id: 'four-layer-standard',
-      num: 3,
-      title: 'The 4-Layer ODC Standard: Unifying Durability, Mesh, Telemetry, and Intent',
-      subtitle: 'A systematic architectural reference model for disruption-tolerant computing from silicon to human experience.',
-      author: 'Anirudha Puthraya',
-      role: 'Standards Director',
-      date: 'November 2026',
-      category: 'Standards & Protocols',
-      read_time: '10 min read',
-      tags: ['ODCS', '4Layers', 'CRDT', 'RFC8785'],
-      summary: 'Digital continuity cannot be solved with an isolated offline cache library. It requires a disciplined multi-layer standard spanning cryptographic durability, CRDT mesh synchronization, runtime telemetry, and optimistic UI authority.',
-      content: `# The 4-Layer ODC Standard\n### By Anirudha Puthraya • Standards Director\n\nJust as the OSI 7-Layer model unified telecommunications, the Open Digital Continuity Standard (ODCS) establishes 4 standardized layers for disruption-tolerant computing:\n\n- **Layer 4: Application & Zero Intent Loss (ZIL)** — Single-frame (<16.6ms) optimistic UI authority.\n- **Layer 3: Dynamic Telemetry Sensing** — Adaptive latency probing and exponential jitter backoff.\n- **Layer 2: Transport & CRDT Consensus** — Semi-lattice state convergence without centralized locks.\n- **Layer 1: Local Durability & Merkle WAL** — RFC 8785 Canonical JSON & SHA-256 hash chains.`
-    },
-    {
-      id: 'star-wasm-engine',
-      num: 4,
-      title: 'From 4.9 KB WebAssembly to Multi-OS Vaults: The Star & Haven Toolchain',
-      subtitle: 'How sovereign compilers eliminate Virtual DOM overhead and deliver single-frame 60 FPS performance.',
-      author: 'Anirudha Puthraya',
-      role: 'Standards Director & Creator of Star Language',
-      date: 'November 2026',
-      category: 'WebAssembly & Runtime',
-      read_time: '9 min read',
-      tags: ['StarLang', 'WebAssembly', 'ZeroVirtualDOM', 'Performance'],
-      summary: 'Why do modern web applications require 50 megabytes of JavaScript just to render a button? Inside the Star Language compiler pipeline that compiles main.star to a standalone 4.9 KB WebAssembly binary running at 60 FPS.',
-      content: `# From 4.9 KB WebAssembly to Multi-OS Vaults\n### By Anirudha Puthraya • Creator of Star Language\n\nModern web development has succumbed to an epidemic of complexity. A standard web application pulls in thousands of transitive npm dependencies and megabytes of framework runtime.\n\nStar eliminates this completely: \`main.star\` compiles directly into pure WebAssembly (\`app.wasm\`, 4.9 KB), delivering single-frame 60 FPS reactive updates with zero virtual-DOM overhead and zero external dependencies.`
-    }
-  ];
+  {
+    "id": "star-haven-full-spec",
+    "num": 1,
+    "title": "The Sovereign Dual-Engine Architecture: Full Specification of Star Language & Haven Language",
+    "subtitle": "From Declarative 60 FPS WebAssembly UI to Natural-English Zero-Intent-Loss Continuity Backends (All 235 Star Modules & Haven Subsystems).",
+    "author": "Anirudha Puthraya",
+    "role": "Standards Director & Creator",
+    "date": "November 2026",
+    "category": "Dual-Engine Specification",
+    "read_time": "18 min read",
+    "tags": [
+      "StarLang",
+      "HavenLang",
+      "ODCS-2.0",
+      "Packages",
+      "ZeroIntentLoss",
+      "WASM"
+    ],
+    "summary": "The authoritative technical specification of the ODCS Dual-Engine standard. Covers all 18 Star packages (235 modules), Haven natural-English grammar and continuity subsystems, and the official announcement of the upcoming Star and Haven sovereign package managers.",
+    "content": "# The Sovereign Dual-Engine Architecture: Full Specification of Star Language & Haven Language\n### By Anirudha Puthraya \u2022 Standards Director, Author & Maintainer\n\n> **\ud83d\udce6 OFFICIAL ANNOUNCEMENT: SOVEREIGN PACKAGE MANAGERS COMING SOON!**\n> Decentralized package managers for both ecosystems (`star pkg` and `haven pkg`) are actively entering Phase 2 implementation.\n> Featuring `star.toml` and `haven.toml` sovereign project manifests, RFC 8785 canonical lockfiles (`star.lock` & `haven.lock`), SHA-256 integrity verification, zero-dependency offline artifact caching (`~/.star/packages` & `~/.haven/pkg_cache`), and decentralized registry publishing via `odcshosting` (https://odcshosting.in).\n\n---\n\n## 1. The Dual-Engine Paradigm\n\nFor three decades, modern computing has relied on the fragile client-server synchronous RPC paradigm. Applications developed under this model assume a permanent, low-latency connection to a centralized cloud. When network conditions degrade, users face spinner screens, 504 Gateway Timeouts, and wiped form inputs.\n\nThe **Open Digital Continuity Standard (ODCS-2.0.0)** completely replaces this paradigm with a **Sovereign Dual-Engine Architecture**:\n\n- **Star Programming Language (v1.2.0 GA):** High-speed WebAssembly frontend UI engine (`app.wasm`, 4.9 KB, 60 FPS).\n- **Haven Language (v2.0):** Natural-English continuity backend engine implementing Layer 1-4 resilience.\n\n---\n\n## 2. Complete Star Language Specification (All 18 Packages & 235 Modules)\n\nStar compiles directly to standalone WebAssembly without virtual-DOM or React dependencies. Its standard library contains 235 production modules across 18 domains:\n\n1. **math (15 modules):** vector2d, vector3d, matrix, quaternion, complex, stats, trig, calculus, geometry, random_dist, combinatorics, linear_algebra, interpolation, bigint, fraction.\n2. **collections (15 modules):** stack, queue, deque, linked_list, heap, priority_queue, binary_search_tree, trie, hash_table, bloom_filter, lru_cache, disjoint_set, graph, circular_buffer, multiset.\n3. **strings (15 modules):** str_utils, regex_lite, template, inflector, slugify, levenshtein, diff, tokenizer, formatter, parser_combinator, unicode_helper, ascii_table, base64_codec, rot13, soundex.\n4. **net (15 modules):** url, http_client, http_router, websocket, query_string, headers, ip_address, dns, socket_utils, mime, cors, cookie, sse, jwt_lite, oauth_lite.\n5. **formats (15 modules):** json_utils, csv, tsv, yaml_lite, xml_lite, toml_lite, ini, markdown_lite, binary_reader, binary_writer, hex_codec, protobuf_lite, msgpack_lite, tar_lite, zip_lite.\n6. **algorithms (15 modules):** sorting, searching, pathfinding, graph_traversal, dynamic_programming, compression_lite, cryptographic_sort, convex_hull, clustering_lite, knapsack, backtracking, string_matching, topological_sort, interval_tree, quadtree.\n7. **crypto (15 modules):** sha256_lite, md5_lite, hmac_lite, aes_lite, rsa_lite, uuid, totp, checksum, random_bytes, pbkdf2_lite, bcrypt_lite, caesar, vigenere, xtea, argon2_lite.\n8. **ui (15 modules):** box_model, color_palette, gradient, typography, grid_system, responsive, flexbox_lite, theme_manager, icon_set, dialog_builder, toast_notifier, badge, avatar, card_layout, form_builder.\n9. **mobile (15 modules):** haptic, sensors, geolocation, battery, device_info, orientation, clipboard, biometrics, torch, network_info, camera_mock, audio_player, volume_control, shake_detector, screen_metrics.\n10. **io (15 modules):** file_utils, path_utils, stream_reader, stream_writer, buffer, file_watcher, temp_file, directory_walker, line_reader, memory_stream, pipe, env_file, log_rotator, lockfile, glob_match.\n11. **game (15 modules):** game_loop, entity_component, collision_2d, tilemap, sprite_animation, particle_system, state_machine, behavior_tree, physics_world, camera_2d, input_manager, scene_manager, spatial_hash, raycast_2d, noise_generator.\n12. **sys (10 modules):** process_utils, args_parser, env_vars, signal_handler, terminal, ansi_colors, benchmark, system_info, time_utils, cron_parser.\n13. **async_tools (10 modules):** promise, task_queue, event_emitter, channel, semaphore, rate_limiter, debounce, throttle, retry, timeout.\n14. **validation (10 modules):** validator, schema, email_validator, url_validator, phone_validator, credit_card, sanitizer, type_guard, rule_engine, form_validator.\n15. **test (10 modules):** assertions, test_runner, mock, spy, fixture, benchmark_runner, snapshot, coverage_lite, test_suite, fake_data.\n16. **media (10 modules):** color_convert, pixel_buffer, image_filter, audio_synth, wav_writer, midi_lite, waveform, bitmap_font, svg_builder, canvas_2d.\n17. **storage (10 modules):** key_value_store, json_db, in_memory_db, cache_manager, transaction, table_storage, indexed_store, query_builder, migration_runner, document_store.\n18. **ai (10 modules):** neural_net_lite, linear_regression, logistic_regression, decision_tree_lite, kmeans, naive_bayes, matrix_math, activation_functions, vector_search, loss_functions.\n\n---\n\n## 3. Complete Haven Language Specification\n\nHaven uses natural-English syntax to maximize auditability while enforcing sub-16ms Zero Intent Loss:\n\n```haven\ndurable record EmergencyEncounter:\n    patient_id: String\n    heart_rate: Integer\n\nset encounter to EmergencyEncounter(\"PT-901\", 78)\ncheckpoint encounter as \"triage_vital\" into hospital_ledger\ngive back \"Sealed with Zero Intent Loss in under 0.15ms!\"\n```\n\n**Key Haven Modules:**\n- `haven.agents`: Sovereign decentralized agent orchestration and consensus routing.\n- `haven.continuity`: Local WAL management, Merkle root recomputation, tamper verification.\n- `haven.intent`: Sub-16ms Zero-Intent-Loss receipt minting and local hardware authority.\n- `haven.merkle`: RFC 8785 Canonical JSON & SHA-256 binary DAGs.\n- `haven.backend.*`: Microservices server, router, ORM, Ed25519 auth, vault.\n- `haven.cli.pkg`: Project manifest & decentralized registry CLI.\n- `odcs.crdt`: PN-Counter and Add-Wins OR-Set conflict-free data types.\n- `odcs.mesh`: Disruption-tolerant peer-to-peer gossip protocol.\n\n---\n\n## 4. Official Notice: Sovereign Package Managers Coming Soon\n\nBoth `star pkg` and `haven pkg` are launching in Phase 2:\n- `star.toml` and `haven.toml` manifest configuration.\n- RFC 8785 deterministically ordered lockfiles (`star.lock` and `haven.lock`).\n- Air-gapped offline caching in `~/.star/packages` and `~/.haven/pkg_cache`.\n- Hosted sovereign package registry at https://odcshosting.in."
+  },
+  {
+    "id": "zero-intent-loss",
+    "num": 2,
+    "title": "The Zero Intent Loss Invariant: Why Human Expression Must Never Be Discarded",
+    "subtitle": "How the Open Digital Continuity Standard replaces 504 timeouts, wiped forms, and spinner screens with deterministic local authority.",
+    "author": "Anirudha Puthraya",
+    "role": "Lead Architect & Creator of Haven Language",
+    "date": "November 2026",
+    "category": "Architecture & Philosophy",
+    "read_time": "8 min read",
+    "tags": [
+      "ODCS",
+      "ZeroIntentLoss",
+      "Resilience",
+      "UX Invariants"
+    ],
+    "summary": "Every day, billions of human inputs are permanently lost to network jitter, server timeouts, and fragile client-server sessions. This essay formalizes the Zero Intent Loss Invariant\u2014mandating that human intent expressed through software must achieve local permanence under 16 milliseconds.",
+    "content": "# The Zero Intent Loss Invariant\n### By Anirudha Puthraya \u2022 Creator & Lead Architect\n\nEvery day, billions of human thoughts, financial transfers, medical observations, and legal contracts are destroyed by an invisible design flaw in contemporary computing: **the fragile assumption of continuous connectivity**.\n\nA paramedic in an underground parking garage types emergency patient vitals and presses \"Submit.\" A spinner appears. Three seconds later, an HTTP 504 Gateway Timeout wipes the input fields. The paramedic must begin again, but time is running out.\n\nThis is not a network failure. **It is an architectural failure.**\n\n---\n\n## 1. The Core Invariant\n\n> *\"The user's expressed intention shall never be rejected, wiped, or blocked by the software interface due to network latency, server downtime, or physical disconnection.\"*\n\nUnder ODCS Layer 4, the moment a user presses a key, checks a box, or seals a record, that action achieves **immediate local cryptographic durability** in under 16 milliseconds. The local node acts as an autonomous sovereign authority.\n\n---\n\n## 2. The 16ms Rule: Local Authority over Remote Permission\n\n1. **Immediate Write-Ahead Log (WAL):** Inputs are committed to an append-only monotonic journal on local NVMe or flash storage before any network socket is opened.\n2. **Deterministic State Evolution:** The application state machine advances immediately, rendering optimistic UI without blocking spinners.\n3. **Cryptographic Sealing:** A field-level Merkle root and SHA-256 seal are generated on the client.\n4. **Convergent Background Mesh:** When connectivity returns, the ledger synchronizes monotonically without double-spends or data loss."
+  },
+  {
+    "id": "why-we-built-haven",
+    "num": 3,
+    "title": "Why We Built Haven: Fixing 30 Years of Broken Client-Server Fragility",
+    "subtitle": "The journey of engineering a native disruption-tolerant runtime for sovereign local-first systems.",
+    "author": "Anirudha Puthraya",
+    "role": "Lead Architect & Creator of Haven Language",
+    "date": "November 2026",
+    "category": "Compilers & Language Design",
+    "read_time": "12 min read",
+    "tags": [
+      "Haven",
+      "LanguageDesign",
+      "DistributedSystems",
+      "WAL"
+    ],
+    "summary": "For three decades, web software has been authored under the assumption that the cloud is permanent. Haven Language is the first programming language designed from syntax to bytecode to treat connectivity as an asynchronous transport.",
+    "content": "# Why We Built Haven: Fixing 30 Years of Broken Client-Server Fragility\n### By Anirudha Puthraya \u2022 Standards Director\n\nEvery programming language carries an implicit worldview. C views the computer as memory addresses and CPU registers. JavaScript views the computer as an event loop embedded inside a browser. Python views the computer as readable scripting.\n\n**Haven views the computer as an autonomous node in an untrusted, intermittent universe.**\n\n---\n\n## 1. Natural English as an Audit Primitive\n\nIn Haven, business rules and emergency triage logic are written in plain human English sentences:\n\n```haven\ndurable record EmergencyEncounter:\n    patient_id: String\n    heart_rate: Integer\n\nset encounter to EmergencyEncounter(\"PT-901\", 78)\ncheckpoint encounter as \"triage_vital\" into hospital_ledger\ngive back \"Sealed with Zero Intent Loss!\"\n```\n\nThis guarantees that medical staff, systems auditors, and engineers can verify mission-critical invariants directly without translation barriers."
+  },
+  {
+    "id": "four-layer-standard",
+    "num": 4,
+    "title": "The 4-Layer ODC Standard: Unifying Durability, Mesh, Telemetry, and Intent",
+    "subtitle": "A systematic architectural reference model for disruption-tolerant computing from silicon to human experience.",
+    "author": "Anirudha Puthraya",
+    "role": "Standards Director",
+    "date": "November 2026",
+    "category": "Standards & Protocols",
+    "read_time": "10 min read",
+    "tags": [
+      "ODCS",
+      "4Layers",
+      "CRDT",
+      "RFC8785"
+    ],
+    "summary": "Digital continuity cannot be solved with an isolated offline cache library. It requires a disciplined multi-layer standard spanning cryptographic durability, CRDT mesh synchronization, runtime telemetry, and optimistic UI authority.",
+    "content": "# The 4-Layer ODC Standard\n### By Anirudha Puthraya \u2022 Standards Director\n\nJust as the OSI 7-Layer model unified telecommunications, the Open Digital Continuity Standard (ODCS) establishes 4 standardized layers for disruption-tolerant computing:\n\n- **Layer 4: Application & Zero Intent Loss (ZIL)** \u2014 Single-frame (<16.6ms) optimistic UI authority.\n- **Layer 3: Dynamic Telemetry Sensing** \u2014 Adaptive latency probing and exponential jitter backoff.\n- **Layer 2: Transport & CRDT Consensus** \u2014 Semi-lattice state convergence without centralized locks.\n- **Layer 1: Local Durability & Merkle WAL** \u2014 RFC 8785 Canonical JSON & SHA-256 hash chains."
+  },
+  {
+    "id": "star-wasm-engine",
+    "num": 5,
+    "title": "From 4.9 KB WebAssembly to Multi-OS Vaults: The Star & Haven Toolchain",
+    "subtitle": "How sovereign compilers eliminate Virtual DOM overhead and deliver single-frame 60 FPS performance.",
+    "author": "Anirudha Puthraya",
+    "role": "Standards Director & Creator of Star Language",
+    "date": "November 2026",
+    "category": "WebAssembly & Runtime",
+    "read_time": "9 min read",
+    "tags": [
+      "StarLang",
+      "WebAssembly",
+      "ZeroVirtualDOM",
+      "Performance"
+    ],
+    "summary": "Why do modern web applications require 50 megabytes of JavaScript just to render a button? Inside the Star Language compiler pipeline that compiles main.star to a standalone 4.9 KB WebAssembly binary running at 60 FPS.",
+    "content": "# From 4.9 KB WebAssembly to Multi-OS Vaults\n### By Anirudha Puthraya \u2022 Creator of Star Language\n\nModern web development has succumbed to an epidemic of complexity. A standard web application pulls in thousands of transitive npm dependencies and megabytes of framework runtime.\n\nStar eliminates this completely: `main.star` compiles directly into pure WebAssembly (`app.wasm`, 4.9 KB), delivering single-frame 60 FPS reactive updates with zero virtual-DOM overhead and zero external dependencies."
+  }
+];
 
   function getArticles() {
     try {

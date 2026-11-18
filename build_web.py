@@ -59,14 +59,14 @@ def build():
     # 2. Deploy website assets directly into build/web/
     print("\n2. Deploying pure sovereign web assets to build/web/...")
     
-    # Copy root website files (index.html, styles.css, app.js, privacy-policy.html, terms.html, etc.)
-    for f in ["index.html", "styles.css", "app.js", "Star.js", "privacy-policy.html", "terms.html"]:
+    # Copy root website files (index.html, styles.css, app.js, privacy-policy.html, terms.html, contribute.html, etc.)
+    for f in ["index.html", "styles.css", "app.js", "Star.js", "privacy-policy.html", "terms.html", "contribute.html"]:
         src_file = os.path.join(website_dir, f)
         if os.path.exists(src_file):
             shutil.copy2(src_file, os.path.join(build_dir, f))
 
-    # Copy sub-directories (admin, privacy-policy, terms)
-    for sub in ["admin", "privacy-policy", "terms"]:
+    # Copy sub-directories (admin, privacy-policy, terms, contribute, images)
+    for sub in ["admin", "privacy-policy", "terms", "contribute", "images"]:
         src_sub = os.path.join(website_dir, sub)
         dst_sub = os.path.join(build_dir, sub)
         if os.path.exists(src_sub):
