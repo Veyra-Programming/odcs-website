@@ -1,18 +1,18 @@
 #!/usr/bin/env python3
 """
-Haven Language v3.5 — Enterprise, Object-Oriented, General-Purpose & Continuity Toolchain + VM
-Engineered for Enterprise Services, Web Applications, Data Engineering, and Digital Continuity.
+Haven Language v4.0 — Next-Gen Innovations, Object-Oriented & Sovereign Systems Edition
+Engineered for Mission-Critical Distributed Systems, Offline-First Applications, and Digital Continuity.
 
-Advanced Concepts Inspired by Enterprise Java, PHP, and Modern Systems:
-  - Interfaces & Abstract Contracts: define interface <Name> / define contract <Name>
-  - Enums & Type-Safe Constants: define enum <Name> with auto-assigned or explicit values
-  - Enterprise Decorators: @memoize, @retry, @timed, @singleton, @deprecated
-  - Fluent Stream API (Java Streams / Laravel Collections): Stream(items).filter().map().sort().to_list()
-  - Inversion of Control & Dependency Injection: ServiceContainer for factories and singletons
-  - Pub/Sub Event Bus: EventBus.on(event, handler) and EventBus.emit(event, payload)
-  - Embedded SQL / Active Record: SqliteDatabase with query(), insert(), query_one(), and migrations
-  - Asynchronous Parallel Concurrency: async_task(fn, *args) and run_parallel([t1, t2])
-  - String Templating Engine: render_template("Hello {{name}}", {"name": "Alice"})
+Sovereign Innovations & Advanced Concepts:
+  - Contract-Driven Programming: require <cond> otherwise <msg>, ensure <cond>, invariant <cond>
+  - Deterministic State Machines: define state_machine <Name> with transitions and lifecycle hooks
+  - Reactive Signals & Computed Cache: Signal(val), Computed(fn), Effect(fn) with auto dependency tracking
+  - Distributed Resilience & Fault Tolerance: CircuitBreaker, @circuit_breaker with fallback
+  - Time-Series Windowing & Anomaly Engine: RollingWindow for rolling statistics, z-score anomaly detection
+  - Zero-Dependency Vector Math & AI Search: dot_product, cosine_similarity, euclidean_distance, knn_search
+  - Declarative Schema Sanitization: Schema, StringRule, NumberRule, EmailRule, ChoiceRule
+  - Cryptographic Merkle State Store: MerkleStore for tamper-evident state with root hashes
+  - Enterprise Batteries: Interfaces, Enums, Streams, DI ServiceContainer, EventBus, SQLite, Async Tasks
   - Full CLI Toolchain: run, compile, lint, test, repl, new, format, info
 """
 
@@ -49,8 +49,8 @@ from dataclasses import dataclass, field, is_dataclass, asdict
 from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
 
-HAVEN_VERSION = "3.5.0"
-HAVEN_CODENAME = "Enterprise Full-Stack Edition"
+HAVEN_VERSION = "4.0.0"
+HAVEN_CODENAME = "Sovereign Innovations Edition"
 
 
 class HavenSyntaxError(SyntaxError):
@@ -1333,6 +1333,563 @@ class TelemetryProbe:
         return "OPTIMAL_ONLINE"
 
 
+# ---------------------------------------------------------------------------
+# Contract-Driven Programming: Invariants, Preconditions & Postconditions
+# ---------------------------------------------------------------------------
+
+class ContractViolationError(AssertionError):
+    """Raised when a contract precondition, postcondition, or invariant is violated."""
+    pass
+
+
+# ---------------------------------------------------------------------------
+# Deterministic State Machine Engine
+# ---------------------------------------------------------------------------
+
+class StateMachineError(RuntimeError):
+    """Raised when an invalid state machine transition is attempted."""
+    pass
+
+
+class StateMachine:
+    """Deterministic finite state machine with guards and transition lifecycle hooks."""
+    def __init__(self, initial_state: str, states: Optional[List[str]] = None):
+        self._current_state = str(initial_state)
+        self._states = set(str(s) for s in (states or [initial_state]))
+        self._states.add(self._current_state)
+        self._transitions: Dict[str, List[Dict[str, Any]]] = {}
+        self._listeners: List[Callable[[str, str, str], None]] = []
+        self._history: List[Dict[str, Any]] = [{"from": None, "to": self._current_state, "event": "__init__", "time": _time.time()}]
+
+    @property
+    def current_state(self) -> str:
+        return self._current_state
+
+    @property
+    def state(self) -> str:
+        return self._current_state
+
+    def add_state(self, state: str) -> "StateMachine":
+        self._states.add(str(state))
+        return self
+
+    def add_transition(self, event: str, from_states: Union[str, List[str]], to_state: str, guard: Optional[Callable[..., bool]] = None) -> "StateMachine":
+        ev = str(event)
+        to_s = str(to_state)
+        self._states.add(to_s)
+        from_list = [str(from_states)] if isinstance(from_states, str) else [str(s) for s in from_states]
+        for s in from_list:
+            self._states.add(s)
+        if ev not in self._transitions:
+            self._transitions[ev] = []
+        self._transitions[ev].append({
+            "from": from_list,
+            "to": to_s,
+            "guard": guard
+        })
+        return self
+
+    def can_transition(self, event: str, *args, **kwargs) -> bool:
+        ev = str(event)
+        if ev not in self._transitions:
+            return False
+        for rule in self._transitions[ev]:
+            if self._current_state in rule["from"] or "*" in rule["from"]:
+                if rule["guard"] is not None:
+                    try:
+                        if not rule["guard"](*args, **kwargs):
+                            continue
+                    except Exception:
+                        return False
+                return True
+        return False
+
+    def transition(self, event: str, *args, **kwargs) -> str:
+        ev = str(event)
+        if ev not in self._transitions:
+            raise StateMachineError(f"No transitions defined for event '{ev}' in state '{self._current_state}'.")
+        for rule in self._transitions[ev]:
+            if self._current_state in rule["from"] or "*" in rule["from"]:
+                if rule["guard"] is not None:
+                    if not rule["guard"](*args, **kwargs):
+                        continue
+                old_state = self._current_state
+                self._current_state = rule["to"]
+                self._history.append({"from": old_state, "to": self._current_state, "event": ev, "time": _time.time()})
+                for cb in self._listeners:
+                    try:
+                        cb(old_state, self._current_state, ev)
+                    except Exception as exc:
+                        print(f"[StateMachine Listener Error]: {exc}", file=_sys.stderr)
+                return self._current_state
+        raise StateMachineError(f"Cannot transition event '{ev}' from current state '{self._current_state}'.")
+
+    def on_transition(self, callback: Callable[[str, str, str], None]) -> "StateMachine":
+        self._listeners.append(callback)
+        return self
+
+    def history(self) -> List[Dict[str, Any]]:
+        return list(self._history)
+
+    def is_in(self, state: str) -> bool:
+        return self._current_state == str(state)
+
+    def __repr__(self) -> str:
+        return f"StateMachine(current={self._current_state!r}, states={list(self._states)!r})"
+
+
+# ---------------------------------------------------------------------------
+# Reactive Signals Engine (Fine-Grained Reactivity without External Libs)
+# ---------------------------------------------------------------------------
+
+_CURRENT_OBSERVER = None
+
+
+class Signal:
+    """Reactive value container with automatic dependency subscription."""
+    def __init__(self, value: Any):
+        self._value = value
+        self._subscribers: set = set()
+
+    @property
+    def value(self) -> Any:
+        global _CURRENT_OBSERVER
+        if _CURRENT_OBSERVER is not None:
+            self._subscribers.add(_CURRENT_OBSERVER)
+        return self._value
+
+    def get(self) -> Any:
+        return self.value
+
+    def set(self, new_val: Any) -> Any:
+        if self._value != new_val:
+            self._value = new_val
+            self._notify()
+        return self._value
+
+    def update(self, fn: Callable[[Any], Any]) -> Any:
+        return self.set(fn(self._value))
+
+    def _notify(self):
+        subs = list(self._subscribers)
+        for sub in subs:
+            sub._trigger()
+
+    def __repr__(self) -> str:
+        return f"Signal({self._value!r})"
+
+
+class Computed:
+    """Memoized calculation derived from reactive Signals with automatic cache invalidation."""
+    def __init__(self, fn: Callable[[], Any]):
+        self._fn = fn
+        self._value = None
+        self._dirty = True
+        self._subscribers: set = set()
+
+    def _trigger(self):
+        if not self._dirty:
+            self._dirty = True
+            for sub in list(self._subscribers):
+                sub._trigger()
+
+    @property
+    def value(self) -> Any:
+        global _CURRENT_OBSERVER
+        if _CURRENT_OBSERVER is not None:
+            self._subscribers.add(_CURRENT_OBSERVER)
+        if self._dirty:
+            prev_observer = _CURRENT_OBSERVER
+            _CURRENT_OBSERVER = self
+            try:
+                self._value = self._fn()
+                self._dirty = False
+            finally:
+                _CURRENT_OBSERVER = prev_observer
+        return self._value
+
+    def get(self) -> Any:
+        return self.value
+
+    def __repr__(self) -> str:
+        return f"Computed({self.value!r})"
+
+
+class Effect:
+    """Reactive side-effect observer that executes whenever dependent Signals mutate."""
+    def __init__(self, fn: Callable[[], Any]):
+        self._fn = fn
+        self._trigger()
+
+    def _trigger(self):
+        global _CURRENT_OBSERVER
+        prev_observer = _CURRENT_OBSERVER
+        _CURRENT_OBSERVER = self
+        try:
+            self._fn()
+        finally:
+            _CURRENT_OBSERVER = prev_observer
+
+
+# ---------------------------------------------------------------------------
+# Distributed Resilience & Fault Tolerance (Circuit Breaker Pattern)
+# ---------------------------------------------------------------------------
+
+class CircuitState:
+    CLOSED = "CLOSED"
+    OPEN = "OPEN"
+    HALF_OPEN = "HALF_OPEN"
+
+
+class CircuitBreakerOpenError(RuntimeError):
+    """Raised when calling a service protected by an open Circuit Breaker without fallback."""
+    pass
+
+
+class CircuitBreaker:
+    """Protects services from cascading failures by failing fast when error threshold is breached."""
+    def __init__(self, failure_threshold: int = 3, recovery_time_s: float = 2.0, fallback: Optional[Callable] = None):
+        self.failure_threshold = max(1, int(failure_threshold))
+        self.recovery_time_s = float(recovery_time_s)
+        self.fallback = fallback
+        self.state = CircuitState.CLOSED
+        self.failure_count = 0
+        self.last_failure_time = 0.0
+        self.success_count_in_half_open = 0
+
+    def call(self, fn: Callable, *args, **kwargs) -> Any:
+        now = _time.time()
+        if self.state == CircuitState.OPEN:
+            if now - self.last_failure_time >= self.recovery_time_s:
+                self.state = CircuitState.HALF_OPEN
+                self.success_count_in_half_open = 0
+            else:
+                if self.fallback is not None:
+                    return self.fallback(*args, **kwargs)
+                raise CircuitBreakerOpenError("Circuit Breaker is OPEN. Call rejected to protect service.")
+
+        try:
+            result = fn(*args, **kwargs)
+            if self.state == CircuitState.HALF_OPEN:
+                self.success_count_in_half_open += 1
+                if self.success_count_in_half_open >= 2:
+                    self.state = CircuitState.CLOSED
+                    self.failure_count = 0
+            elif self.state == CircuitState.CLOSED:
+                self.failure_count = 0
+            return result
+        except Exception as exc:
+            self.failure_count += 1
+            self.last_failure_time = now
+            if self.state in (CircuitState.CLOSED, CircuitState.HALF_OPEN) and self.failure_count >= self.failure_threshold:
+                self.state = CircuitState.OPEN
+            if self.fallback is not None:
+                return self.fallback(*args, **kwargs)
+            raise exc
+
+    def __call__(self, fn: Callable) -> Callable:
+        @_functools.wraps(fn)
+        def wrapper(*args, **kwargs):
+            return self.call(fn, *args, **kwargs)
+        wrapper.circuit_breaker = self
+        return wrapper
+
+
+def circuit_breaker(failure_threshold=3, recovery_time_s=2.0, fallback=None):
+    return CircuitBreaker(failure_threshold=failure_threshold, recovery_time_s=recovery_time_s, fallback=fallback)
+
+
+# ---------------------------------------------------------------------------
+# Time-Series Windowing & Statistical Anomaly Engine
+# ---------------------------------------------------------------------------
+
+class RollingWindow:
+    """Fixed-capacity statistical window for real-time telemetry, IoT, and anomaly detection."""
+    def __init__(self, capacity: int = 100):
+        self.capacity = max(2, int(capacity))
+        self._data: List[float] = []
+
+    def add(self, value: Union[int, float]) -> "RollingWindow":
+        self._data.append(float(value))
+        if len(self._data) > self.capacity:
+            self._data.pop(0)
+        return self
+
+    def values(self) -> List[float]:
+        return list(self._data)
+
+    def count(self) -> int:
+        return len(self._data)
+
+    def mean(self) -> float:
+        return (sum(self._data) / len(self._data)) if self._data else 0.0
+
+    def median(self) -> float:
+        if not self._data:
+            return 0.0
+        s = sorted(self._data)
+        n = len(s)
+        mid = n // 2
+        return (s[mid] if n % 2 == 1 else (s[mid - 1] + s[mid]) / 2.0)
+
+    def variance(self) -> float:
+        if len(self._data) <= 1:
+            return 0.0
+        m = self.mean()
+        return sum((x - m) ** 2 for x in self._data) / (len(self._data) - 1)
+
+    def stdev(self) -> float:
+        return _math.sqrt(self.variance())
+
+    def min(self) -> float:
+        return min(self._data) if self._data else 0.0
+
+    def max(self) -> float:
+        return max(self._data) if self._data else 0.0
+
+    def percentile(self, p: float) -> float:
+        if not self._data:
+            return 0.0
+        sorted_d = sorted(self._data)
+        idx = (len(sorted_d) - 1) * (float(p) / 100.0)
+        low = int(_math.floor(idx))
+        high = int(_math.ceil(idx))
+        if low == high:
+            return sorted_d[low]
+        weight = idx - low
+        return sorted_d[low] * (1.0 - weight) + sorted_d[high] * weight
+
+    def moving_average(self, window_size: int = 5) -> List[float]:
+        w = max(1, int(window_size))
+        out = []
+        for i in range(len(self._data)):
+            chunk = self._data[max(0, i - w + 1):i + 1]
+            out.append(sum(chunk) / len(chunk))
+        return out
+
+    def is_anomaly(self, value: Union[int, float], threshold_deviations: float = 2.5) -> bool:
+        if len(self._data) < 3:
+            return False
+        m = self.mean()
+        s = self.stdev()
+        if s == 0.0:
+            return float(value) != m
+        z_score = abs(float(value) - m) / s
+        return z_score > float(threshold_deviations)
+
+    def __repr__(self) -> str:
+        return f"RollingWindow(count={len(self._data)}, mean={self.mean():.2f}, stdev={self.stdev():.2f})"
+
+
+# ---------------------------------------------------------------------------
+# Zero-Dependency Vector Mathematics & Semantic Search Primitives
+# ---------------------------------------------------------------------------
+
+def dot_product(vec_a: List[float], vec_b: List[float]) -> float:
+    return sum(float(a) * float(b) for a, b in zip(vec_a, vec_b))
+
+
+def vector_magnitude(vec: List[float]) -> float:
+    return _math.sqrt(sum(float(x) * float(x) for x in vec))
+
+
+def vector_normalize(vec: List[float]) -> List[float]:
+    mag = vector_magnitude(vec)
+    if mag == 0.0:
+        return [0.0] * len(vec)
+    return [float(x) / mag for x in vec]
+
+
+def cosine_similarity(vec_a: List[float], vec_b: List[float]) -> float:
+    dot = dot_product(vec_a, vec_b)
+    mag_a = vector_magnitude(vec_a)
+    mag_b = vector_magnitude(vec_b)
+    if mag_a == 0.0 or mag_b == 0.0:
+        return 0.0
+    return max(-1.0, min(1.0, dot / (mag_a * mag_b)))
+
+
+def euclidean_distance(vec_a: List[float], vec_b: List[float]) -> float:
+    return _math.sqrt(sum((float(a) - float(b)) ** 2 for a, b in zip(vec_a, vec_b)))
+
+
+def manhattan_distance(vec_a: List[float], vec_b: List[float]) -> float:
+    return sum(abs(float(a) - float(b)) for a, b in zip(vec_a, vec_b))
+
+
+def knn_search(query_vec: List[float], dataset: List[Dict[str, Any]], vector_key: str = "vector", top_k: int = 3, metric: str = "cosine") -> List[Dict[str, Any]]:
+    scored = []
+    for item in dataset:
+        target_vec = item[vector_key] if isinstance(item, dict) else getattr(item, vector_key)
+        if metric == "cosine":
+            score = cosine_similarity(query_vec, target_vec)
+        else:
+            score = -euclidean_distance(query_vec, target_vec)
+        scored.append((score, item))
+    scored.sort(key=lambda x: x[0], reverse=True)
+    out = []
+    for score, item in scored[:int(top_k)]:
+        entry = dict(item) if isinstance(item, dict) else item.__dict__.copy()
+        entry["_score"] = round(score, 4)
+        out.append(entry)
+    return out
+
+
+# ---------------------------------------------------------------------------
+# Declarative Schema Validation & Data Sanitization Engine
+# ---------------------------------------------------------------------------
+
+class ValidationResult:
+    def __init__(self, is_valid: bool, errors: Dict[str, str], sanitized_data: Dict[str, Any]):
+        self.is_valid = is_valid
+        self.errors = errors
+        self.data = sanitized_data
+
+    def __bool__(self) -> bool:
+        return self.is_valid
+
+    def __repr__(self) -> str:
+        return f"ValidationResult(valid={self.is_valid}, errors={self.errors!r})"
+
+
+class StringRule:
+    def __init__(self, min_len: Optional[int] = None, max_len: Optional[int] = None, pattern: Optional[str] = None):
+        self.min_len = min_len
+        self.max_len = max_len
+        self.pattern = pattern
+
+    def validate(self, field_name: str, val: Any) -> Tuple[bool, Optional[str], Any]:
+        if val is None or not isinstance(val, str):
+            return False, f"Field '{field_name}' must be a string", val
+        s = str(val).strip()
+        if self.min_len is not None and len(s) < self.min_len:
+            return False, f"Field '{field_name}' must be at least {self.min_len} characters", s
+        if self.max_len is not None and len(s) > self.max_len:
+            return False, f"Field '{field_name}' must be at most {self.max_len} characters", s
+        if self.pattern and not _re.search(self.pattern, s):
+            return False, f"Field '{field_name}' format is invalid", s
+        return True, None, s
+
+
+class NumberRule:
+    def __init__(self, min_val: Optional[float] = None, max_val: Optional[float] = None, is_integer: bool = False):
+        self.min_val = min_val
+        self.max_val = max_val
+        self.is_integer = is_integer
+
+    def validate(self, field_name: str, val: Any) -> Tuple[bool, Optional[str], Any]:
+        try:
+            num = int(val) if self.is_integer else float(val)
+        except (ValueError, TypeError):
+            return False, f"Field '{field_name}' must be a number", val
+        if self.min_val is not None and num < self.min_val:
+            return False, f"Field '{field_name}' must be at least {self.min_val}", num
+        if self.max_val is not None and num > self.max_val:
+            return False, f"Field '{field_name}' must be at most {self.max_val}", num
+        return True, None, num
+
+
+class EmailRule:
+    _EMAIL_REGEX = "^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+[.][a-zA-Z0-9-.]+$"
+    def validate(self, field_name: str, val: Any) -> Tuple[bool, Optional[str], Any]:
+        if not val or not isinstance(val, str) or not _re.match(self._EMAIL_REGEX, val.strip()):
+            return False, f"Field '{field_name}' must be a valid email address", val
+        return True, None, val.strip().lower()
+
+
+class ChoiceRule:
+    def __init__(self, allowed_values: List[Any]):
+        self.allowed = set(allowed_values)
+
+    def validate(self, field_name: str, val: Any) -> Tuple[bool, Optional[str], Any]:
+        if val not in self.allowed:
+            return False, f"Field '{field_name}' must be one of {sorted(list(self.allowed))}", val
+        return True, None, val
+
+
+class Schema:
+    """Type-safe declarative data sanitization and contract validation engine."""
+    def __init__(self, rules: Dict[str, Any]):
+        self.rules = rules
+
+    def validate(self, payload: Dict[str, Any]) -> ValidationResult:
+        errors = {}
+        sanitized = {}
+        for field_name, rule in self.rules.items():
+            val = payload.get(field_name) if isinstance(payload, dict) else getattr(payload, field_name, None)
+            if hasattr(rule, "validate"):
+                ok, err, clean_val = rule.validate(field_name, val)
+                if not ok:
+                    errors[field_name] = err
+                else:
+                    sanitized[field_name] = clean_val
+            elif callable(rule):
+                try:
+                    if not rule(val):
+                        errors[field_name] = f"Field '{field_name}' failed validation"
+                    else:
+                        sanitized[field_name] = val
+                except Exception as exc:
+                    errors[field_name] = str(exc)
+            else:
+                sanitized[field_name] = val
+        return ValidationResult(is_valid=len(errors) == 0, errors=errors, sanitized_data=sanitized)
+
+
+# ---------------------------------------------------------------------------
+# Cryptographic Merkle Key-Value State Store
+# ---------------------------------------------------------------------------
+
+class MerkleStore:
+    """Tamper-evident key-value state store with deterministic Merkle tree root hashes."""
+    def __init__(self):
+        self._store: Dict[str, Any] = {}
+        self._leaf_hashes: Dict[str, str] = {}
+        self._history: List[Tuple[float, str, Any, str]] = []
+
+    def set(self, key: str, value: Any) -> str:
+        k = str(key)
+        self._store[k] = value
+        entry_digest = _hashlib.sha256(f"{k}:{canonical_json(value)}".encode("utf-8")).hexdigest()
+        self._leaf_hashes[k] = entry_digest
+        self._history.append((_time.time(), k, value, entry_digest))
+        return entry_digest
+
+    def get(self, key: str, default: Any = None) -> Any:
+        return self._store.get(str(key), default)
+
+    def delete(self, key: str) -> bool:
+        k = str(key)
+        if k in self._store:
+            del self._store[k]
+            del self._leaf_hashes[k]
+            return True
+        return False
+
+    def root_hash(self) -> str:
+        if not self._leaf_hashes:
+            return _hashlib.sha256(b"EMPTY_MERKLE_STORE").hexdigest()
+        sorted_digests = [self._leaf_hashes[k] for k in sorted(self._leaf_hashes.keys())]
+        combined = ":".join(sorted_digests).encode("utf-8")
+        return _hashlib.sha256(combined).hexdigest()
+
+    def verify_integrity(self) -> bool:
+        for k, v in self._store.items():
+            expected = _hashlib.sha256(f"{k}:{canonical_json(v)}".encode("utf-8")).hexdigest()
+            if self._leaf_hashes.get(k) != expected:
+                return False
+        return True
+
+    def keys(self) -> List[str]:
+        return sorted(list(self._store.keys()))
+
+    def to_dict(self) -> Dict[str, Any]:
+        return dict(self._store)
+
+    def __repr__(self) -> str:
+        return f"MerkleStore(keys={len(self._store)}, root={self.root_hash()[:16]}...)"
+
+
 true = True
 false = False
 nothing = None
@@ -1909,6 +2466,51 @@ def transpile_haven(source: str, include_prelude: bool = True) -> str:
             i += 1
             continue
 
+        # 0. Deterministic State Machines: define state_machine Name:
+        m_sm = re.match(r"^(?:define\s+state_machine|state_machine)\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*:\s*$", cleaned)
+        if m_sm:
+            sm_name = m_sm.group(1)
+            i += 1
+            init_state = '"initial"'
+            states_expr = "None"
+            transitions = []
+            other_body = []
+            while i < n:
+                sub_raw = lines[i]
+                sub_stripped = _rewrite_parts(sub_raw).strip()
+                if not sub_stripped:
+                    i += 1
+                    continue
+                sub_indent = len(sub_raw) - len(sub_raw.lstrip(" "))
+                if sub_indent <= indent_len:
+                    break
+                m_init = re.match(r"^initial(?:\s+state)?\s*:\s*(.+)$", sub_stripped)
+                m_states = re.match(r"^states\s*:\s*(.+)$", sub_stripped)
+                m_trans = re.match(r"^transition\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*:\s*(.+?)\s*->\s*(.+)$", sub_stripped)
+                if m_init:
+                    init_state = _fold_pipeline(m_init.group(1).strip())
+                elif m_states:
+                    states_expr = _fold_pipeline(m_states.group(1).strip())
+                elif m_trans:
+                    ev = m_trans.group(1).strip()
+                    from_s = _fold_pipeline(m_trans.group(2).strip())
+                    to_s = _fold_pipeline(m_trans.group(3).strip())
+                    transitions.append((ev, from_s, to_s))
+                else:
+                    other_body.append((sub_indent, sub_stripped))
+                i += 1
+
+            out_lines.append(f"{indent}class {sm_name}(StateMachine):")
+            out_lines.append(f"{indent}    def __init__(self, initial_state={init_state}):")
+            out_lines.append(f"{indent}        super().__init__(initial_state, {states_expr})")
+            for ev, from_s, to_s in transitions:
+                out_lines.append(f"{indent}        self.add_transition(\"{ev}\", {from_s}, {to_s})")
+            if not transitions and not other_body:
+                out_lines.append(f"{indent}        pass")
+            for s_ind, b_line in other_body:
+                out_lines.append(f"{' ' * s_ind}{b_line}")
+            continue
+
         # 1. Interfaces & Abstract Contracts: define interface Name: / define contract Name:
         m_iface = re.match(r"^(?:define\s+(?:interface|contract)|interface|contract)\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*:\s*$", cleaned)
         if m_iface:
@@ -2099,11 +2701,36 @@ def transpile_haven(source: str, include_prelude: bool = True) -> str:
             i += 1
             continue
 
-        # Invariants & Assertions: ensure / verify
-        m_ensure = re.match(r"^(?:ensure|verify)\s+(.+?)(?:\s+(?:otherwise|because)\s+(.+))?$", cleaned)
+        # Contract-Driven Programming: require / ensure / invariant
+        m_req = re.match(r"^require\s+(.+?)(?:\s+(?:otherwise|because)\s+(.+))?$", cleaned)
+        if m_req:
+            cond_expr = _fold_pipeline(m_req.group(1).strip())
+            msg_expr = m_req.group(2).strip() if m_req.group(2) else f'"Precondition violated: {cond_expr}"'
+            out_lines.append(f"{indent}if not ({cond_expr}): raise ContractViolationError({msg_expr})")
+            i += 1
+            continue
+
+        m_inv = re.match(r"^invariant\s+(.+?)(?:\s+(?:otherwise|because)\s+(.+))?$", cleaned)
+        if m_inv:
+            cond_expr = _fold_pipeline(m_inv.group(1).strip())
+            msg_expr = m_inv.group(2).strip() if m_inv.group(2) else f'"Invariant violated: {cond_expr}"'
+            out_lines.append(f"{indent}if not ({cond_expr}): raise ContractViolationError({msg_expr})")
+            i += 1
+            continue
+
+        m_ensure = re.match(r"^ensure\s+(.+?)(?:\s+(?:otherwise|because)\s+(.+))?$", cleaned)
         if m_ensure:
             cond_expr = _fold_pipeline(m_ensure.group(1).strip())
-            msg_expr = m_ensure.group(2).strip() if m_ensure.group(2) else None
+            msg_expr = m_ensure.group(2).strip() if m_ensure.group(2) else f'"Postcondition violated: {cond_expr}"'
+            out_lines.append(f"{indent}if not ({cond_expr}): raise ContractViolationError({msg_expr})")
+            i += 1
+            continue
+
+        # Invariants & Assertions: verify
+        m_verify = re.match(r"^verify\s+(.+?)(?:\s+(?:otherwise|because)\s+(.+))?$", cleaned)
+        if m_verify:
+            cond_expr = _fold_pipeline(m_verify.group(1).strip())
+            msg_expr = m_verify.group(2).strip() if m_verify.group(2) else None
             out_lines.append(f"{indent}assert {cond_expr}, {msg_expr}" if msg_expr else f"{indent}assert {cond_expr}")
             i += 1
             continue
@@ -2183,7 +2810,7 @@ def transpile_haven(source: str, include_prelude: bool = True) -> str:
 
         # 13. Natural English Assignments & Multi-variable Unpacking
         m_set = re.match(
-            r"^(?:set\s+([a-zA-Z0-9_.,\s]+?)\s+to|let\s+([a-zA-Z0-9_.,\s]+?)\s+(?:be|=)|remember\s+([a-zA-Z0-9_.,\s]+?)\s+as)\s+(.+)$",
+            r"^(?:set\s+([a-zA-Z0-9_.,\s\[\]]+?)\s+to|let\s+([a-zA-Z0-9_.,\s\[\]]+?)\s+(?:be|=)|remember\s+([a-zA-Z0-9_.,\s\[\]]+?)\s+as)\s+(.+)$",
             cleaned,
         )
         if m_set:
@@ -2485,7 +3112,15 @@ def print_system_info() -> int:
     print(f"  Operating System:   {platform.system()} {platform.release()} ({platform.machine()})")
     print(f"  Platform Node:      {platform.node()}")
     print("------------------------------------------------------------")
-    print("  Enterprise Standard Batteries (Zero-Dependency Built-ins):")
+    print("  Sovereign Innovations & Batteries (Zero-Dependency Built-ins):")
+    print("    • Contracts:      require <cond> otherwise <msg>, ensure <cond>, invariant <cond>")
+    print("    • State Machines: define state_machine Name: with initial, states, and transition rules")
+    print("    • Reactive State: Signal(val), Computed(fn), Effect(fn) with auto dependency tracking")
+    print("    • Resilience:     @circuit_breaker(failure_threshold, recovery_time_s, fallback)")
+    print("    • Telemetry/IoT:  RollingWindow(capacity) for rolling stats, moving avg & anomaly detection")
+    print("    • AI & Vectors:   dot_product, cosine_similarity, euclidean_distance, knn_search")
+    print("    • Validation:     Schema, StringRule, NumberRule, EmailRule, ChoiceRule, ValidationResult")
+    print("    • Merkle Store:   MerkleStore with tamper-evident SHA-256 state roots and verification")
     print("    • Interfaces:     define interface / define contract with @abstractmethod")
     print("    • Enums:          define enum Priority: LOW, MEDIUM, HIGH, CRITICAL")
     print("    • Decorators:     @memoize, @retry, @timed, @singleton, @deprecated")
@@ -2516,7 +3151,7 @@ def launch_haven_repl() -> int:
         pass
 
     print(f"\033[95m🕊️  Haven Language v{HAVEN_VERSION} Interactive REPL\033[0m")
-    print(f"   Edition: {HAVEN_CODENAME} | Batteries: 100+ Enterprise Functions")
+    print(f"   Edition: {HAVEN_CODENAME} | Batteries: 120+ Sovereign & Enterprise Functions")
     print("   Type \033[93m:help\033[0m for cheatsheet, \033[93m:modules\033[0m for standard library, \033[93mexit\033[0m to quit.")
     print("------------------------------------------------------------")
 
@@ -2538,7 +3173,16 @@ def launch_haven_repl() -> int:
             break
         if stripped == ":help":
             print(textwrap.dedent("""
-                Haven Language v3.5 Enterprise Cheatsheet:
+                Haven Language v4.0 Sovereign Cheatsheet:
+                  Contracts:   require amount > 0 otherwise "Positive amount required"
+                               ensure balance >= 0 otherwise "No overdraft"
+                  State Mach:  define state_machine Flow: initial: "init", transition run: "init" -> "done"
+                  Signals:     set c to Signal(10) | set d to Computed(lambda: c.value * 2)
+                  Resilience:  @circuit_breaker(failure_threshold=3, recovery_time_s=1.0, fallback=fn)
+                  Telemetry:   set w to RollingWindow(50) | w.add(val) | w.is_anomaly(val)
+                  AI Vectors:  cosine_similarity(v1, v2) | euclidean_distance(v1, v2) | knn_search(q, db)
+                  Validation:  Schema({"age": NumberRule(min=18)}).validate(data)
+                  MerkleStore: set ms to MerkleStore() | ms.set("k", "v") | ms.root_hash()
                   Interfaces:  define interface IService: define handle(self, x): pass
                   Enums:       define enum Role: ADMIN, MEMBER, GUEST
                   Decorators:  @memoize | @retry(attempts=3) | @timed | @singleton
@@ -2562,7 +3206,15 @@ def launch_haven_repl() -> int:
             continue
         if stripped in (":modules", ":builtins"):
             print(textwrap.dedent("""
-                Enterprise Modules & Batteries:
+                Sovereign Innovations & Enterprise Modules:
+                  • Contracts:    require, ensure, invariant, ContractViolationError
+                  • State Mach:   StateMachine, define state_machine, StateMachineError
+                  • Reactive:     Signal, Computed, Effect
+                  • Resilience:   CircuitBreaker, circuit_breaker, CircuitState, CircuitBreakerOpenError
+                  • Telemetry:    RollingWindow (.add, .mean, .median, .stdev, .is_anomaly, .moving_average)
+                  • AI & Vectors: dot_product, vector_magnitude, vector_normalize, cosine_similarity, euclidean_distance, manhattan_distance, knn_search
+                  • Validation:   Schema, StringRule, NumberRule, EmailRule, ChoiceRule, ValidationResult
+                  • Merkle Store: MerkleStore (.set, .get, .delete, .root_hash, .verify_integrity)
                   • OOP/Contract: define interface, define contract, define enum, define trait, define class
                   • Decorators:   @memoize, @retry, @timed, @singleton, @deprecated, @abstract
                   • Streams:      Stream, Collection (.filter, .map, .sort, .unique, .chunk, .reduce)
@@ -2584,13 +3236,17 @@ def launch_haven_repl() -> int:
         if stripped == ":examples":
             print(textwrap.dedent("""
                 Quick Interactive Snippets:
-                  1. Stream([1, 2, 3, 4, 5]).filter(lambda x: x > 2).map(lambda x: x * 10).to_list()
-                  2. define enum Status: PENDING, APPROVED, REJECTED
-                  3. set db to SqliteDatabase(":memory:")
-                     db.execute("CREATE TABLE t (id INT, v TEXT)")
-                     db.insert("t", {"id": 1, "v": "hello"})
-                     db.query("SELECT * FROM t")
-                  4. render_template("Welcome, {{user}} to Haven v3.5!", {"user": "Architect"})
+                  1. set sm to StateMachine("idle").add_transition("start", "idle", "active")
+                     sm.transition("start")
+                  2. set c to Signal(10)
+                     set d to Computed(lambda: c.value * 5)
+                     c.set(20)
+                     say d.value
+                  3. cosine_similarity([1.0, 0.0], [0.9, 0.1])
+                  4. Schema({"email": EmailRule()}).validate({"email": "dev@haven.org"})
+                  5. set ms to MerkleStore()
+                     ms.set("server.host", "localhost")
+                     say ms.root_hash()
             """).strip())
             continue
         if stripped == ":info":
