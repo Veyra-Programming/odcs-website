@@ -1,12 +1,20 @@
 #!/usr/bin/env python3
 """
-Haven Language v2.0 — Natural-English & Advanced Continuity Transpiler + VM CLI
+Haven Language v2.5 — Natural-English, Modern Functional & Continuity Transpiler + VM CLI
 Companion Language for the Open Digital Continuity Standard (ODCS)
 
-Provides:
-  - Transpilation of Haven (.hvn) Natural-English & Advanced Pipeline syntax to Python 3.
-  - Built-in ODCS Layer 1-4 runtime prelude (crypto, DurableRecord, PNCounter, ZIL, Ledger).
-  - CLI commands: run, compile, lint, repl.
+Features:
+  - Natural English syntax (assignments, conditionals, loops, functions, pattern matching).
+  - Advanced left-to-right pipelines with '_' placeholder.
+  - Pattern matching: inspect <expr>: when <pattern>: ... otherwise: ...
+  - Durable immutable records with functional evolution (copy <record> with (...)).
+  - Tamper-evident ledger checkpointing (checkpoint <record> [as <label>] into <ledger>).
+  - Modern functional collection primitives (filter_by, map_by, take_first, sort_by, unique_items, etc.).
+  - Natural duration & time syntax (wait N milliseconds / seconds / minutes).
+  - Safe null-coalescing (or else).
+  - Natural file operations (save <expr> to <path>, read text from <path> as <var>, append <expr> to <path>).
+  - Built-in test runner (haven test <path>).
+  - Supercharged interactive REPL with ANSI colors, instant expressions, and :help.
 """
 
 from __future__ import annotations
@@ -37,8 +45,10 @@ HAVEN_PRELUDE = '''
 import dataclasses as _dc
 import hashlib as _hashlib
 import json as _json
+import os as _os
 import time as _time
 import uuid as _uuid
+from typing import Any, Dict, List, Optional, Tuple
 
 
 class ContinuityImmutabilityError(Exception):
@@ -89,8 +99,67 @@ def now_ms():
     return int(_time.time() * 1000)
 
 
+def now_iso():
+    return _time.strftime("%Y-%m-%dT%H:%M:%SZ", _time.gmtime())
+
+
+def seconds(n):
+    return float(n)
+
+
+def milliseconds(n):
+    return float(n) / 1000.0
+
+
+def minutes(n):
+    return float(n) * 60.0
+
+
+def random_int(min_val, max_val):
+    import random
+    return random.randint(int(min_val), int(max_val))
+
+
+def random_item(collection):
+    import random
+    return random.choice(list(collection))
+
+
+def env_var(key, default=None):
+    return _os.environ.get(str(key), default)
+
+
+def _haven_coalesce(primary, fallback):
+    if primary is not None:
+        return primary
+    if callable(fallback):
+        return fallback()
+    return fallback
+
+
+def _haven_save_file(path, content):
+    if not isinstance(content, str):
+        content = canonical_json(content)
+    with open(str(path), "w", encoding="utf-8") as f:
+        f.write(content)
+    return len(content)
+
+
+def _haven_append_file(path, content):
+    if not isinstance(content, str):
+        content = canonical_json(content)
+    with open(str(path), "a", encoding="utf-8") as f:
+        f.write(content)
+    return len(content)
+
+
+def _haven_read_file(path):
+    with open(str(path), "r", encoding="utf-8") as f:
+        return _HavenStr(f.read())
+
+
 class _HavenStr(str):
-    """String subclass providing ergonomic Haven chain helpers (.trim, .to_uppercase)."""
+    """String subclass providing ergonomic Haven chain helpers."""
     def trim(self):
         return _HavenStr(self.strip())
 
@@ -99,6 +168,27 @@ class _HavenStr(str):
 
     def to_lowercase(self):
         return _HavenStr(self.lower())
+
+    def contains(self, sub):
+        return str(sub) in self
+
+    def starts_with(self, prefix):
+        return self.startswith(str(prefix))
+
+    def ends_with(self, suffix):
+        return self.endswith(str(suffix))
+
+    def split_by(self, sep=" "):
+        return [_HavenStr(s) for s in self.split(str(sep))]
+
+    def replace_text(self, old_val, new_val):
+        return _HavenStr(self.replace(str(old_val), str(new_val)))
+
+    def pad_left(self, width, fill=" "):
+        return _HavenStr(self.rjust(int(width), str(fill)))
+
+    def pad_right(self, width, fill=" "):
+        return _HavenStr(self.ljust(int(width), str(fill)))
 
 
 def trim(value):
@@ -113,12 +203,139 @@ def lowercase(value):
     return _HavenStr(str(value).lower())
 
 
+def contains_text(text, substring):
+    return str(substring) in str(text)
+
+
+def starts_with(text, prefix):
+    return str(text).startswith(str(prefix))
+
+
+def ends_with(text, suffix):
+    return str(text).endswith(str(suffix))
+
+
+def split_by(text, delimiter=" "):
+    return [_HavenStr(s) for s in str(text).split(str(delimiter))]
+
+
+def replace_text(text, old_val, new_val):
+    return _HavenStr(str(text).replace(str(old_val), str(new_val)))
+
+
+def pad_left(text, width, fill_char=" "):
+    return _HavenStr(str(text).rjust(int(width), str(fill_char)))
+
+
+def pad_right(text, width, fill_char=" "):
+    return _HavenStr(str(text).ljust(int(width), str(fill_char)))
+
+
+def capitalize_text(text):
+    return _HavenStr(str(text).capitalize())
+
+
 def String(value):
     return _HavenStr(str(value))
 
 
 def Integer(value):
     return int(value)
+
+
+def Float(value):
+    return float(value)
+
+
+def Boolean(value):
+    return bool(value)
+
+
+# ---------------------------------------------------------------------------
+# Functional Collection Utilities for Native Haven Pipelines
+# ---------------------------------------------------------------------------
+
+def filter_by(coll, predicate):
+    return [x for x in coll if predicate(x)]
+
+
+def map_by(coll, transform):
+    return [transform(x) for x in coll]
+
+
+def take_first(coll, n):
+    return list(coll)[:int(n)]
+
+
+def drop_first(coll, n):
+    return list(coll)[int(n):]
+
+
+def sort_by(coll, key_fn=None, descending=False):
+    if key_fn is None or key_fn == "asc":
+        return sorted(list(coll), reverse=descending)
+    if key_fn == "desc":
+        return sorted(list(coll), reverse=True)
+    return sorted(list(coll), key=key_fn, reverse=descending)
+
+
+def reverse_items(coll):
+    return list(reversed(list(coll)))
+
+
+def unique_items(coll):
+    seen = set()
+    out = []
+    for x in coll:
+        try:
+            h = x
+            if h not in seen:
+                seen.add(h)
+                out.append(x)
+        except TypeError:
+            key = canonical_json(x)
+            if key not in seen:
+                seen.add(key)
+                out.append(x)
+    return out
+
+
+def sum_all(coll):
+    return sum(coll)
+
+
+def average(coll):
+    c = list(coll)
+    return (sum(c) / len(c)) if c else 0.0
+
+
+def minimum_of(coll):
+    return min(coll)
+
+
+def maximum_of(coll):
+    return max(coll)
+
+
+def join_with(coll, sep=""):
+    return str(sep).join(str(x) for x in coll)
+
+
+def tally(coll):
+    counts = {}
+    for x in coll:
+        counts[x] = counts.get(x, 0) + 1
+    return counts
+
+
+def chunk_by(coll, chunk_size):
+    size = max(1, int(chunk_size))
+    c = list(coll)
+    return [c[i:i + size] for i in range(0, len(c), size)]
+
+
+def zip_with(coll_a, coll_b):
+    return list(zip(coll_a, coll_b))
 
 
 class _CryptoMod:
@@ -235,11 +452,31 @@ class ContinuityLedger:
     def current_height(self):
         return len(self.blocks)
 
+    def height(self):
+        return len(self.blocks)
+
+    def last_block(self):
+        return self.blocks[-1] if self.blocks else None
+
     def genesis_hash(self):
         return self.blocks[0]["hash"]
 
     def merkle_root(self):
         return merkle_root([b["hash"] for b in self.blocks])
+
+    def to_json(self):
+        return canonical_json(self.blocks)
+
+    def checkpoint(self, record, label="CHECKPOINT"):
+        rec_data = record.to_dict() if hasattr(record, "to_dict") else (_dc.asdict(record) if _dc.is_dataclass(record) else record)
+        rec_hash = record.odcs_hash() if hasattr(record, "odcs_hash") else seal_hash(rec_data)
+        return self.append({
+            "type": "CHECKPOINT",
+            "label": str(label),
+            "record": rec_data,
+            "hash": rec_hash,
+            "sealed_at": now_ms()
+        })
 
     def verify_integrity(self):
         for i, b in enumerate(self.blocks):
@@ -276,6 +513,8 @@ HAVEN_TYPE_MAP = {
     "Boolean": "bool",
     "List": "list",
     "Map": "dict",
+    "Dict": "dict",
+    "Bytes": "bytes",
     "Any": "Any",
 }
 
@@ -352,7 +591,6 @@ def _auto_interpolate_string(parts: List[Tuple[bool, str]]) -> List[Tuple[bool, 
     out: List[Tuple[bool, str]] = []
     for idx, (is_str, chunk) in enumerate(parts):
         if is_str and interp_re.search(chunk):
-            # Avoid double-prefixing if preceding code already ends with f/r/b/u quote prefix
             prev_code = out[-1][1] if out and not out[-1][0] else ""
             if not re.search(r"[frbuFRBU]+$", prev_code):
                 out.append((True, "f" + chunk))
@@ -372,6 +610,8 @@ def _replace_english_ops(code_chunk: str) -> str:
         (r"\bis\s+equal\s+to\b", "=="),
         (r"\bis\s+greater\s+than\b", ">"),
         (r"\bis\s+less\s+than\b", "<"),
+        (r"\bis\s+not\s+in\b", "not in"),
+        (r"\bis\s+in\b", "in"),
         (r"\btrue\b", "True"),
         (r"\bfalse\b", "False"),
         (r"\bnothing\b", "None"),
@@ -385,7 +625,7 @@ def _replace_english_ops(code_chunk: str) -> str:
 def _convert_call_named_colons(expr: str) -> str:
     """Convert `fn(key: val, other: val2)` named args to Python `fn(key=val, other=val2)` without touching dicts `{k: v}`, comments, or lambdas."""
     out: List[str] = []
-    stack: List[str] = []  # '(' or '[' or '{'
+    stack: List[str] = []
     i = 0
     n = len(expr)
     in_q: Optional[str] = None
@@ -431,7 +671,6 @@ def _convert_call_named_colons(expr: str) -> str:
             i += 1
             continue
 
-        # Inside (...) call arguments: transform `ident:` -> `ident=` (skip `lambda params:`)
         if stack and stack[-1] == "(":
             m_lam = re.match(r"lambda\b[^:\n]*:", expr[i:])
             if m_lam and (i == 0 or not (expr[i - 1].isalnum() or expr[i - 1] == "_")):
@@ -464,7 +703,7 @@ def _rewrite_parts(line: str) -> str:
 
 
 def _split_outside_strings(expr: str, sep: str = "|>") -> List[str]:
-    """Split expression by top-level pipeline separator outside strings/brackets."""
+    """Split expression by top-level separator outside strings/brackets."""
     segments: List[str] = []
     buf: List[str] = []
     depth = 0
@@ -507,6 +746,171 @@ def _split_outside_strings(expr: str, sep: str = "|>") -> List[str]:
     return segments
 
 
+def _split_outside_brackets(text: str, delimiter: str = ",") -> List[str]:
+    """Split a comma list outside quotes/brackets."""
+    parts: List[str] = []
+    buf: List[str] = []
+    depth = 0
+    in_q: Optional[str] = None
+    i = 0
+    n = len(text)
+    while i < n:
+        ch = text[i]
+        if in_q:
+            buf.append(ch)
+            if ch == "\\" and i + 1 < n:
+                buf.append(text[i + 1])
+                i += 2
+                continue
+            if ch == in_q:
+                in_q = None
+            i += 1
+            continue
+        if ch in ('"', "'"):
+            in_q = ch
+            buf.append(ch)
+            i += 1
+            continue
+        if ch in "([{":
+            depth += 1
+        elif ch in ")]}" and depth > 0:
+            depth -= 1
+        if depth == 0 and text.startswith(delimiter, i):
+            parts.append("".join(buf).strip())
+            buf = []
+            i += len(delimiter)
+            continue
+        buf.append(ch)
+        i += 1
+    parts.append("".join(buf).strip())
+    return parts
+
+
+def _split_keyword_outside_strings(line: str, keyword: str) -> Optional[Tuple[str, str]]:
+    """Find last occurrence of separator outside quotes/brackets."""
+    depth = 0
+    in_q: Optional[str] = None
+    i = 0
+    n = len(line)
+    kw_re = re.compile(r"\s+\b" + re.escape(keyword.strip()) + r"\b\s+")
+    last_match: Optional[Tuple[int, int]] = None
+
+    while i < n:
+        ch = line[i]
+        if in_q:
+            if ch == "\\" and i + 1 < n:
+                i += 2
+                continue
+            if ch == in_q:
+                in_q = None
+            i += 1
+            continue
+        if ch in ('"', "'"):
+            in_q = ch
+            i += 1
+            continue
+        if ch in "([{":
+            depth += 1
+        elif ch in ")]}" and depth > 0:
+            depth -= 1
+
+        if depth == 0:
+            m = kw_re.match(line[i:])
+            if m:
+                last_match = (i, i + m.end())
+                i += m.end()
+                continue
+        i += 1
+
+    if last_match is not None:
+        start, end = last_match
+        return line[:start].strip(), line[end:].strip()
+    return None
+
+
+def _build_when_condition(target_var: str, raw_pattern: str) -> str:
+    """Compile pattern expression for `when <pattern>:` inside `inspect <var>`."""
+    pat = raw_pattern.strip()
+    comb_parts = re.split(r"\s+\b(and|or)\b\s+", pat)
+    if len(comb_parts) > 1:
+        built = []
+        for token in comb_parts:
+            if token in ("and", "or"):
+                built.append(token)
+            else:
+                built.append(_build_when_condition(target_var, token))
+        return f"({' '.join(built)})"
+
+    if re.match(r"^(?:==|!=|<=|>=|<|>|\bin\b|\bis\b)", pat):
+        return f"({target_var} {pat})"
+
+    items = _split_outside_brackets(pat, ",")
+    if len(items) > 1:
+        return f"({target_var} in ({pat}))"
+
+    return f"({target_var} == ({pat}))"
+
+
+def _replace_or_else(expr: str) -> str:
+    """Convert `a or else b` into `_haven_coalesce(a, b)` outside quotes."""
+    if "or else" not in expr:
+        return expr
+
+    depth = 0
+    in_q: Optional[str] = None
+    i = 0
+    n = len(expr)
+    sep = "or else"
+    split_pos: Optional[int] = None
+
+    while i < n:
+        ch = expr[i]
+        if in_q:
+            if ch == "\\" and i + 1 < n:
+                i += 2
+                continue
+            if ch == in_q:
+                in_q = None
+            i += 1
+            continue
+        if ch in ('"', "'"):
+            in_q = ch
+            i += 1
+            continue
+        if ch in "([{":
+            depth += 1
+        elif ch in ")]}" and depth > 0:
+            depth -= 1
+
+        if depth == 0 and expr.startswith("or else", i):
+            before_ok = (i == 0 or not expr[i - 1].isalnum())
+            after_ok = (i + 7 >= n or not expr[i + 7].isalnum())
+            if before_ok and after_ok:
+                split_pos = i
+                break
+        i += 1
+
+    if split_pos is not None:
+        lhs = expr[:split_pos].strip()
+        rhs = expr[split_pos + len(sep):].strip()
+        return f"_haven_coalesce({_replace_or_else(lhs)}, {_replace_or_else(rhs)})"
+
+    sub_expr = re.sub(
+        r"\(([^()]+)\)",
+        lambda m: f"({_replace_or_else(m.group(1))})" if "or else" in m.group(1) else m.group(0),
+        expr,
+    )
+    if sub_expr != expr:
+        return _replace_or_else(sub_expr)
+
+    return expr
+
+
+def _replace_copy_with(expr: str) -> str:
+    """Lower `copy <record> with (...)` to `_dc.replace(<record>, ...)` for durable records."""
+    return re.sub(r"\bcopy\s+([a-zA-Z_][a-zA-Z0-9_.]*)\s+with\s*\(", r"_dc.replace(\1, ", expr)
+
+
 def _substitute_placeholder(stage: str, lhs: str) -> str:
     """Substitute standalone `_` placeholder outside strings with `lhs`, or inject into call."""
     parts = _split_strings_and_code(stage)
@@ -524,7 +928,6 @@ def _substitute_placeholder(stage: str, lhs: str) -> str:
     if replaced_any:
         return "".join(c for _, c in new_parts)
 
-    # No explicit '_' placeholder: if call fn(...), insert as first argument; else call fn(lhs)
     m = re.match(r"^([a-zA-Z_][a-zA-Z0-9_.]*)\((.*)\)$", stage.strip())
     if m:
         fn_name, args = m.group(1), m.group(2).strip()
@@ -532,22 +935,89 @@ def _substitute_placeholder(stage: str, lhs: str) -> str:
     return f"{stage.strip()}({lhs})"
 
 
+def _fold_nested_parens(expr: str) -> str:
+    """Find each `(...)` that contains `|>` and fold inner expression properly."""
+    out: List[str] = []
+    i = 0
+    n = len(expr)
+    in_q: Optional[str] = None
+
+    while i < n:
+        ch = expr[i]
+        if in_q:
+            out.append(ch)
+            if ch == "\\" and i + 1 < n:
+                out.append(expr[i + 1])
+                i += 2
+                continue
+            if ch == in_q:
+                in_q = None
+            i += 1
+            continue
+        if ch in ('"', "'"):
+            in_q = ch
+            out.append(ch)
+            i += 1
+            continue
+        if ch == "(":
+            depth = 1
+            j = i + 1
+            in_sub_q: Optional[str] = None
+            while j < n and depth > 0:
+                c = expr[j]
+                if in_sub_q:
+                    if c == "\\" and j + 1 < n:
+                        j += 2
+                        continue
+                    if c == in_sub_q:
+                        in_sub_q = None
+                    j += 1
+                    continue
+                if c in ('"', "'"):
+                    in_sub_q = c
+                    j += 1
+                    continue
+                if c == "(":
+                    depth += 1
+                elif c == ")":
+                    depth -= 1
+                j += 1
+
+            if depth == 0:
+                inner = expr[i + 1:j - 1]
+                if "|>" in inner:
+                    folded_inner = _fold_nested_parens(inner)
+                    out.append(f"({_fold_pipeline(folded_inner)})")
+                else:
+                    out.append(f"({inner})")
+                i = j
+                continue
+
+        out.append(ch)
+        i += 1
+
+    return "".join(out)
+
+
 def _fold_pipeline(expr: str) -> str:
     """Compile Haven pipeline chains (`a |> fn(_) |> show(_)`) left-to-right."""
+    expr = _replace_copy_with(expr)
     if "|>" not in expr:
-        return expr
+        return _replace_or_else(expr)
+    expr = _fold_nested_parens(expr)
+    if "|>" not in expr:
+        return _replace_or_else(expr)
     stages = _split_outside_strings(expr, "|>")
     if len(stages) < 2:
-        return expr
-    acc = stages[0]
+        return _replace_or_else(expr)
+    acc = _replace_or_else(stages[0])
     for stage in stages[1:]:
         if not stage:
             continue
-        # Special English sink words at pipeline end
         if stage in ("show", "say", "print", "show(_)", "say(_)", "print(_)"):
             acc = f"print({acc})"
         else:
-            acc = _substitute_placeholder(stage, acc)
+            acc = _substitute_placeholder(_replace_or_else(stage), acc)
     return acc
 
 
@@ -566,7 +1036,6 @@ def _preprocess_multiline_pipelines(lines: List[str]) -> List[str]:
     for raw in lines:
         stripped = raw.strip()
         if stripped.startswith("|>") and merged:
-            # Find last non-empty line to append pipeline stage
             k = len(merged) - 1
             while k >= 0 and not merged[k].strip():
                 k -= 1
@@ -579,18 +1048,18 @@ def _preprocess_multiline_pipelines(lines: List[str]) -> List[str]:
 
 def transpile_haven(source: str, include_prelude: bool = True) -> str:
     """
-    Transpile Haven (.hvn) Natural-English & Advanced Continuity syntax to Python 3.
+    Transpile Haven (.hvn) Natural-English, Modern Functional & Continuity syntax to Python 3.
     Preserves standard Python compatibility when given valid Python scripts.
     """
     lines = _preprocess_multiline_pipelines(source.splitlines())
     out_lines: List[str] = []
+    inspect_stack: List[Dict[str, Any]] = []
     i = 0
     n = len(lines)
 
     while i < n:
         raw_line = lines[i]
         indent_len = len(raw_line) - len(raw_line.lstrip(" "))
-        indent = " " * indent_len
         cleaned = _rewrite_parts(raw_line).strip()
 
         if not cleaned:
@@ -598,15 +1067,22 @@ def transpile_haven(source: str, include_prelude: bool = True) -> str:
             i += 1
             continue
 
+        # Close any inspect blocks whose scope has ended due to decrease in indentation
+        while inspect_stack and indent_len <= inspect_stack[-1]["base_indent"]:
+            inspect_stack.pop()
+
+        # Calculate active dedent shift from all active inspect blocks
+        shift = sum(ctx["delta"] for ctx in inspect_stack)
+        effective_indent_len = max(0, indent_len - shift)
+        indent = " " * effective_indent_len
+
         # Preserve # comments untouched
         if cleaned.startswith("#"):
             out_lines.append(indent + cleaned)
             i += 1
             continue
 
-        # 1. Durable Immutable Record Block:
-        # durable record PacketName:
-        #     field: String
+        # 1. Durable Immutable Record Block
         m_rec = re.match(r"^durable\s+record\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*:\s*$", cleaned)
         if m_rec:
             rec_name = m_rec.group(1)
@@ -639,7 +1115,7 @@ def transpile_haven(source: str, include_prelude: bool = True) -> str:
                 out_lines.append(f"{indent}    pass")
             continue
 
-        # 2. Import shims for built-in Haven/ODCS virtual modules
+        # 2. Virtual module import shims
         if re.match(r"^(?:from\s+(?:odcs|haven_ai|crypto)(?:\.[a-zA-Z0-9_]+)?\s+import|import\s+(?:crypto|odcs))\b", cleaned):
             out_lines.append(f"{indent}# [haven-builtin] {cleaned}")
             i += 1
@@ -652,7 +1128,31 @@ def transpile_haven(source: str, include_prelude: bool = True) -> str:
             i += 1
             continue
 
-        # 4. Natural English Control Flow
+        # 4. Pattern Matching: inspect <expr>: and when <pattern>:
+        m_inspect = re.match(r"^inspect\s+(.+)\s*:\s*$", cleaned)
+        if m_inspect:
+            var_name = f"_haven_inspect_{len(inspect_stack)}"
+            target_expr = _fold_pipeline(m_inspect.group(1).strip())
+            out_lines.append(f"{indent}{var_name} = {target_expr}")
+            inspect_stack.append({"base_indent": indent_len, "var": var_name, "has_case": False, "delta": 0})
+            i += 1
+            continue
+
+        m_when = re.match(r"^when\s+(.+)\s*:\s*$", cleaned)
+        if m_when and inspect_stack and indent_len > inspect_stack[-1]["base_indent"]:
+            ctx = inspect_stack[-1]
+            if not ctx["has_case"]:
+                ctx["delta"] = indent_len - ctx["base_indent"]
+                effective_indent_len = max(0, indent_len - ctx["delta"])
+                indent = " " * effective_indent_len
+            kw = "if" if not ctx["has_case"] else "elif"
+            ctx["has_case"] = True
+            cond = _build_when_condition(ctx["var"], m_when.group(1).strip())
+            out_lines.append(f"{indent}{kw} {cond}:")
+            i += 1
+            continue
+
+        # 5. Natural English Control Flow & Loops
         if re.match(r"^repeat\s+(.+)\s+times\s*:\s*$", cleaned):
             count_expr = re.match(r"^repeat\s+(.+)\s+times\s*:\s*$", cleaned).group(1)
             out_lines.append(f"{indent}for iteration in range(1, int({count_expr}) + 1):")
@@ -682,7 +1182,36 @@ def transpile_haven(source: str, include_prelude: bool = True) -> str:
             i += 1
             continue
 
-        m_ensure = re.match(r"^ensure\s+(.+?)(?:\s+(?:otherwise|because)\s+(.+))?$", cleaned)
+        if cleaned == "stop":
+            out_lines.append(f"{indent}break")
+            i += 1
+            continue
+
+        if cleaned == "skip":
+            out_lines.append(f"{indent}continue")
+            i += 1
+            continue
+
+        # Duration & Sleep: wait N milliseconds / seconds / minutes
+        m_wait = re.match(
+            r"^(?:wait|sleep)\s+(.+?)(?:\s+(milliseconds|millis|ms|seconds|second|sec|s|minutes|minute|min|m))?\s*$",
+            cleaned,
+            re.IGNORECASE,
+        )
+        if m_wait:
+            val_expr = _fold_pipeline(m_wait.group(1).strip())
+            unit = (m_wait.group(2) or "seconds").lower()
+            if unit in ("milliseconds", "millis", "ms"):
+                out_lines.append(f"{indent}_time.sleep(({val_expr}) / 1000.0)")
+            elif unit in ("minutes", "minute", "min", "m"):
+                out_lines.append(f"{indent}_time.sleep(({val_expr}) * 60.0)")
+            else:
+                out_lines.append(f"{indent}_time.sleep({val_expr})")
+            i += 1
+            continue
+
+        # Invariants & Assertions: ensure / verify <condition> otherwise "<message>"
+        m_ensure = re.match(r"^(?:ensure|verify)\s+(.+?)(?:\s+(?:otherwise|because)\s+(.+))?$", cleaned)
         if m_ensure:
             cond_expr = _fold_pipeline(m_ensure.group(1).strip())
             msg_expr = m_ensure.group(2).strip() if m_ensure.group(2) else None
@@ -707,7 +1236,7 @@ def transpile_haven(source: str, include_prelude: bool = True) -> str:
             i += 1
             continue
 
-        # 5. Error handling (`on error as e:` / `recover:` / `except SomeError as e:`)
+        # 6. Natural Error Handling (try / on error as e: / recover / always)
         m_err_as = re.match(r"^(?:on\s+error|recover)\s+as\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*:\s*$", cleaned)
         if m_err_as:
             out_lines.append(f"{indent}except Exception as {m_err_as.group(1)}:")
@@ -719,7 +1248,51 @@ def transpile_haven(source: str, include_prelude: bool = True) -> str:
             i += 1
             continue
 
-        # 6. Natural English Assignments & Mutations
+        if re.match(r"^always\s*:\s*$", cleaned):
+            out_lines.append(f"{indent}finally:")
+            i += 1
+            continue
+
+        # 7. Checkpointing: checkpoint <record> [as <label>] into <ledger>
+        m_chk = re.match(r"^checkpoint\s+(.+?)(?:\s+as\s+(.+?))?\s+into\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*$", cleaned)
+        if m_chk:
+            rec_expr = _fold_pipeline(m_chk.group(1).strip())
+            label_expr = m_chk.group(2).strip() if m_chk.group(2) else '"CHECKPOINT"'
+            ledger_var = m_chk.group(3).strip()
+            out_lines.append(f"{indent}{ledger_var}.checkpoint({rec_expr}, {label_expr})")
+            i += 1
+            continue
+
+        # 8. File I/O Natural Statements
+        if cleaned.startswith("save "):
+            split_res = _split_keyword_outside_strings(cleaned[5:], "to")
+            if split_res:
+                payload_str, dest_str = split_res
+                payload_expr = _fold_pipeline(payload_str.strip())
+                dest_expr = _fold_pipeline(dest_str.strip())
+                out_lines.append(f"{indent}_haven_save_file({dest_expr}, {payload_expr})")
+                i += 1
+                continue
+
+        if cleaned.startswith("append "):
+            split_res = _split_keyword_outside_strings(cleaned[7:], "to")
+            if split_res:
+                payload_str, dest_str = split_res
+                payload_expr = _fold_pipeline(payload_str.strip())
+                dest_expr = _fold_pipeline(dest_str.strip())
+                out_lines.append(f"{indent}_haven_append_file({dest_expr}, {payload_expr})")
+                i += 1
+                continue
+
+        m_read = re.match(r"^read\s+text\s+from\s+(.+?)\s+as\s+([a-zA-Z_][a-zA-Z0-9_]*)$", cleaned)
+        if m_read:
+            src_expr = _fold_pipeline(m_read.group(1).strip())
+            target_var = m_read.group(2).strip()
+            out_lines.append(f"{indent}{target_var} = _haven_read_file({src_expr})")
+            i += 1
+            continue
+
+        # 9. Natural English Assignments & Mutations
         m_set = re.match(r"^(?:set\s+([a-zA-Z_][a-zA-Z0-9_]*)\s+to|let\s+([a-zA-Z_][a-zA-Z0-9_]*)\s+(?:be|=)|remember\s+([a-zA-Z_][a-zA-Z0-9_]*)\s+as)\s+(.+)$", cleaned)
         if m_set:
             var_name = m_set.group(1) or m_set.group(2) or m_set.group(3)
@@ -740,15 +1313,18 @@ def transpile_haven(source: str, include_prelude: bool = True) -> str:
             i += 1
             continue
 
-        # 7. Return / Give Back
-        m_ret = re.match(r"^give\s+back\s+(.+)$", cleaned)
+        # 10. Return / Give Back
+        m_ret = re.match(r"^give\s+back(?:\s+(.+))?$", cleaned)
         if m_ret:
-            out_lines.append(f"{indent}return {_fold_pipeline(m_ret.group(1))}")
+            expr = m_ret.group(1)
+            if expr:
+                out_lines.append(f"{indent}return {_fold_pipeline(expr)}")
+            else:
+                out_lines.append(f"{indent}return")
             i += 1
             continue
 
-        # 8. ODCS Native Intent Preservation:
-        # preserve intent "ActionName" with {"k": "v"} as receipt
+        # 11. ODCS Native Intent Preservation
         m_intent = re.match(
             r"^preserve\s+intent\s+(.+?)(?:\s+with\s+(.+?))?(?:\s+as\s+([a-zA-Z_][a-zA-Z0-9_]*))?$",
             cleaned,
@@ -761,16 +1337,15 @@ def transpile_haven(source: str, include_prelude: bool = True) -> str:
             i += 1
             continue
 
-        # 9. Natural Print / Say / Show statements
+        # 12. Natural Print / Say / Show statements
         m_say = re.match(r"^(?:say|show|print)\s+(.+)$", cleaned)
         if m_say and not cleaned.startswith("print("):
             inner = m_say.group(1).strip()
-            # Keep `print("x")` un-double-wrapped if user wrote `say ("hi")`? No, print((...)) is valid, or clean parens
             out_lines.append(f"{indent}print({_fold_pipeline(inner)})")
             i += 1
             continue
 
-        # 10. Default expression / pipeline folding
+        # 13. Default pipeline & expression
         out_lines.append(f"{indent}{_fold_pipeline(cleaned)}")
         i += 1
 
@@ -778,6 +1353,29 @@ def transpile_haven(source: str, include_prelude: bool = True) -> str:
     if include_prelude:
         return HAVEN_PRELUDE.lstrip() + "\n# --- Transpiled Haven User Program ---\n" + body + "\n"
     return body + "\n"
+
+
+def format_haven_diagnostic(src: str, exc: SyntaxError, filename: str) -> str:
+    """Render helpful compiler diagnostics with pointer and tips."""
+    lines = src.splitlines()
+    lineno = exc.lineno or 1
+    col = exc.offset or 1
+    err_line = lines[lineno - 1] if 0 <= lineno - 1 < len(lines) else ""
+    pointer = " " * max(0, col - 1) + "^^^"
+    suggestion = ""
+    if "==" in err_line:
+        suggestion = "\n  💡 Tip: Haven natural-English comparison is 'is equal to' (or '==')."
+    elif "def " in err_line:
+        suggestion = "\n  💡 Tip: Define Haven functions using 'define function_name(args):'."
+    elif "=" in err_line and "set " not in err_line and "let " not in err_line and "remember " not in err_line:
+        suggestion = "\n  💡 Tip: Assign variables in Haven using 'set var to val' or 'let var be val'."
+
+    return (
+        f"\n\033[91m[Haven SyntaxError]\033[0m in {filename} at line {lineno}, column {col}:\n"
+        f"  {lineno:4d} | {err_line}\n"
+        f"       | {pointer}\n"
+        f"  Error: {exc.msg}{suggestion}\n"
+    )
 
 
 def execute_haven_file(path: str, show_compiled: bool = False) -> int:
@@ -792,15 +1390,156 @@ def execute_haven_file(path: str, show_compiled: bool = False) -> int:
     try:
         ast.parse(compiled)
     except SyntaxError as exc:
-        print(f"[Haven SyntaxError] line {exc.lineno}: {exc.msg}", file=sys.stderr)
+        print(format_haven_diagnostic(compiled, exc, path), file=sys.stderr)
         return 1
-    ns: Dict[str, Any] = {"__name__": "__main__"}
+    ns: Dict[str, Any] = {"__name__": "__main__", "__file__": os.path.abspath(path)}
     exec(compile(compiled, path, "exec"), ns)
     return 0
 
 
+def run_haven_tests(target_path: str = ".") -> int:
+    """Discover and execute all Haven test scripts (.hvn) reporting test status and timing."""
+    test_files = []
+    if os.path.isfile(target_path):
+        test_files = [target_path]
+    elif os.path.isdir(target_path):
+        for root, dirs, files in os.walk(target_path):
+            dirs[:] = [d for d in dirs if d not in (".git", "node_modules", "dist", "build", "__pycache__")]
+            for f in sorted(files):
+                if f.endswith(".hvn"):
+                    test_files.append(os.path.join(root, f))
+
+    if not test_files:
+        print(f"No Haven test suites (.hvn) found in '{target_path}'.")
+        return 0
+
+    print("============================================================")
+    print("🧪 Haven Language v2.5 Automated Test Suite Runner")
+    print(f"   Target: {target_path} | Discovered: {len(test_files)} suite(s)")
+    print("============================================================")
+
+    passed = 0
+    failed = 0
+    start_total = time.time()
+
+    for test_file in test_files:
+        t0 = time.time()
+        try:
+            with open(test_file, "r", encoding="utf-8") as fh:
+                src = fh.read()
+            compiled = transpile_haven(src, include_prelude=True)
+            ast.parse(compiled)
+            ns = {"__name__": "__main__", "__file__": os.path.abspath(test_file)}
+            exec(compile(compiled, test_file, "exec"), ns)
+            dt_ms = int((time.time() - t0) * 1000)
+            print(f"  \033[92m✓ [PASS]\033[0m {test_file} ({dt_ms}ms)")
+            passed += 1
+        except Exception as exc:
+            dt_ms = int((time.time() - t0) * 1000)
+            print(f"  \033[91m✗ [FAIL]\033[0m {test_file} ({dt_ms}ms) -> {exc}")
+            failed += 1
+
+    total_ms = int((time.time() - start_total) * 1000)
+    print("============================================================")
+    status_color = "\033[92m" if failed == 0 else "\033[91m"
+    print(f"{status_color}Test Results: {passed} passed, {failed} failed in {total_ms}ms\033[0m")
+    return 0 if failed == 0 else 1
+
+
+def launch_haven_repl() -> int:
+    """Launch interactive Haven command-line REPL with instant evaluation and helper commands."""
+    try:
+        import readline  # Enable arrow key history on platforms that support it
+    except ImportError:
+        pass
+
+    print("\033[95m🕊️  Haven Language v2.5 Interactive REPL\033[0m")
+    print("   Type \033[93m:help\033[0m for cheatsheet, \033[93m:builtins\033[0m for standard library, \033[93mexit\033[0m to quit.")
+    print("------------------------------------------------------------")
+
+    ns: Dict[str, Any] = {}
+    exec(compile(HAVEN_PRELUDE, "<haven-prelude>", "exec"), ns)
+
+    while True:
+        try:
+            line = input("\033[95mhaven\033[0m\033[90m>\033[0m ")
+        except (EOFError, KeyboardInterrupt):
+            print("\nExiting Haven REPL.")
+            break
+
+        stripped = line.strip()
+        if not stripped:
+            continue
+        if stripped in ("exit", "quit", ":exit", ":quit"):
+            print("Goodbye!")
+            break
+        if stripped == ":help":
+            print(textwrap.dedent("""
+                Haven Language v2.5 Cheatsheet:
+                  Variables:   set name to "Alpha" | let port be 8080 | remember KEY as "val"
+                  Mutations:   increase count by 1 | decrease quota by 5
+                  Flow:        whenever x is greater than 10: ... otherwise: ...
+                  Pattern:     inspect code: when 200, 201: ... otherwise: ...
+                  Pipelines:   data |> filter_by(fn) |> map_by(fn) |> take_first(3) |> show
+                  Records:     durable record Packet: ... | copy pkt with (status: "OK")
+                  Checkpoint:  checkpoint pkt as "stage_1" into ledger
+                  Durations:   wait 250 milliseconds | wait 2 seconds
+                  Null-safe:   name or else "Guest"
+                  Files:       save "data" to "f.txt" | read text from "f.txt" as content
+                  REPL Meta:   :builtins, :examples, :clear, :reset, :exit
+            """).strip())
+            continue
+        if stripped == ":builtins":
+            print(textwrap.dedent("""
+                Built-in Haven Standard Library:
+                  Collections: filter_by, map_by, take_first, drop_first, sort_by, reverse_items,
+                               unique_items, sum_all, average, minimum_of, maximum_of, join_with,
+                               tally, chunk_by, zip_with
+                  Strings:     trim, uppercase, lowercase, contains_text, starts_with, ends_with,
+                               split_by, replace_text, pad_left, pad_right, capitalize_text
+                  Time/Env:    now_ms(), now_iso(), seconds(n), milliseconds(n), minutes(n),
+                               random_int(a, b), random_item(list), env_var(key, default)
+                  Continuity:  ContinuityLedger, PNCounter, ZeroIntentLoss, seal_hash,
+                               canonical_json, merkle_root, uuid7
+            """).strip())
+            continue
+        if stripped == ":examples":
+            print(textwrap.dedent("""
+                Quick Haven Examples:
+                  1. set nums to [5, 12, 3, 19, 8] |> filter_by(lambda x: x > 5) |> sort_by(_)
+                  2. inspect "healthy": when "healthy": say "Cluster Green" otherwise: say "Alert"
+                  3. set user to (env_var("USER") or else "DefaultUser")
+            """).strip())
+            continue
+        if stripped == ":clear":
+            os.system("cls" if os.name == "nt" else "clear")
+            continue
+        if stripped == ":reset":
+            ns.clear()
+            exec(compile(HAVEN_PRELUDE, "<haven-prelude>", "exec"), ns)
+            print("\033[92mEnvironment reset.\033[0m")
+            continue
+
+        try:
+            py = transpile_haven(line, include_prelude=False).strip()
+            # Try evaluating as an expression first
+            try:
+                code_obj = compile(py, "<repl>", "eval")
+                val = eval(code_obj, ns)
+                if val is not None:
+                    print(f"\033[96m➜\033[0m {repr(val)}")
+            except SyntaxError:
+                # Fall back to statement execution
+                code_obj = compile(py, "<repl>", "exec")
+                exec(code_obj, ns)
+        except Exception as exc:
+            print(f"\033[91m[Haven Error]\033[0m {exc}")
+
+    return 0
+
+
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Haven Language v2.0 Natural-English Toolchain & VM")
+    parser = argparse.ArgumentParser(description="Haven Language v2.5 Natural-English Toolchain & VM")
     sub = parser.add_subparsers(dest="cmd")
 
     p_run = sub.add_parser("run", help="Run a .hvn script")
@@ -815,8 +1554,12 @@ def main() -> int:
 
     sub.add_parser("repl", help="Launch interactive Haven REPL")
 
-    args = parser.parse_args()
+    p_test = sub.add_parser("test", help="Discover and execute Haven test suites")
+    p_test.add_argument("target", nargs="?", default="heaven/examples", help="Target test directory or file")
+
+    args, unknown = parser.parse_known_args()
     if args.cmd == "run":
+        sys.argv = [args.file] + unknown
         return execute_haven_file(args.file, show_compiled=args.show_compiled)
     if args.cmd == "compile":
         with open(args.file, "r", encoding="utf-8") as fh:
@@ -825,28 +1568,17 @@ def main() -> int:
     if args.cmd == "lint":
         with open(args.file, "r", encoding="utf-8") as fh:
             compiled = transpile_haven(fh.read(), include_prelude=True)
-        ast.parse(compiled)
-        print(f"[OK] {args.file} passed Haven v2.0 AST verification.")
-        return 0
+        try:
+            ast.parse(compiled)
+            print(f"\033[92m[OK]\033[0m {args.file} passed Haven v2.5 AST verification.")
+            return 0
+        except SyntaxError as exc:
+            print(format_haven_diagnostic(compiled, exc, args.file), file=sys.stderr)
+            return 1
+    if args.cmd == "test":
+        return run_haven_tests(args.target)
     if args.cmd == "repl":
-        print("Haven Language v2.0 Interactive REPL (type 'exit' to quit)")
-        ns: Dict[str, Any] = {}
-        exec(compile(HAVEN_PRELUDE, "<haven-prelude>", "exec"), ns)
-        while True:
-            try:
-                line = input("haven> ")
-            except EOFError:
-                break
-            if line.strip() in ("exit", "quit"):
-                break
-            if not line.strip():
-                continue
-            try:
-                py = transpile_haven(line, include_prelude=False)
-                exec(compile(py, "<repl>", "exec"), ns)
-            except Exception as exc:
-                print(f"[Haven Error] {exc}")
-        return 0
+        return launch_haven_repl()
 
     parser.print_help()
     return 0
